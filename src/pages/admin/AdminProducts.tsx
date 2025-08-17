@@ -95,8 +95,11 @@ const AdminProducts = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All Categories</SelectItem>
-                <SelectItem value="Fans">Fans</SelectItem>
-                <SelectItem value="Bulbs">Bulbs</SelectItem>
+                {useProductStore.getState().categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

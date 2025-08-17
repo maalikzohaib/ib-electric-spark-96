@@ -7,6 +7,7 @@ import {
   Plus, 
   Settings, 
   Star, 
+  Tag,
   LogOut 
 } from "lucide-react";
 
@@ -46,7 +47,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     {
       name: "Categories",
       path: "/admin/categories",
-      icon: <Settings className="h-4 w-4" />
+      icon: <Tag className="h-4 w-4" />
     }
   ];
 

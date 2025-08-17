@@ -14,7 +14,9 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AddProduct from "./pages/admin/AddProduct";
+import EditProduct from "./pages/admin/EditProduct";
 import FeaturedProducts from "./pages/admin/FeaturedProducts";
+import Categories from "./pages/admin/Categories";
 import AdminLayout from "./components/admin/AdminLayout";
 import NotFound from "./pages/NotFound";
 
@@ -81,9 +83,19 @@ const App = () => (
               <AddProduct />
             </AdminLayout>
           } />
+          <Route path="/admin/edit-product/:id" element={
+            <AdminLayout>
+              <EditProduct />
+            </AdminLayout>
+          } />
           <Route path="/admin/featured" element={
             <AdminLayout>
               <FeaturedProducts />
+            </AdminLayout>
+          } />
+          <Route path="/admin/categories" element={
+            <AdminLayout>
+              <Categories />
             </AdminLayout>
           } />
           

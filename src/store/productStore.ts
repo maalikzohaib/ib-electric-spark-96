@@ -26,6 +26,9 @@ interface ProductStore {
   setFeaturedProducts: (productIds: string[]) => void;
   getProductById: (id: string) => Product | undefined;
   getFeaturedProducts: () => Product[];
+  addCategory: (category: string) => void;
+  updateCategory: (oldCategory: string, newCategory: string) => void;
+  deleteCategory: (category: string) => void;
 }
 
 export const useProductStore = create<ProductStore>()(
@@ -73,6 +76,37 @@ export const useProductStore = create<ProductStore>()(
         return featuredProducts
           .map((id) => products.find((product) => product.id === id))
           .filter(Boolean) as Product[];
+      },
+      
+      addCategory: (category) => {
+        set((state) => {
+          if (!state.categories.includes(category)) {
+            return {
+              categories: [...state.categories, category],
+            };
+          }
+          return state;
+        });
+      },
+      
+      updateCategory: (oldCategory, newCategory) => {
+        set((state) => ({
+          categories: state.categories.map((cat) =>
+            cat === oldCategory ? newCategory : cat
+          ),
+          products: state.products.map((product) =>
+            product.category === oldCategory
+              ? { ...product, category: newCategory as 'Fans' | 'Bulbs' }
+              : product
+          ),
+        }));
+      },
+      
+      deleteCategory: (category) => {
+        set((state) => ({
+          categories: state.categories.filter((cat) => cat !== category),
+          products: state.products.filter((product) => product.category !== category),
+        }));
       },
     }),
     {

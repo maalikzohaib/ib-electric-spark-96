@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { Input } from "@/components/ui/input";
@@ -10,16 +10,19 @@ import { useProductStore } from "@/store/productStore";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X, Plus } from "lucide-react";
 
-const AddProduct = () => {
+const EditProduct = () => {
   const navigate = useNavigate();
-  const { addProduct } = useProductStore();
+  const { id } = useParams<{ id: string }>();
+  const { getProductById, updateProduct, categories } = useProductStore();
   const { toast } = useToast();
+  
+  const product = id ? getProductById(id) : null;
   
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
-    category: '' as 'Fans' | 'Bulbs' | '',
+    category: '' as string,
     brand: '',
     availability: 'In Stock' as 'In Stock' | 'Out of Stock',
     color: '',
@@ -30,11 +33,37 @@ const AddProduct = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [imageInput, setImageInput] = useState('');
 
+  useEffect(() => {
+    if (!product) {
+      toast({
+        title: "Product Not Found",
+        description: "The product you're trying to edit doesn't exist.",
+        variant: "destructive",
+      });
+      navigate('/admin/products');
+      return;
+    }
+
+    setFormData({
+      title: product.title,
+      description: product.description,
+      price: product.price.toString(),
+      category: product.category,
+      brand: product.brand,
+      availability: product.availability,
+      color: product.color || '',
+      variant: product.variant || '',
+    });
+    
+    setImages(product.images);
+    setMainImageIndex(product.images.indexOf(product.mainImage));
+  }, [product, navigate, toast]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'price' ? value : value
+      [name]: value
     }));
   };
 
@@ -105,7 +134,7 @@ const AddProduct = () => {
       return;
     }
 
-    const newProduct = {
+    const updatedProduct = {
       ...formData,
       price: parseFloat(formData.price),
       category: formData.category as 'Fans' | 'Bulbs',
@@ -113,23 +142,27 @@ const AddProduct = () => {
       mainImage: images[mainImageIndex],
     };
 
-    addProduct(newProduct);
+    updateProduct(id!, updatedProduct);
     
     toast({
-      title: "Product Added",
-      description: `${formData.title} has been added to the store.`,
+      title: "Product Updated",
+      description: `${formData.title} has been updated successfully.`,
     });
 
     navigate('/admin/products');
   };
 
+  if (!product) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Add Product</h1>
+        <h1 className="text-3xl font-bold text-foreground">Edit Product</h1>
         <p className="text-muted-foreground">
-          Create a new product for your store
+          Update product information
         </p>
       </div>
 
@@ -186,7 +219,7 @@ const AddProduct = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {useProductStore.getState().categories.map((category) => (
+                      {categories.map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
                         </SelectItem>
@@ -347,7 +380,7 @@ const AddProduct = () => {
             Cancel
           </Button>
           <Button type="submit" variant="store">
-            Add Product
+            Update Product
           </Button>
         </div>
       </form>
@@ -355,4 +388,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;
