@@ -21,7 +21,7 @@ const AdminProducts = () => {
   const { toast } = useToast();
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category') || '');
+  const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category') || 'all');
 
   // Filter products
   const filteredProducts = products.filter(product => {
@@ -29,7 +29,7 @@ const AdminProducts = () => {
       product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.brand.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = !categoryFilter || product.category === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -94,8 +94,8 @@ const AdminProducts = () => {
                 <SelectValue placeholder="All Categories" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
-                {useProductStore.getState().categories.map((category) => (
+                <SelectItem value="all">All Categories</SelectItem>
+                {useProductStore.getState().categories.filter(category => category.trim() !== '').map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}
                   </SelectItem>
@@ -194,7 +194,7 @@ const AdminProducts = () => {
                 variant="outline" 
                 onClick={() => {
                   setSearchQuery('');
-                  setCategoryFilter('');
+                  setCategoryFilter('all');
                   setSearchParams({});
                 }}
               >

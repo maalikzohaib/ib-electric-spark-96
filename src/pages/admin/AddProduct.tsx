@@ -19,7 +19,7 @@ const AddProduct = () => {
     title: '',
     description: '',
     price: '',
-    category: '' as 'Fans' | 'Bulbs' | '',
+    category: '' as string,
     brand: '',
     availability: 'In Stock' as 'In Stock' | 'Out of Stock',
     color: '',
@@ -108,7 +108,7 @@ const AddProduct = () => {
     const newProduct = {
       ...formData,
       price: parseFloat(formData.price),
-      category: formData.category as 'Fans' | 'Bulbs',
+      category: formData.category as any,
       images,
       mainImage: images[mainImageIndex],
     };
@@ -186,7 +186,7 @@ const AddProduct = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {useProductStore.getState().categories.map((category) => (
+                      {useProductStore.getState().categories.filter(category => category.trim() !== '').map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
                         </SelectItem>

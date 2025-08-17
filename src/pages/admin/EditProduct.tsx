@@ -219,7 +219,7 @@ const EditProduct = () => {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((category) => (
+                      {categories.filter(category => category.trim() !== '').map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
                         </SelectItem>
