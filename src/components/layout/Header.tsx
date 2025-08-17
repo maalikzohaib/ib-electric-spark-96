@@ -78,11 +78,6 @@ const Header = () => {
                 Shop
               </Button>
             </Link>
-            <Link to="/admin">
-              <Button variant="outline" size="sm" className="ml-2">
-                Admin Panel
-              </Button>
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -141,15 +136,6 @@ const Header = () => {
             >
               <Button variant="store" size="sm" className="w-full">
                 Shop
-              </Button>
-            </Link>
-            <Link
-              to="/admin"
-              className="block py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Button variant="outline" size="sm" className="w-full">
-                Admin Panel
               </Button>
             </Link>
           </nav>
