@@ -11,9 +11,6 @@ const Header = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Shop", path: "/shop" },
-    { name: "Fans", path: "/shop?category=Fans" },
-    { name: "Bulbs", path: "/shop?category=Bulbs" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
@@ -60,21 +57,28 @@ const Header = () => {
           </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden lg:flex space-x-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location.pathname === item.path
-                    ? "text-primary"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+          <div className="hidden lg:flex items-center space-x-6">
+            <nav className="flex space-x-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    location.pathname === item.path
+                      ? "text-primary"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+            <Link to="/shop">
+              <Button variant="store" size="sm" className="ml-4">
+                Shop
+              </Button>
+            </Link>
+          </div>
 
           {/* Mobile Menu Button */}
           <Button
@@ -125,6 +129,15 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            <Link
+              to="/shop"
+              className="block py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Button variant="store" size="sm" className="w-full">
+                Shop
+              </Button>
+            </Link>
           </nav>
         )}
       </div>

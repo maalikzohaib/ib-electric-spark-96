@@ -31,94 +31,102 @@ const SalesChart = () => {
                 Demonstrating the superior reliability, efficiency, and power consumption of our electrical products
               </p>
             </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <ComposedChart data={electricalData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis 
-                    dataKey="month" 
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                  />
-                  <YAxis 
-                    yAxisId="left"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                    domain={[80, 100]}
-                  />
-                  <YAxis 
-                    yAxisId="right" 
-                    orientation="right"
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
-                    domain={[0, 40]}
-                  />
-                  <Tooltip 
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px'
-                    }}
-                    formatter={(value, name) => {
-                      if (name === 'Reliability' || name === 'Efficiency') {
-                        return [`${value}%`, name];
-                      }
-                      if (name === 'Power Saving') {
-                        return [`${value}%`, name];
-                      }
-                      return [value, name];
-                    }}
-                  />
-                  <Legend />
-                  <Bar 
-                    yAxisId="left"
-                    dataKey="reliability" 
-                    fill="hsl(var(--primary))" 
-                    name="Reliability"
-                    radius={[4, 4, 0, 0]}
-                    opacity={0.8}
-                  />
-                  <Bar 
-                    yAxisId="left"
-                    dataKey="efficiency" 
-                    fill="hsl(var(--accent))" 
-                    name="Efficiency"
-                    radius={[4, 4, 0, 0]}
-                    opacity={0.8}
-                  />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="powerSaving" 
-                    stroke="hsl(var(--success))" 
-                    strokeWidth={3}
-                    name="Power Saving"
-                    dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 6 }}
-                    activeDot={{ r: 8, stroke: 'hsl(var(--success))', strokeWidth: 2 }}
-                  />
-                </ComposedChart>
-              </ResponsiveContainer>
+            <CardContent className="p-2 sm:p-6">
+              <div className="w-full overflow-x-auto">
+                <ResponsiveContainer width="100%" height={350} minWidth={320}>
+                  <ComposedChart data={electricalData} margin={{ top: 20, right: 10, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="month" 
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      tick={{ fontSize: 10 }}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      tick={{ fontSize: 10 }}
+                      domain={[80, 100]}
+                      width={30}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={10}
+                      tick={{ fontSize: 10 }}
+                      domain={[0, 40]}
+                      width={30}
+                    />
+                    <Tooltip 
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                        fontSize: '12px'
+                      }}
+                      formatter={(value, name) => {
+                        if (name === 'Reliability' || name === 'Efficiency') {
+                          return [`${value}%`, name];
+                        }
+                        if (name === 'Power Saving') {
+                          return [`${value}%`, name];
+                        }
+                        return [value, name];
+                      }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="reliability" 
+                      fill="hsl(var(--primary))" 
+                      name="Reliability"
+                      radius={[2, 2, 0, 0]}
+                      opacity={0.8}
+                    />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="efficiency" 
+                      fill="hsl(var(--accent))" 
+                      name="Efficiency"
+                      radius={[2, 2, 0, 0]}
+                      opacity={0.8}
+                    />
+                    <Line 
+                      yAxisId="right"
+                      type="monotone" 
+                      dataKey="powerSaving" 
+                      stroke="hsl(var(--success))" 
+                      strokeWidth={2}
+                      name="Power Saving"
+                      dot={{ fill: 'hsl(var(--success))', strokeWidth: 1, r: 4 }}
+                      activeDot={{ r: 6, stroke: 'hsl(var(--success))', strokeWidth: 1 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </div>
 
         <div className="mt-12 text-center animate-fade-in">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            <div className="p-6 bg-card rounded-lg shadow-card">
-              <div className="text-3xl font-bold text-primary mb-2">98%</div>
-              <p className="text-muted-foreground">Product Reliability</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
+            <div className="p-4 md:p-6 bg-card rounded-lg shadow-card">
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-2">98%</div>
+              <p className="text-muted-foreground text-sm md:text-base">Product Reliability</p>
             </div>
-            <div className="p-6 bg-card rounded-lg shadow-card">
-              <div className="text-3xl font-bold text-accent mb-2">96%</div>
-              <p className="text-muted-foreground">Energy Efficiency</p>
+            <div className="p-4 md:p-6 bg-card rounded-lg shadow-card">
+              <div className="text-2xl md:text-3xl font-bold text-accent mb-2">96%</div>
+              <p className="text-muted-foreground text-sm md:text-base">Energy Efficiency</p>
             </div>
-            <div className="p-6 bg-card rounded-lg shadow-card">
-              <div className="text-3xl font-bold text-success mb-2">32%</div>
-              <p className="text-muted-foreground">Power Consumption Reduction</p>
+            <div className="p-4 md:p-6 bg-card rounded-lg shadow-card">
+              <div className="text-2xl md:text-3xl font-bold text-success mb-2">32%</div>
+              <p className="text-muted-foreground text-sm md:text-base">Power Consumption Reduction</p>
             </div>
-            <div className="p-6 bg-card rounded-lg shadow-card">
-              <div className="text-3xl font-bold text-primary mb-2">250+</div>
-              <p className="text-muted-foreground">Monthly Sales</p>
+            <div className="p-4 md:p-6 bg-card rounded-lg shadow-card">
+              <div className="text-2xl md:text-3xl font-bold text-primary mb-2">250+</div>
+              <p className="text-muted-foreground text-sm md:text-base">Monthly Sales</p>
             </div>
           </div>
         </div>

@@ -181,22 +181,6 @@ const Home = () => {
       {/* Testimonials Section */}
       <TestimonialsSection />
 
-      {/* Call to Action Section */}
-      <section className="py-20 bg-gradient-subtle">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-4xl font-bold text-foreground mb-4">
-              Ready to Transform Your Home?
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-8">Start Shopping Now</p>
-            <Link to="/shop">
-              <Button variant="store" size="lg" className="text-xl px-12 py-6 shadow-elegant hover:shadow-xl transition-all duration-300 animate-pulse">
-                🛍️ Start Shopping Now - Special Offers Available!
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
       {/* WhatsApp Contact Button */}
       <div className="fixed bottom-6 right-6 z-50 animate-bounce">
         <a href="https://wa.me/923014539090?text=Hello! I'm interested in your electrical products." target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center space-x-2 group">

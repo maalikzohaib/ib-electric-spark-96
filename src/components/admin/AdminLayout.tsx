@@ -69,10 +69,17 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               />
               <h1 className="text-xl font-bold text-foreground">Admin Panel</h1>
             </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
+            <div className="flex items-center space-x-4">
+              <Link to="/">
+                <Button variant="outline">
+                  Back to Website
+                </Button>
+              </Link>
+              <Button variant="outline" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>

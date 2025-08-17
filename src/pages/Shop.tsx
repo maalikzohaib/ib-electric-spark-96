@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/enhanced-button";
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { products } = useProductStore();
+  const { products, categories } = useProductStore();
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -133,8 +133,11 @@ const Shop = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      <SelectItem value="Fans">Fans</SelectItem>
-                      <SelectItem value="Bulbs">Bulbs</SelectItem>
+                      {categories.filter(category => category.trim() !== '').map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
