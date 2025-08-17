@@ -113,34 +113,6 @@ const Shop = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-            <CardContent className="p-6 text-center">
-              <ShoppingBag className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground">{products.length}</h3>
-              <p className="text-muted-foreground">Total Products</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
-            <CardContent className="p-6 text-center">
-              <Zap className="h-12 w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground">{categories.length}</h3>
-              <p className="text-muted-foreground">Categories</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/20">
-            <CardContent className="p-6 text-center">
-              <Package className="h-12 w-12 text-secondary mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground">
-                {products.filter(p => p.availability === 'In Stock').length}
-              </h3>
-              <p className="text-muted-foreground">In Stock</p>
-            </CardContent>
-          </Card>
-        </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
