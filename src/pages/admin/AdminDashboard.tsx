@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { useProductStore } from "@/store/productStore";
-import { Package, Plus, Star, TrendingUp } from "lucide-react";
+import ShopStats from "@/components/ShopStats";
+import { Package, Plus, Star, TrendingUp, BarChart3 } from "lucide-react";
 
 const AdminDashboard = () => {
   const { products, getFeaturedProducts } = useProductStore();
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const featuredProducts = getFeaturedProducts();
   
   const totalProducts = products.length;
@@ -56,13 +59,25 @@ const AdminDashboard = () => {
             Welcome to the IB Electric Store admin panel
           </p>
         </div>
-        <Link to="/admin/add-product">
-          <Button variant="store">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={() => setShowAnalytics(!showAnalytics)}
+          >
+            <BarChart3 className="h-4 w-4 mr-2" />
+            {showAnalytics ? 'Hide' : 'Show'} Analytics
           </Button>
-        </Link>
+          <Link to="/admin/add-product">
+            <Button variant="store">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      {/* Analytics Section */}
+      {showAnalytics && <ShopStats />}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

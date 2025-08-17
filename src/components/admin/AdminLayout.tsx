@@ -5,7 +5,6 @@ import {
   LayoutDashboard, 
   Package, 
   Plus, 
-  Settings, 
   Star, 
   Tag,
   LogOut 
@@ -70,6 +69,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               <h1 className="text-xl font-bold text-foreground">Admin Panel</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <span className="text-sm text-muted-foreground">
+                Logged in as: <span className="font-medium text-foreground">admin</span>
+              </span>
               <Link to="/">
                 <Button variant="outline">
                   Back to Website
