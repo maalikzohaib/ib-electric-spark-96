@@ -14,9 +14,9 @@ const Shop = () => {
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
-    category: searchParams.get('category') || '',
+    category: searchParams.get('category') || 'all',
     brand: searchParams.get('brand') || '',
-    availability: searchParams.get('availability') || '',
+    availability: searchParams.get('availability') || 'all',
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
   });
@@ -27,9 +27,9 @@ const Shop = () => {
   useEffect(() => {
     setFilters({
       search: searchParams.get('search') || '',
-      category: searchParams.get('category') || '',
+      category: searchParams.get('category') || 'all',
       brand: searchParams.get('brand') || '',
-      availability: searchParams.get('availability') || '',
+      availability: searchParams.get('availability') || 'all',
       minPrice: searchParams.get('minPrice') || '',
       maxPrice: searchParams.get('maxPrice') || '',
     });
@@ -42,9 +42,9 @@ const Shop = () => {
       product.brand.toLowerCase().includes(filters.search.toLowerCase()) ||
       product.category.toLowerCase().includes(filters.search.toLowerCase());
     
-    const matchesCategory = !filters.category || product.category === filters.category;
+    const matchesCategory = filters.category === 'all' || product.category === filters.category;
     const matchesBrand = !filters.brand || product.brand.toLowerCase().includes(filters.brand.toLowerCase());
-    const matchesAvailability = !filters.availability || product.availability === filters.availability;
+    const matchesAvailability = filters.availability === 'all' || product.availability === filters.availability;
     
     const matchesPrice = (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
                         (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
@@ -54,7 +54,7 @@ const Shop = () => {
 
   const updateFilter = (key: string, value: string) => {
     const newParams = new URLSearchParams(searchParams);
-    if (value) {
+    if (value && value !== 'all') {
       newParams.set(key, value);
     } else {
       newParams.delete(key);
@@ -66,7 +66,9 @@ const Shop = () => {
     setSearchParams({});
   };
 
-  const activeFiltersCount = Object.values(filters).filter(Boolean).length;
+  const activeFiltersCount = Object.entries(filters).filter(([key, value]) => 
+    value && value !== 'all'
+  ).length;
   const uniqueBrands = [...new Set(products.map(p => p.brand))];
 
   return (
@@ -130,7 +132,7 @@ const Shop = () => {
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       <SelectItem value="Fans">Fans</SelectItem>
                       <SelectItem value="Bulbs">Bulbs</SelectItem>
                     </SelectContent>
@@ -194,7 +196,7 @@ const Shop = () => {
                       <SelectValue placeholder="All Products" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Products</SelectItem>
+                      <SelectItem value="all">All Products</SelectItem>
                       <SelectItem value="In Stock">In Stock</SelectItem>
                       <SelectItem value="Out of Stock">Out of Stock</SelectItem>
                     </SelectContent>
@@ -224,12 +226,12 @@ const Shop = () => {
                       />
                     </Badge>
                   )}
-                  {filters.category && (
+                  {filters.category && filters.category !== 'all' && (
                     <Badge variant="secondary">
                       Category: {filters.category}
                       <X 
                         className="h-3 w-3 ml-1 cursor-pointer" 
-                        onClick={() => updateFilter('category', '')}
+                        onClick={() => updateFilter('category', 'all')}
                       />
                     </Badge>
                   )}
