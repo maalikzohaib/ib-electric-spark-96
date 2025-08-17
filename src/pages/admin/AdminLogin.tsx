@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
@@ -15,6 +15,11 @@ const AdminLogin = () => {
     username: '',
     password: ''
   });
+
+  // Clear any old authentication data on component mount
+  React.useEffect(() => {
+    localStorage.removeItem('ib-admin-auth');
+  }, []);
 
   if (isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
