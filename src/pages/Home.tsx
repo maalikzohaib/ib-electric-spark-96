@@ -7,9 +7,9 @@ import HeroSection from "@/components/HeroSection";
 import StatsSection from "@/components/StatsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import SalesChart from "@/components/SalesChart";
-import { Zap, Shield, Clock, Award, Lightbulb, Wind, Leaf, Users, ArrowRight } from "lucide-react";
-import energyEfficiency from "@/assets/energy-efficiency.jpg";
-import customerService from "@/assets/customer-service.jpg";
+import { Zap, Shield, Clock, Award, Lightbulb, Wind, Leaf, Users, ArrowRight, MessageCircle } from "lucide-react";
+import smartHomeElectrical from "@/assets/smart-home-electrical.jpg";
+import electricalComponents from "@/assets/electrical-components.jpg";
 
 const Home = () => {
   const { getFeaturedProducts } = useProductStore();
@@ -45,19 +45,24 @@ const Home = () => {
   const benefits = [
     {
       icon: <Lightbulb className="h-12 w-12 text-accent" />,
-      title: "Smart Lighting Solutions",
-      description: "LED technology that adapts to your lifestyle while saving up to 80% on electricity bills.",
-      image: energyEfficiency
+      title: "Smart Electrical Solutions",
+      description: "Advanced LED technology and energy-efficient ceiling fans that adapt to your lifestyle while saving up to 80% on electricity bills.",
+      image: smartHomeElectrical
     },
     {
       icon: <Users className="h-12 w-12 text-primary" />,
-      title: "Customer-Centric Service",
-      description: "24/7 WhatsApp support and personalized product recommendations for your specific needs.",
-      image: customerService
+      title: "Professional Grade Components",
+      description: "High-quality electrical components, reliable wiring solutions, and premium electrical accessories for lasting performance.",
+      image: electricalComponents
     }
   ];
 
   return (
+    <>
+      <title>IB Electric Store - Premium Ceiling Fans & LED Bulbs | Energy Efficient Electrical Products</title>
+      <meta name="description" content="Shop premium ceiling fans and LED bulbs at IB Electric Store. Energy-efficient electrical products with 98% reliability, 32% power savings. Fast delivery in Pakistan." />
+      <meta name="keywords" content="ceiling fans, LED bulbs, electrical products, energy efficient, Pakistan, IB Electric Store, electrical store, fans, bulbs, lighting" />
+      
     <div className="min-h-screen">
       {/* Hero Section */}
       <HeroSection />
@@ -89,8 +94,8 @@ const Home = () => {
               </div>
               <div className="text-center animate-fade-in">
                 <Link to="/shop">
-                  <Button variant="outline" size="lg" className="hover:bg-primary hover:text-primary-foreground transition-all duration-300">
-                    View More Products
+                  <Button variant="store" size="lg" className="text-lg px-8 py-4 shadow-elegant hover:shadow-xl transition-all duration-300 animate-pulse">
+                    🛒 Shop All Products - Best Deals Available!
                   </Button>
                 </Link>
               </div>
@@ -105,8 +110,8 @@ const Home = () => {
                   No featured products available at the moment.
                 </p>
                 <Link to="/shop">
-                  <Button variant="store" size="lg">
-                    Browse All Products
+                  <Button variant="store" size="lg" className="text-lg px-8 py-4 shadow-elegant hover:shadow-xl transition-all duration-300">
+                    🛒 Shop All Products Now!
                   </Button>
                 </Link>
               </div>
@@ -203,60 +208,39 @@ const Home = () => {
       {/* Testimonials Section */}
       <TestimonialsSection />
 
-      {/* Category Spotlight */}
+      {/* Call to Action Section */}
       <section className="py-20 bg-gradient-subtle">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-4xl font-bold text-foreground mb-4">
-              Our Product Categories
+              Ready to Transform Your Home?
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Explore our specialized collections designed for every electrical need
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-8">
+              Discover our complete range of high-quality electrical products. From energy-efficient LED bulbs to stylish ceiling fans, 
+              we have everything you need for your electrical requirements.
             </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <Link to="/shop?category=Fans" className="group animate-slide-up">
-              <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 border-0 shadow-elegant">
-                <div className="relative h-80 bg-gradient-primary flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="w-full h-full bg-white/10 bg-[radial-gradient(circle,white_1px,transparent_1px)] bg-[length:20px_20px]"></div>
-                  </div>
-                  <div className="text-center text-primary-foreground relative z-10 transform group-hover:scale-105 transition-transform duration-300">
-                    <Wind className="h-16 w-16 mx-auto mb-4 animate-float" />
-                    <h3 className="text-3xl font-bold mb-3">Ceiling Fans</h3>
-                    <p className="text-primary-foreground/90 text-lg">Energy-efficient and stylish ceiling fans</p>
-                    <div className="mt-6 inline-flex items-center text-primary-foreground/80">
-                      <span className="mr-2">Explore Collection</span>
-                      <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
-            
-            <Link to="/shop?category=Bulbs" className="group animate-slide-up" style={{ animationDelay: '200ms' }}>
-              <Card className="overflow-hidden hover:shadow-xl transition-all duration-500 border-0 shadow-elegant">
-                <div className="relative h-80 bg-gradient-accent flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="w-full h-full bg-black/10 bg-[radial-gradient(circle,black_1px,transparent_1px)] bg-[length:20px_20px]"></div>
-                  </div>
-                  <div className="text-center text-accent-foreground relative z-10 transform group-hover:scale-105 transition-transform duration-300">
-                    <Lightbulb className="h-16 w-16 mx-auto mb-4 animate-float" style={{ animationDelay: '1s' }} />
-                    <h3 className="text-3xl font-bold mb-3">LED Bulbs</h3>
-                    <p className="text-accent-foreground/90 text-lg">Bright and long-lasting LED lighting solutions</p>
-                    <div className="mt-6 inline-flex items-center text-accent-foreground/80">
-                      <span className="mr-2">Explore Collection</span>
-                      <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </Card>
+            <Link to="/shop">
+              <Button variant="store" size="lg" className="text-xl px-12 py-6 shadow-elegant hover:shadow-xl transition-all duration-300 animate-pulse">
+                🛍️ Start Shopping Now - Special Offers Available!
+              </Button>
             </Link>
           </div>
         </div>
       </section>
+      {/* WhatsApp Contact Button */}
+      <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+        <a
+          href="https://wa.me/923014539090?text=Hello! I'm interested in your electrical products."
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center space-x-2 group"
+        >
+          <MessageCircle className="h-6 w-6" />
+          <span className="hidden md:block font-medium">Contact Us</span>
+        </a>
+      </div>
     </div>
+    </>
   );
 };
 
