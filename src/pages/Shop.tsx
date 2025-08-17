@@ -2,15 +2,12 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
+import ShopStats from "@/components/ShopStats";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { X, Filter, Search, Zap, ShoppingBag, Package } from "lucide-react";
+import { X, Filter, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/enhanced-button";
-import shopHeroBg from "@/assets/shop-hero-bg.jpg";
-import electricalPattern from "@/assets/electrical-pattern.jpg";
-import emptyCart from "@/assets/empty-cart.jpg";
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,6 +23,7 @@ const Shop = () => {
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   // Update filters when URL params change
   useEffect(() => {
@@ -77,42 +75,29 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div 
-        className="relative h-80 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${shopHeroBg})` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-secondary/80" />
-        <div className="relative container mx-auto px-4 h-full flex items-center">
-          <div className="text-center w-full">
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 animate-fade-in">
-              Electrical Excellence
-            </h1>
-            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Discover premium electrical products for your home and business
-            </p>
-            <div className="flex items-center justify-center">
-              <Zap className="h-8 w-8 text-accent mr-3" />
-              <span className="text-white text-lg font-medium">Quality • Innovation • Trust</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-8">
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-            <Input
-              placeholder="Search for electrical products, brands, categories..."
-              value={filters.search}
-              onChange={(e) => updateFilter('search', e.target.value)}
-              className="pl-12 h-14 text-lg border-2 focus:border-primary shadow-lg"
-            />
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Shop</h1>
+              <p className="text-muted-foreground">
+                Discover our complete range of electrical products
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowStats(!showStats)}
+              className="flex items-center gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              {showStats ? 'Hide' : 'Show'} Analytics
+            </Button>
           </div>
         </div>
 
+        {/* Analytics Section */}
+        {showStats && <ShopStats />}
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
@@ -123,7 +108,7 @@ const Shop = () => {
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="w-full h-12"
+                  className="w-full"
                 >
                   <Filter className="h-4 w-4 mr-2" />
                   Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
@@ -131,28 +116,36 @@ const Shop = () => {
               </div>
 
               {/* Filter Panel */}
-              <div className={`bg-card rounded-xl border shadow-elegant p-6 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+              <div className={`bg-card rounded-lg border p-6 space-y-6 ${showFilters ? 'block' : 'hidden lg:block'}`}>
                 <div className="flex items-center justify-between">
-                  <h2 className="font-bold text-xl text-foreground flex items-center">
-                    <Filter className="h-5 w-5 mr-2 text-primary" />
-                    Filters
-                  </h2>
+                  <h2 className="font-semibold text-foreground">Filters</h2>
                   {activeFiltersCount > 0 && (
                     <Button variant="ghost" size="sm" onClick={clearFilters}>
                       <X className="h-4 w-4 mr-1" />
-                      Clear All
+                      Clear
                     </Button>
                   )}
                 </div>
 
+                {/* Search */}
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    Search Products
+                  </label>
+                  <Input
+                    placeholder="Search by name, brand..."
+                    value={filters.search}
+                    onChange={(e) => updateFilter('search', e.target.value)}
+                  />
+                </div>
+
                 {/* Category */}
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-foreground flex items-center">
-                    <Package className="h-4 w-4 mr-2 text-primary" />
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
                     Category
                   </label>
                   <Select value={filters.category} onValueChange={(value) => updateFilter('category', value)}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger>
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
@@ -167,23 +160,22 @@ const Shop = () => {
                 </div>
 
                 {/* Brand */}
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-foreground">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
                     Brand
                   </label>
                   <Input
                     placeholder="Search by brand..."
                     value={filters.brand}
                     onChange={(e) => updateFilter('brand', e.target.value)}
-                    className="h-12"
                   />
                   {uniqueBrands.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2">
                       {uniqueBrands.slice(0, 5).map((brand) => (
                         <Badge
                           key={brand}
                           variant="outline"
-                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
                           onClick={() => updateFilter('brand', brand)}
                         >
                           {brand}
@@ -194,35 +186,33 @@ const Shop = () => {
                 </div>
 
                 {/* Price Range */}
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-foreground">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
                     Price Range
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <Input
                       type="number"
-                      placeholder="Min ₹"
+                      placeholder="Min"
                       value={filters.minPrice}
                       onChange={(e) => updateFilter('minPrice', e.target.value)}
-                      className="h-12"
                     />
                     <Input
                       type="number"
-                      placeholder="Max ₹"
+                      placeholder="Max"
                       value={filters.maxPrice}
                       onChange={(e) => updateFilter('maxPrice', e.target.value)}
-                      className="h-12"
                     />
                   </div>
                 </div>
 
                 {/* Availability */}
-                <div className="space-y-3">
-                  <label className="text-sm font-semibold text-foreground">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
                     Availability
                   </label>
                   <Select value={filters.availability} onValueChange={(value) => updateFilter('availability', value)}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger>
                       <SelectValue placeholder="All Products" />
                     </SelectTrigger>
                     <SelectContent>
@@ -232,12 +222,6 @@ const Shop = () => {
                     </SelectContent>
                   </Select>
                 </div>
-
-                {/* Decorative Element */}
-                <div 
-                  className="h-32 rounded-lg bg-cover bg-center opacity-20"
-                  style={{ backgroundImage: `url(${electricalPattern})` }}
-                />
               </div>
             </div>
           </div>
@@ -245,42 +229,37 @@ const Shop = () => {
           {/* Products Grid */}
           <div className="flex-1">
             {/* Results Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">
-                  {filteredProducts.length} Products Found
-                </h2>
-                <p className="text-muted-foreground">
-                  {activeFiltersCount > 0 ? 'Filtered results' : 'Showing all products'}
-                </p>
-              </div>
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-muted-foreground">
+                {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+              </p>
               
               {/* Active Filters */}
               {activeFiltersCount > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {filters.search && (
-                    <Badge variant="secondary" className="px-3 py-1">
+                    <Badge variant="secondary">
                       Search: {filters.search}
                       <X 
-                        className="h-3 w-3 ml-2 cursor-pointer" 
+                        className="h-3 w-3 ml-1 cursor-pointer" 
                         onClick={() => updateFilter('search', '')}
                       />
                     </Badge>
                   )}
                   {filters.category && filters.category !== 'all' && (
-                    <Badge variant="secondary" className="px-3 py-1">
+                    <Badge variant="secondary">
                       Category: {filters.category}
                       <X 
-                        className="h-3 w-3 ml-2 cursor-pointer" 
+                        className="h-3 w-3 ml-1 cursor-pointer" 
                         onClick={() => updateFilter('category', 'all')}
                       />
                     </Badge>
                   )}
                   {filters.brand && (
-                    <Badge variant="secondary" className="px-3 py-1">
+                    <Badge variant="secondary">
                       Brand: {filters.brand}
                       <X 
-                        className="h-3 w-3 ml-2 cursor-pointer" 
+                        className="h-3 w-3 ml-1 cursor-pointer" 
                         onClick={() => updateFilter('brand', '')}
                       />
                     </Badge>
@@ -293,26 +272,16 @@ const Shop = () => {
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
-                  <div key={product.id} className="animate-fade-in">
-                    <ProductCard product={product} />
-                  </div>
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <img 
-                  src={emptyCart} 
-                  alt="No products found" 
-                  className="w-32 h-32 mx-auto mb-6 opacity-50"
-                />
-                <h3 className="text-2xl font-bold text-foreground mb-4">
-                  No Products Found
-                </h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
+              <div className="text-center py-12">
+                <p className="text-muted-foreground mb-4">
+                  No products found matching your criteria.
                 </p>
-                <Button variant="outline" onClick={clearFilters} className="px-8">
-                  Clear All Filters
+                <Button variant="outline" onClick={clearFilters}>
+                  Clear Filters
                 </Button>
               </div>
             )}
