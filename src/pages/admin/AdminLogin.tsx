@@ -7,10 +7,15 @@ import { Label } from "@/components/ui/label";
 import { useAdminStore } from "@/store/adminStore";
 import { useToast } from "@/hooks/use-toast";
 import { Lock } from "lucide-react";
-
 const AdminLogin = () => {
-  const { isAuthenticated, login, logout } = useAdminStore();
-  const { toast } = useToast();
+  const {
+    isAuthenticated,
+    login,
+    logout
+  } = useAdminStore();
+  const {
+    toast
+  } = useToast();
   const [credentials, setCredentials] = useState({
     username: '',
     password: ''
@@ -22,38 +27,35 @@ const AdminLogin = () => {
     localStorage.clear(); // Clear all localStorage data
     sessionStorage.clear(); // Clear all sessionStorage data
   }, [logout]);
-
   if (isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
   }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (login(credentials.username, credentials.password)) {
       toast({
         title: "Login Successful",
-        description: "Welcome to the admin panel.",
+        description: "Welcome to the admin panel."
       });
     } else {
       toast({
         title: "Login Failed",
         description: "Invalid username or password.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value
+    } = e.target;
     setCredentials(prev => ({
       ...prev,
       [name]: value
     }));
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
+  return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
       <Card className="w-full max-w-md shadow-elegant">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
@@ -70,28 +72,12 @@ const AdminLogin = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={credentials.username}
-                onChange={handleInputChange}
-                placeholder="Enter username"
-              />
+              <Input id="username" name="username" type="text" required value={credentials.username} onChange={handleInputChange} placeholder="Enter username" />
             </div>
             
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={credentials.password}
-                onChange={handleInputChange}
-                placeholder="Enter password"
-              />
+              <Input id="password" name="password" type="password" required value={credentials.password} onChange={handleInputChange} placeholder="Enter password" />
             </div>
             
             <Button type="submit" variant="store" className="w-full">
@@ -100,15 +86,7 @@ const AdminLogin = () => {
           </form>
           
           <div className="mt-6 text-center">
-            <div className="bg-muted/50 rounded-lg p-4">
-              <p className="text-xs text-muted-foreground mb-2">Demo Credentials:</p>
-              <p className="text-sm font-mono text-foreground">
-                Username: <span className="font-bold">admin</span>
-              </p>
-              <p className="text-sm font-mono text-foreground">
-                Password: <span className="font-bold">Electric@12345</span>
-              </p>
-            </div>
+            
             
             <div className="mt-4">
               <p className="text-xs text-muted-foreground font-medium">
@@ -118,8 +96,6 @@ const AdminLogin = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default AdminLogin;
