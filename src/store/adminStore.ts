@@ -16,6 +16,7 @@ export const useAdminStore = create<AdminStore>()(
       isAuthenticated: false,
       
       login: (username: string, password: string) => {
+        // Only allow login with exact credentials
         if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
           set({ isAuthenticated: true });
           return true;
@@ -29,6 +30,8 @@ export const useAdminStore = create<AdminStore>()(
     }),
     {
       name: 'ib-admin-auth',
+      // Reset authentication state on page refresh to ensure login is always required
+      partialize: () => ({ isAuthenticated: false }),
     }
   )
 );
