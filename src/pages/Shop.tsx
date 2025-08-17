@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import ProductCard from "@/components/ProductCard";
+import ShopStats from "@/components/ShopStats";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, Filter } from "lucide-react";
+import { X, Filter, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/enhanced-button";
 
 const Shop = () => {
@@ -22,6 +23,7 @@ const Shop = () => {
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   // Update filters when URL params change
   useEffect(() => {
@@ -76,11 +78,26 @@ const Shop = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Shop</h1>
-          <p className="text-muted-foreground">
-            Discover our complete range of electrical products
-          </p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">Shop</h1>
+              <p className="text-muted-foreground">
+                Discover our complete range of electrical products
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowStats(!showStats)}
+              className="flex items-center gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              {showStats ? 'Hide' : 'Show'} Analytics
+            </Button>
+          </div>
         </div>
+
+        {/* Analytics Section */}
+        {showStats && <ShopStats />}
 
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
