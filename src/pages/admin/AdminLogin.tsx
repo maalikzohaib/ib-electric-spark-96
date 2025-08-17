@@ -9,17 +9,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Lock } from "lucide-react";
 
 const AdminLogin = () => {
-  const { isAuthenticated, login } = useAdminStore();
+  const { isAuthenticated, login, logout } = useAdminStore();
   const { toast } = useToast();
   const [credentials, setCredentials] = useState({
     username: '',
     password: ''
   });
 
-  // Clear any old authentication data on component mount
+  // Always ensure user is logged out when accessing login page
   React.useEffect(() => {
-    localStorage.removeItem('ib-admin-auth');
-  }, []);
+    logout();
+    localStorage.clear(); // Clear all localStorage data
+    sessionStorage.clear(); // Clear all sessionStorage data
+  }, [logout]);
 
   if (isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -105,6 +107,12 @@ const AdminLogin = () => {
               </p>
               <p className="text-sm font-mono text-foreground">
                 Password: <span className="font-bold">Electric@12345</span>
+              </p>
+            </div>
+            
+            <div className="mt-4">
+              <p className="text-xs text-muted-foreground font-medium">
+                Private
               </p>
             </div>
           </div>
