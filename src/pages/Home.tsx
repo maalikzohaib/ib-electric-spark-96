@@ -10,55 +10,44 @@ import SalesChart from "@/components/SalesChart";
 import { Zap, Shield, Clock, Award, Lightbulb, Wind, Leaf, Users, ArrowRight, MessageCircle } from "lucide-react";
 import smartHomeElectrical from "@/assets/smart-home-electrical.jpg";
 import electricalComponents from "@/assets/electrical-components.jpg";
-
 const Home = () => {
-  const { getFeaturedProducts } = useProductStore();
+  const {
+    getFeaturedProducts
+  } = useProductStore();
   const featuredProducts = getFeaturedProducts();
-
-  const features = [
-    {
-      icon: <Zap className="h-10 w-10 text-primary" />,
-      title: "Energy Efficient",
-      description: "High-quality electrical products designed for optimal energy consumption and performance.",
-      color: "bg-primary/10"
-    },
-    {
-      icon: <Shield className="h-10 w-10 text-accent" />,
-      title: "Quality Guaranteed",
-      description: "All our products come with manufacturer warranty and our commitment to quality.",
-      color: "bg-accent/10"
-    },
-    {
-      icon: <Clock className="h-10 w-10 text-success" />,
-      title: "Fast Service",
-      description: "Quick response time and efficient service for all your electrical needs.",
-      color: "bg-success/10"
-    },
-    {
-      icon: <Award className="h-10 w-10 text-primary" />,
-      title: "Trusted Brand",
-      description: "Years of experience serving the community with reliable electrical solutions.",
-      color: "bg-primary/10"
-    }
-  ];
-
-  const benefits = [
-    {
-      icon: <Lightbulb className="h-12 w-12 text-accent" />,
-      title: "Smart Electrical Solutions",
-      description: "Advanced LED technology and energy-efficient ceiling fans that adapt to your lifestyle while saving up to 80% on electricity bills.",
-      image: smartHomeElectrical
-    },
-    {
-      icon: <Users className="h-12 w-12 text-primary" />,
-      title: "Professional Grade Components",
-      description: "High-quality electrical components, reliable wiring solutions, and premium electrical accessories for lasting performance.",
-      image: electricalComponents
-    }
-  ];
-
-  return (
-    <>
+  const features = [{
+    icon: <Zap className="h-10 w-10 text-primary" />,
+    title: "Energy Efficient",
+    description: "High-quality electrical products designed for optimal energy consumption and performance.",
+    color: "bg-primary/10"
+  }, {
+    icon: <Shield className="h-10 w-10 text-accent" />,
+    title: "Quality Guaranteed",
+    description: "All our products come with manufacturer warranty and our commitment to quality.",
+    color: "bg-accent/10"
+  }, {
+    icon: <Clock className="h-10 w-10 text-success" />,
+    title: "Fast Service",
+    description: "Quick response time and efficient service for all your electrical needs.",
+    color: "bg-success/10"
+  }, {
+    icon: <Award className="h-10 w-10 text-primary" />,
+    title: "Trusted Brand",
+    description: "Years of experience serving the community with reliable electrical solutions.",
+    color: "bg-primary/10"
+  }];
+  const benefits = [{
+    icon: <Lightbulb className="h-12 w-12 text-accent" />,
+    title: "Smart Electrical Solutions",
+    description: "Advanced LED technology and energy-efficient ceiling fans that adapt to your lifestyle while saving up to 80% on electricity bills.",
+    image: smartHomeElectrical
+  }, {
+    icon: <Users className="h-12 w-12 text-primary" />,
+    title: "Professional Grade Components",
+    description: "High-quality electrical components, reliable wiring solutions, and premium electrical accessories for lasting performance.",
+    image: electricalComponents
+  }];
+  return <>
       <title>IB Electric Store - Premium Ceiling Fans & LED Bulbs | Energy Efficient Electrical Products</title>
       <meta name="description" content="Shop premium ceiling fans and LED bulbs at IB Electric Store. Energy-efficient electrical products with 98% reliability, 32% power savings. Fast delivery in Pakistan." />
       <meta name="keywords" content="ceiling fans, LED bulbs, electrical products, energy efficient, Pakistan, IB Electric Store, electrical store, fans, bulbs, lighting" />
@@ -83,14 +72,13 @@ const Home = () => {
             </p>
           </div>
           
-          {featuredProducts.length > 0 ? (
-            <>
+          {featuredProducts.length > 0 ? <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                {featuredProducts.map((product, index) => (
-                  <div key={product.id} style={{ animationDelay: `${index * 100}ms` }}>
+                {featuredProducts.map((product, index) => <div key={product.id} style={{
+                animationDelay: `${index * 100}ms`
+              }}>
                     <ProductCard product={product} />
-                  </div>
-                ))}
+                  </div>)}
               </div>
               <div className="text-center animate-fade-in">
                 <Link to="/shop">
@@ -99,9 +87,7 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-            </>
-          ) : (
-            <div className="text-center py-16 animate-fade-in">
+            </> : <div className="text-center py-16 animate-fade-in">
               <div className="max-w-md mx-auto">
                 <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                   <Zap className="h-12 w-12 text-muted-foreground" />
@@ -115,8 +101,7 @@ const Home = () => {
                   </Button>
                 </Link>
               </div>
-            </div>
-          )}
+            </div>}
         </div>
       </section>
 
@@ -133,19 +118,12 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {benefits.map((benefit, index) => (
-              <Card 
-                key={index} 
-                className="overflow-hidden border-0 shadow-elegant hover:shadow-xl transition-all duration-500 animate-slide-up group"
-                style={{ animationDelay: `${index * 200}ms` }}
-              >
+            {benefits.map((benefit, index) => <Card key={index} className="overflow-hidden border-0 shadow-elegant hover:shadow-xl transition-all duration-500 animate-slide-up group" style={{
+              animationDelay: `${index * 200}ms`
+            }}>
                 <div className="grid grid-cols-1 md:grid-cols-2 h-full">
                   <div className="relative overflow-hidden">
-                    <img
-                      src={benefit.image}
-                      alt={benefit.title}
-                      className="w-full h-64 md:h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
+                    <img src={benefit.image} alt={benefit.title} className="w-full h-64 md:h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent"></div>
                   </div>
                   <div className="p-8 flex flex-col justify-center">
@@ -160,8 +138,7 @@ const Home = () => {
                     </p>
                   </div>
                 </div>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -179,12 +156,9 @@ const Home = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card 
-                key={index} 
-                className="text-center p-8 hover:shadow-elegant transition-all duration-500 animate-scale-in border-0 shadow-card group"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
+            {features.map((feature, index) => <Card key={index} className="text-center p-8 hover:shadow-elegant transition-all duration-500 animate-scale-in border-0 shadow-card group" style={{
+              animationDelay: `${index * 100}ms`
+            }}>
                 <CardContent className="p-0">
                   <div className={`w-20 h-20 rounded-2xl ${feature.color} flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
                     {feature.icon}
@@ -196,8 +170,7 @@ const Home = () => {
                     {feature.description}
                   </p>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -215,10 +188,7 @@ const Home = () => {
             <h2 className="text-4xl font-bold text-foreground mb-4">
               Ready to Transform Your Home?
             </h2>
-            <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-8">
-              Discover our complete range of high-quality electrical products. From energy-efficient LED bulbs to stylish ceiling fans, 
-              we have everything you need for your electrical requirements.
-            </p>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-8">Start Shopping Now</p>
             <Link to="/shop">
               <Button variant="store" size="lg" className="text-xl px-12 py-6 shadow-elegant hover:shadow-xl transition-all duration-300 animate-pulse">
                 🛍️ Start Shopping Now - Special Offers Available!
@@ -229,19 +199,12 @@ const Home = () => {
       </section>
       {/* WhatsApp Contact Button */}
       <div className="fixed bottom-6 right-6 z-50 animate-bounce">
-        <a
-          href="https://wa.me/923014539090?text=Hello! I'm interested in your electrical products."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center space-x-2 group"
-        >
+        <a href="https://wa.me/923014539090?text=Hello! I'm interested in your electrical products." target="_blank" rel="noopener noreferrer" className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center space-x-2 group">
           <MessageCircle className="h-6 w-6" />
           <span className="hidden md:block font-medium">Contact Us</span>
         </a>
       </div>
     </div>
-    </>
-  );
+    </>;
 };
-
 export default Home;
