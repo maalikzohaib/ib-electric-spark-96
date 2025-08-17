@@ -96,9 +96,7 @@ const Home = () => {
                   No featured products available at the moment.
                 </p>
                 <Link to="/shop">
-                  <Button variant="store" size="lg" className="text-lg px-8 py-4 shadow-elegant hover:shadow-xl transition-all duration-300">
-                    🛒 Shop All Products Now!
-                  </Button>
+                  <Button variant="store" size="lg" className="text-lg px-8 py-4 shadow-elegant hover:shadow-xl transition-all duration-300">Shop All Products Now!</Button>
                 </Link>
               </div>
             </div>}
