@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
+import { useProductData } from "@/hooks/useProductData";
 import ProductCard from "@/components/ProductCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,6 +16,7 @@ import emptyCart from "@/assets/empty-cart.jpg";
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { products, categories } = useProductStore();
+  const { loading } = useProductData();
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -39,16 +41,19 @@ const Shop = () => {
     });
   }, [searchParams]);
 
+  // Transform categories for filtering
+  const categoryOptions = categories.map(cat => ({ id: cat.id, name: cat.name }));
+  
   // Filter products based on current filters
   const filteredProducts = products.filter(product => {
     const matchesSearch = !filters.search || 
-      product.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      product.brand.toLowerCase().includes(filters.search.toLowerCase()) ||
-      product.category.toLowerCase().includes(filters.search.toLowerCase());
+      product.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+      product.brand.toLowerCase().includes(filters.search.toLowerCase());
     
-    const matchesCategory = filters.category === 'all' || product.category === filters.category;
+    const matchesCategory = filters.category === 'all' || product.category_id === filters.category;
     const matchesBrand = !filters.brand || product.brand.toLowerCase().includes(filters.brand.toLowerCase());
-    const matchesAvailability = filters.availability === 'all' || product.availability === filters.availability;
+    const matchesAvailability = filters.availability === 'all' || 
+      (filters.availability === 'In Stock' ? product.in_stock : !product.in_stock);
     
     const matchesPrice = (!filters.minPrice || product.price >= parseFloat(filters.minPrice)) &&
                         (!filters.maxPrice || product.price <= parseFloat(filters.maxPrice));
@@ -157,9 +162,9 @@ const Shop = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Categories</SelectItem>
-                      {categories.filter(category => category.trim() !== '').map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
+                      {categoryOptions.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -290,7 +295,13 @@ const Shop = () => {
             </div>
 
             {/* Products Grid */}
-            {filteredProducts.length > 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-96 bg-card rounded-lg animate-pulse"></div>
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                   <div key={product.id} className="animate-fade-in">

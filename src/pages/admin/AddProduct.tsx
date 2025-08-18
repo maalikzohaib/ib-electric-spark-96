@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
@@ -12,23 +12,23 @@ import { Upload, X, Plus } from "lucide-react";
 
 const AddProduct = () => {
   const navigate = useNavigate();
-  const { addProduct } = useProductStore();
+  const { addProduct, categories, fetchCategories, loading } = useProductStore();
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
-    title: '',
+    name: '',
     description: '',
     price: '',
-    category: '' as string,
+    category_id: '' as string,
     brand: '',
-    availability: 'In Stock' as 'In Stock' | 'Out of Stock',
-    color: '',
-    variant: '',
+    in_stock: true,
   });
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
   
-  const [images, setImages] = useState<string[]>([]);
-  const [mainImageIndex, setMainImageIndex] = useState(0);
-  const [imageInput, setImageInput] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -41,53 +41,15 @@ const AddProduct = () => {
   const handleSelectChange = (name: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'in_stock' ? value === 'true' : value
     }));
   };
 
-  const addImage = () => {
-    if (imageInput.trim() && !images.includes(imageInput.trim())) {
-      setImages(prev => [...prev, imageInput.trim()]);
-      setImageInput('');
-    }
-  };
 
-  const removeImage = (index: number) => {
-    setImages(prev => {
-      const newImages = prev.filter((_, i) => i !== index);
-      if (mainImageIndex >= newImages.length) {
-        setMainImageIndex(Math.max(0, newImages.length - 1));
-      }
-      return newImages;
-    });
-  };
-
-  const setAsMainImage = (index: number) => {
-    setMainImageIndex(index);
-  };
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    Array.from(files).forEach(file => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const result = event.target?.result as string;
-          if (result && !images.includes(result)) {
-            setImages(prev => [...prev, result]);
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.price || !formData.category || !formData.brand) {
+    if (!formData.name || !formData.price || !formData.category_id || !formData.brand) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -96,31 +58,38 @@ const AddProduct = () => {
       return;
     }
 
-    if (images.length === 0) {
+    if (!imageUrl) {
       toast({
-        title: "Missing Images",
-        description: "Please add at least one product image.",
+        title: "Missing Image",
+        description: "Please add a product image URL.",
         variant: "destructive",
       });
       return;
     }
 
-    const newProduct = {
-      ...formData,
-      price: parseFloat(formData.price),
-      category: formData.category as any,
-      images,
-      mainImage: images[mainImageIndex],
-    };
+    try {
+      const newProduct = {
+        ...formData,
+        price: parseFloat(formData.price),
+        image_url: imageUrl,
+        featured: false,
+      };
 
-    addProduct(newProduct);
-    
-    toast({
-      title: "Product Added",
-      description: `${formData.title} has been added to the store.`,
-    });
+      await addProduct(newProduct);
+      
+      toast({
+        title: "Product Added",
+        description: `${formData.name} has been added to the store.`,
+      });
 
-    navigate('/admin/products');
+      navigate('/admin/products');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add product. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -142,13 +111,13 @@ const AddProduct = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="title">Product Title *</Label>
+                <Label htmlFor="name">Product Name *</Label>
                 <Input
-                  id="title"
-                  name="title"
-                  value={formData.title}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="Enter product title"
+                  placeholder="Enter product name"
                   required
                 />
               </div>
@@ -180,15 +149,15 @@ const AddProduct = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="category">Category *</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleSelectChange('category', value)}>
+                  <Label htmlFor="category_id">Category *</Label>
+                  <Select value={formData.category_id} onValueChange={(value) => handleSelectChange('category_id', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {useProductStore.getState().categories.filter(category => category.trim() !== '').map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -208,128 +177,59 @@ const AddProduct = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="color">Color</Label>
-                  <Input
-                    id="color"
-                    name="color"
-                    value={formData.color}
-                    onChange={handleInputChange}
-                    placeholder="e.g., White, Black"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="variant">Variant</Label>
-                  <Input
-                    id="variant"
-                    name="variant"
-                    value={formData.variant}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 52 inch, 9W"
-                  />
-                </div>
-              </div>
-
               <div>
-                <Label htmlFor="availability">Availability</Label>
-                <Select value={formData.availability} onValueChange={(value) => handleSelectChange('availability', value)}>
+                <Label htmlFor="in_stock">Availability</Label>
+                <Select value={formData.in_stock.toString()} onValueChange={(value) => handleSelectChange('in_stock', value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="In Stock">In Stock</SelectItem>
-                    <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+                    <SelectItem value="true">In Stock</SelectItem>
+                    <SelectItem value="false">Out of Stock</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </CardContent>
           </Card>
 
-          {/* Product Images */}
+          {/* Product Image */}
           <Card>
             <CardHeader>
-              <CardTitle>Product Images</CardTitle>
+              <CardTitle>Product Image</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="image-input">Add Image URL</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="image-input"
-                    value={imageInput}
-                    onChange={(e) => setImageInput(e.target.value)}
-                    placeholder="Enter image URL"
-                  />
-                  <Button type="button" onClick={addImage} variant="outline">
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="file-input">Upload Images</Label>
+                <Label htmlFor="image-url">Image URL *</Label>
                 <Input
-                  id="file-input"
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileUpload}
+                  id="image-url"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="Enter image URL"
+                  required
                 />
               </div>
 
-              {images.length > 0 && (
+              {imageUrl && (
                 <div>
-                  <Label>Images ({images.length})</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {images.map((image, index) => (
-                      <div key={index} className="relative group">
-                        <img
-                          src={image}
-                          alt={`Product ${index + 1}`}
-                          className={`w-full h-24 object-cover rounded border-2 ${
-                            index === mainImageIndex ? 'border-primary' : 'border-border'
-                          }`}
-                        />
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center gap-1">
-                          {index !== mainImageIndex && (
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => setAsMainImage(index)}
-                            >
-                              Main
-                            </Button>
-                          )}
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => removeImage(index)}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        {index === mainImageIndex && (
-                          <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-xs px-1 rounded">
-                            Main
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  <Label>Preview</Label>
+                  <div className="mt-2">
+                    <img
+                      src={imageUrl}
+                      alt="Product preview"
+                      className="w-full h-48 object-cover rounded border"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Click "Main" to set the main product image. The main image will be displayed prominently.
-                  </p>
                 </div>
               )}
 
-              {images.length === 0 && (
+              {!imageUrl && (
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                   <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    Add product images using URLs or upload files
+                    Add a product image URL
                   </p>
                 </div>
               )}
@@ -346,8 +246,8 @@ const AddProduct = () => {
           >
             Cancel
           </Button>
-          <Button type="submit" variant="store">
-            Add Product
+          <Button type="submit" variant="store" disabled={loading}>
+            {loading ? 'Adding Product...' : 'Add Product'}
           </Button>
         </div>
       </form>

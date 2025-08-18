@@ -14,11 +14,11 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-10 transition-opacity duration-300 z-10"></div>
         <img
-          src={product.mainImage}
-          alt={product.title}
+          src={product.image_url}
+          alt={product.name}
           className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        {product.availability === 'Out of Stock' && (
+        {!product.in_stock && (
           <Badge 
             variant="destructive" 
             className="absolute top-3 right-3 z-20"
@@ -32,7 +32,7 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       <div className="p-6 space-y-4">
         <div className="space-y-2">
           <h3 className="font-bold text-foreground text-lg line-clamp-2 group-hover:text-primary transition-colors duration-300">
-            {product.title}
+            {product.name}
           </h3>
           <p className="text-muted-foreground text-sm font-medium">
             {product.brand}
@@ -44,10 +44,10 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
             Rs. {product.price.toLocaleString()}
           </span>
           <Badge 
-            variant={product.availability === 'In Stock' ? 'default' : 'destructive'}
+            variant={product.in_stock ? 'default' : 'destructive'}
             className="text-xs px-3 py-1"
           >
-            {product.availability}
+            {product.in_stock ? 'In Stock' : 'Out of Stock'}
           </Badge>
         </div>
         
@@ -55,7 +55,7 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
           <Button 
             variant="store" 
             className="w-full group-hover:bg-primary group-hover:scale-105 transition-all duration-300"
-            disabled={product.availability === 'Out of Stock'}
+            disabled={!product.in_stock}
           >
             View Details
           </Button>
