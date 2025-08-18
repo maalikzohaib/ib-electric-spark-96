@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProductStore } from "@/store/productStore";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, X, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Upload, X, Plus, Camera } from "lucide-react";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ const AddProduct = () => {
     price: '',
     category_id: '' as string,
     brand: '',
+    color: '',
+    variant: '',
     in_stock: true,
   });
 
@@ -29,6 +32,8 @@ const AddProduct = () => {
   }, [fetchCategories]);
   
   const [imageUrl, setImageUrl] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -45,6 +50,58 @@ const AddProduct = () => {
     }));
   };
 
+  const handleImageUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    setUploading(true);
+    const newFiles = Array.from(files);
+    
+    try {
+      const uploadedUrls: string[] = [];
+      
+      for (const file of newFiles) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        
+        const { data, error } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, file);
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        uploadedUrls.push(publicUrl);
+      }
+      
+      if (uploadedUrls.length > 0) {
+        setImageUrl(uploadedUrls[0]); // Set first image as main image
+      }
+      
+      setImageFiles(prev => [...prev, ...newFiles]);
+      
+      toast({
+        title: "Images Uploaded",
+        description: `${uploadedUrls.length} image(s) uploaded successfully.`,
+      });
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to upload images. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImageFile = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,10 +115,10 @@ const AddProduct = () => {
       return;
     }
 
-    if (!imageUrl) {
+    if (!imageUrl && imageFiles.length === 0) {
       toast({
         title: "Missing Image",
-        description: "Please add a product image URL.",
+        description: "Please add a product image.",
         variant: "destructive",
       });
       return;
@@ -177,6 +234,29 @@ const AddProduct = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="color">Color</Label>
+                  <Input
+                    id="color"
+                    name="color"
+                    value={formData.color}
+                    onChange={handleInputChange}
+                    placeholder="Enter product color"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="variant">Variant</Label>
+                  <Input
+                    id="variant"
+                    name="variant"
+                    value={formData.variant}
+                    onChange={handleInputChange}
+                    placeholder="Enter product variant"
+                  />
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="in_stock">Availability</Label>
                 <Select value={formData.in_stock.toString()} onValueChange={(value) => handleSelectChange('in_stock', value)}>
@@ -192,26 +272,89 @@ const AddProduct = () => {
             </CardContent>
           </Card>
 
-          {/* Product Image */}
+          {/* Product Images */}
           <Card>
             <CardHeader>
-              <CardTitle>Product Image</CardTitle>
+              <CardTitle>Product Images</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="image-url">Image URL *</Label>
+                <Label htmlFor="image-url">Image URL</Label>
                 <Input
                   id="image-url"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
                   placeholder="Enter image URL"
-                  required
                 />
               </div>
 
+              <div className="text-center text-muted-foreground">OR</div>
+
+              <div>
+                <Label>Upload from Device</Label>
+                <div className="mt-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => handleImageUpload(e.target.files)}
+                    className="hidden"
+                    id="image-upload"
+                    disabled={uploading}
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="cursor-pointer border-2 border-dashed border-border rounded-lg p-8 text-center block hover:border-primary transition-colors"
+                  >
+                    {uploading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span className="ml-2">Uploading...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Camera className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">
+                          Click to upload images from your device
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          Support: JPG, PNG, GIF (Max 10MB each)
+                        </p>
+                      </>
+                    )}
+                  </label>
+                </div>
+              </div>
+
+              {imageFiles.length > 0 && (
+                <div>
+                  <Label>Uploaded Images ({imageFiles.length})</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {imageFiles.map((file, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-24 object-cover rounded border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1 h-6 w-6 p-0"
+                          onClick={() => removeImageFile(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {imageUrl && (
                 <div>
-                  <Label>Preview</Label>
+                  <Label>URL Preview</Label>
                   <div className="mt-2">
                     <img
                       src={imageUrl}
@@ -225,11 +368,11 @@ const AddProduct = () => {
                 </div>
               )}
 
-              {!imageUrl && (
+              {!imageUrl && imageFiles.length === 0 && (
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                   <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
-                    Add a product image URL
+                    Add product images using URL or upload from device
                   </p>
                 </div>
               )}

@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { Badge } from "@/components/ui/badge";
 import ShopStats from "@/components/ShopStats";
-import AdminAnalytics from "@/components/AdminAnalytics";
 import { 
   Package, 
   Users, 
@@ -100,9 +99,6 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Analytics Dashboard */}
-      <AdminAnalytics />
 
       {/* Recent Products and Featured Products */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
