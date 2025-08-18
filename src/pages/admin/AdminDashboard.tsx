@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { Badge } from "@/components/ui/badge";
 import ShopStats from "@/components/ShopStats";
+import AdminAnalytics from "@/components/AdminAnalytics";
 import { 
   Package, 
   Users, 
@@ -100,8 +101,8 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Shop Stats Component */}
-      <ShopStats />
+      {/* Analytics Dashboard */}
+      <AdminAnalytics />
 
       {/* Recent Products and Featured Products */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -126,7 +127,7 @@ const AdminDashboard = () => {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground truncate">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">Rs. {product.price.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">PKR {product.price.toLocaleString()}</p>
                   </div>
                   <Badge variant={product.in_stock ? 'default' : 'destructive'} className="text-xs">
                     {product.in_stock ? 'In Stock' : 'Out of Stock'}
@@ -173,7 +174,7 @@ const AdminDashboard = () => {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground truncate">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">Rs. {product.price.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">PKR {product.price.toLocaleString()}</p>
                   </div>
                   <Star className="h-4 w-4 text-yellow-500 fill-current" />
                 </div>
