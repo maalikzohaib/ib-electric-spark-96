@@ -431,7 +431,7 @@ const AddProduct = () => {
             Cancel
           </Button>
           <Button type="submit" variant="store" disabled={loading}>
-            {loading ? 'Adding Product...' : 'Add Product'}
+            {loading ? 'Listing Product...' : 'List Product'}
           </Button>
         </div>
       </form>
