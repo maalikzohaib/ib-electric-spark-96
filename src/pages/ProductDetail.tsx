@@ -68,7 +68,7 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Image */}
           <div className="space-y-4">
-            <div className="relative overflow-hidden rounded-2xl bg-card">
+            <div className="relative overflow-hidden rounded-2xl bg-card hover-scale transition-all duration-300">
               <img
                 src={product.image_url}
                 alt={product.name}
@@ -85,7 +85,7 @@ const ProductDetail = () => {
           </div>
 
           {/* Product Info */}
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div>
               <h1 className="text-4xl font-bold text-foreground mb-4">{product.name}</h1>
               <div className="flex items-center gap-4 mb-6">
@@ -105,14 +105,26 @@ const ProductDetail = () => {
             </div>
 
             {/* Product Details */}
-            <Card>
+            <Card className="hover-scale transition-all duration-300">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold mb-4">Product Details</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="font-medium text-muted-foreground">Brand:</span>
                     <span className="ml-2 text-foreground">{product.brand}</span>
                   </div>
+                  {product.color && (
+                    <div>
+                      <span className="font-medium text-muted-foreground">Color:</span>
+                      <span className="ml-2 text-foreground">{product.color}</span>
+                    </div>
+                  )}
+                  {product.variant && (
+                    <div>
+                      <span className="font-medium text-muted-foreground">Variant:</span>
+                      <span className="ml-2 text-foreground">{product.variant}</span>
+                    </div>
+                  )}
                   <div>
                     <span className="font-medium text-muted-foreground">Availability:</span>
                     <span className="ml-2 text-foreground">
@@ -128,7 +140,7 @@ const ProductDetail = () => {
               <Button
                 variant="store"
                 size="lg"
-                className="flex-1"
+                className="flex-1 hover-scale"
                 onClick={() => handleWhatsAppOrder(product)}
                 disabled={!product.in_stock}
               >
@@ -137,14 +149,14 @@ const ProductDetail = () => {
                 </svg>
                 {product.in_stock ? 'Buy with WhatsApp' : 'Out of Stock'}
               </Button>
-              <Button variant="outline" size="lg" onClick={handleShare}>
+              <Button variant="outline" size="lg" onClick={handleShare} className="hover-scale">
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>
             </div>
 
             {/* Back to Shop */}
-            <Button variant="ghost" onClick={() => navigate('/shop')} className="w-full">
+            <Button variant="ghost" onClick={() => navigate('/shop')} className="w-full hover-scale">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Continue Shopping
             </Button>

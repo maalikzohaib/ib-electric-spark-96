@@ -41,7 +41,7 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
         
         <div className="flex items-center justify-between">
           <span className="text-primary font-bold text-2xl">
-            Rs. {product.price.toLocaleString()}
+            PKR {product.price.toLocaleString()}
           </span>
           <Badge 
             variant={product.in_stock ? 'default' : 'destructive'}

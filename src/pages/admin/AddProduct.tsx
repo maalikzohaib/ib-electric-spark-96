@@ -31,9 +31,10 @@ const AddProduct = () => {
     fetchCategories();
   }, [fetchCategories]);
   
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [newImageUrl, setNewImageUrl] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -76,10 +77,7 @@ const AddProduct = () => {
         uploadedUrls.push(publicUrl);
       }
       
-      if (uploadedUrls.length > 0) {
-        setImageUrl(uploadedUrls[0]); // Set first image as main image
-      }
-      
+      setImageUrls(prev => [...prev, ...uploadedUrls]);
       setImageFiles(prev => [...prev, ...newFiles]);
       
       toast({
@@ -102,6 +100,17 @@ const AddProduct = () => {
     setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const removeImageUrl = (index: number) => {
+    setImageUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const addImageUrl = () => {
+    if (newImageUrl.trim()) {
+      setImageUrls(prev => [...prev, newImageUrl.trim()]);
+      setNewImageUrl('');
+    }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,20 +124,22 @@ const AddProduct = () => {
       return;
     }
 
-    if (!imageUrl && imageFiles.length === 0) {
+    if (imageUrls.length === 0 && imageFiles.length === 0) {
       toast({
         title: "Missing Image",
-        description: "Please add a product image.",
+        description: "Please add at least one product image.",
         variant: "destructive",
       });
       return;
     }
 
     try {
+      const mainImageUrl = imageUrls.length > 0 ? imageUrls[0] : '';
+      
       const newProduct = {
         ...formData,
         price: parseFloat(formData.price),
-        image_url: imageUrl,
+        image_url: mainImageUrl,
         featured: false,
       };
 
@@ -279,14 +290,41 @@ const AddProduct = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="image-url">Image URL</Label>
-                <Input
-                  id="image-url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="Enter image URL"
-                />
+                <Label htmlFor="image-url">Add Image URLs</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="image-url"
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    placeholder="Enter image URL"
+                    onKeyPress={(e) => e.key === 'Enter' && addImageUrl()}
+                  />
+                  <Button type="button" onClick={addImageUrl} disabled={!newImageUrl.trim()}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
+
+              {imageUrls.length > 0 && (
+                <div>
+                  <Label>Added URLs ({imageUrls.length})</Label>
+                  <div className="space-y-2 mt-2">
+                    {imageUrls.map((url, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded">
+                        <span className="text-sm flex-1 truncate">{url}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeImageUrl(index)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="text-center text-muted-foreground">OR</div>
 
@@ -352,23 +390,26 @@ const AddProduct = () => {
                 </div>
               )}
 
-              {imageUrl && (
+              {imageUrls.length > 0 && (
                 <div>
-                  <Label>URL Preview</Label>
-                  <div className="mt-2">
-                    <img
-                      src={imageUrl}
-                      alt="Product preview"
-                      className="w-full h-48 object-cover rounded border"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
+                  <Label>URL Previews</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-2">
+                    {imageUrls.map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-24 object-cover rounded border"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
 
-              {!imageUrl && imageFiles.length === 0 && (
+              {imageUrls.length === 0 && imageFiles.length === 0 && (
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
                   <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-muted-foreground">
