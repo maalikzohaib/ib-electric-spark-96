@@ -100,9 +100,6 @@ const AdminDashboard = () => {
         </Card>
       </div>
 
-      {/* Shop Stats Component */}
-      <ShopStats />
-
       {/* Recent Products and Featured Products */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Products */}
@@ -126,7 +123,7 @@ const AdminDashboard = () => {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground truncate">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">Rs. {product.price.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">PKR {product.price.toLocaleString()}</p>
                   </div>
                   <Badge variant={product.in_stock ? 'default' : 'destructive'} className="text-xs">
                     {product.in_stock ? 'In Stock' : 'Out of Stock'}
@@ -173,7 +170,7 @@ const AdminDashboard = () => {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground truncate">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">Rs. {product.price.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">PKR {product.price.toLocaleString()}</p>
                   </div>
                   <Star className="h-4 w-4 text-yellow-500 fill-current" />
                 </div>

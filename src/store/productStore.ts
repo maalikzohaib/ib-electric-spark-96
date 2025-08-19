@@ -8,6 +8,8 @@ export interface Product {
   price: number;
   category_id: string;
   brand: string;
+  color?: string;
+  variant?: string;
   in_stock: boolean;
   image_url: string;
   featured: boolean;

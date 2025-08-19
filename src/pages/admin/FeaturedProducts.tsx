@@ -7,9 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Star } from "lucide-react";
 
 const FeaturedProducts = () => {
-  const { products, featuredProducts, setFeaturedProducts } = useProductStore();
+  const { products, featuredProducts, setFeaturedProduct } = useProductStore();
   const { toast } = useToast();
-  const [selectedProducts, setSelectedProducts] = useState<string[]>(featuredProducts);
+  const [selectedProducts, setSelectedProducts] = useState<string[]>(
+    featuredProducts.map(p => p.id)
+  );
 
   const handleProductToggle = (productId: string) => {
     setSelectedProducts(prev => {
@@ -28,12 +30,27 @@ const FeaturedProducts = () => {
     });
   };
 
-  const handleSave = () => {
-    setFeaturedProducts(selectedProducts);
-    toast({
-      title: "Featured Products Updated",
-      description: `${selectedProducts.length} products set as featured.`,
-    });
+  const handleSave = async () => {
+    try {
+      // Update featured status for all products
+      for (const product of products) {
+        const shouldBeFeatured = selectedProducts.includes(product.id);
+        if (product.featured !== shouldBeFeatured) {
+          await setFeaturedProduct(product.id, shouldBeFeatured);
+        }
+      }
+      
+      toast({
+        title: "Featured Products Updated",
+        description: `${selectedProducts.length} products set as featured.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update featured products.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -61,14 +78,14 @@ const FeaturedProducts = () => {
                   onCheckedChange={() => handleProductToggle(product.id)}
                 />
                 <img
-                  src={product.mainImage}
-                  alt={product.title}
+                  src={product.image_url}
+                  alt={product.name}
                   className="w-16 h-16 object-cover rounded"
                 />
                 <div className="flex-1">
-                  <h3 className="font-medium text-foreground">{product.title}</h3>
-                  <p className="text-sm text-muted-foreground">{product.brand} • {product.category}</p>
-                  <p className="text-sm font-medium text-primary">Rs. {product.price.toLocaleString()}</p>
+                  <h3 className="font-medium text-foreground">{product.name}</h3>
+                  <p className="text-sm text-muted-foreground">{product.brand} • {useProductStore.getState().categories.find(c => c.id === product.category_id)?.name || 'Unknown'}</p>
+                  <p className="text-sm font-medium text-primary">PKR {product.price.toLocaleString()}</p>
                 </div>
               </div>
             ))}
