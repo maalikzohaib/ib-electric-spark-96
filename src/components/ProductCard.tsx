@@ -14,7 +14,7 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-10 transition-opacity duration-300 z-10"></div>
         <img
-          src={product.image_url}
+          src={product.images && product.images.length > 0 ? product.images[0] : product.image_url}
           alt={product.name}
           className="w-full h-56 object-cover transition-transform duration-500 group-hover:scale-110"
         />

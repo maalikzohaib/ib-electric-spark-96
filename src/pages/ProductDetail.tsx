@@ -66,13 +66,15 @@ const ProductDetail = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
+          {/* Product Images Gallery */}
           <div className="space-y-4">
+            {/* Main Image */}
             <div className="relative overflow-hidden rounded-2xl bg-card hover-scale transition-all duration-300">
               <img
-                src={product.image_url}
+                src={product.images && product.images.length > 0 ? product.images[0] : product.image_url}
                 alt={product.name}
                 className="w-full aspect-square object-cover"
+                id="main-product-image"
               />
               {!product.in_stock && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
@@ -82,6 +84,30 @@ const ProductDetail = () => {
                 </div>
               )}
             </div>
+            
+            {/* Image Thumbnails */}
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {product.images.map((imageUrl, index) => (
+                  <div
+                    key={index}
+                    className="relative overflow-hidden rounded-lg bg-card cursor-pointer hover-scale transition-all duration-200 border-2 hover:border-primary"
+                    onClick={() => {
+                      const mainImage = document.getElementById('main-product-image') as HTMLImageElement;
+                      if (mainImage) {
+                        mainImage.src = imageUrl;
+                      }
+                    }}
+                  >
+                    <img
+                      src={imageUrl}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full aspect-square object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}

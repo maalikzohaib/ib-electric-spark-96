@@ -12,6 +12,7 @@ export interface Product {
   variant?: string;
   in_stock: boolean;
   image_url: string;
+  images?: string[];
   featured: boolean;
   created_at?: string;
   updated_at?: string;

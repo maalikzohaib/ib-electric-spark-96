@@ -162,6 +162,7 @@ const AddProduct = () => {
         ...formData,
         price: parseFloat(formData.price),
         image_url: mainImageUrl,
+        images: finalImageUrls,
         featured: false,
       };
 
@@ -305,10 +306,11 @@ const AddProduct = () => {
             </CardContent>
           </Card>
 
-          {/* Product Images */}
+            {/* Product Images */}
           <Card>
             <CardHeader>
-              <CardTitle>Product Images</CardTitle>
+              <CardTitle>Product Images Gallery</CardTitle>
+              <p className="text-sm text-muted-foreground">Upload multiple images to showcase your product</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
