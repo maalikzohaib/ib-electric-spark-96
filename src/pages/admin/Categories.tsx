@@ -22,11 +22,11 @@ const Categories = () => {
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
-  const handleAddCategory = async (e: React.FormEvent) => {
+  const handleAddCategory = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.trim()) return;
     
-    if (categories.some(cat => cat.name === newCategory.trim())) {
+    if (categories.includes(newCategory.trim())) {
       toast({
         title: "Category Exists",
         description: "This category already exists.",
@@ -35,26 +35,18 @@ const Categories = () => {
       return;
     }
     
-    try {
-      await addCategory({ name: newCategory.trim() });
-      setNewCategory('');
-      
-      toast({
-        title: "Category Added",
-        description: `"${newCategory.trim()}" has been added to categories.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add category. Please try again.",
-        variant: "destructive",
-      });
-    }
+    addCategory(newCategory.trim());
+    setNewCategory('');
+    
+    toast({
+      title: "Category Added",
+      description: `"${newCategory.trim()}" has been added to categories.`,
+    });
   };
 
-  const startEdit = (categoryId: string, categoryName: string) => {
-    setEditingCategory(categoryId);
-    setEditValue(categoryName);
+  const startEdit = (category: string) => {
+    setEditingCategory(category);
+    setEditValue(category);
   };
 
   const cancelEdit = () => {
@@ -62,19 +54,13 @@ const Categories = () => {
     setEditValue('');
   };
 
-  const saveEdit = async () => {
-    if (!editValue.trim()) {
+  const saveEdit = () => {
+    if (!editValue.trim() || editValue === editingCategory) {
       cancelEdit();
       return;
     }
     
-    const currentCategory = categories.find(c => c.id === editingCategory);
-    if (!currentCategory || editValue === currentCategory.name) {
-      cancelEdit();
-      return;
-    }
-    
-    if (categories.some(cat => cat.name === editValue.trim() && cat.id !== editingCategory)) {
+    if (categories.includes(editValue.trim()) && editValue.trim() !== editingCategory) {
       toast({
         title: "Category Exists",
         description: "This category name already exists.",
@@ -83,51 +69,35 @@ const Categories = () => {
       return;
     }
     
-    try {
-      await updateCategory(editingCategory!, { name: editValue.trim() });
-      
-      toast({
-        title: "Category Updated",
-        description: `Category updated to "${editValue.trim()}".`,
-      });
-      
-      cancelEdit();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update category. Please try again.",
-        variant: "destructive",
-      });
-    }
+    updateCategory(editingCategory!, editValue.trim());
+    
+    toast({
+      title: "Category Updated",
+      description: `Category updated to "${editValue.trim()}".`,
+    });
+    
+    cancelEdit();
   };
 
-  const handleDeleteCategory = async (categoryId: string, categoryName: string) => {
-    const productsInCategory = products.filter(p => p.category_id === categoryId).length;
+  const handleDeleteCategory = (category: string) => {
+    const productsInCategory = products.filter(p => p.category === category).length;
     
     const confirmMessage = productsInCategory > 0 
-      ? `Are you sure you want to delete "${categoryName}"? This will also delete ${productsInCategory} product(s) in this category.`
-      : `Are you sure you want to delete "${categoryName}"?`;
+      ? `Are you sure you want to delete "${category}"? This will also delete ${productsInCategory} product(s) in this category.`
+      : `Are you sure you want to delete "${category}"?`;
     
     if (window.confirm(confirmMessage)) {
-      try {
-        await deleteCategory(categoryId);
-        
-        toast({
-          title: "Category Deleted",
-          description: `"${categoryName}" has been deleted.`,
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to delete category. Please try again.",
-          variant: "destructive",
-        });
-      }
+      deleteCategory(category);
+      
+      toast({
+        title: "Category Deleted",
+        description: `"${category}" has been deleted.`,
+      });
     }
   };
 
-  const getProductCount = (categoryId: string) => {
-    return products.filter(p => p.category_id === categoryId).length;
+  const getProductCount = (category: string) => {
+    return products.filter(p => p.category === category).length;
   };
 
   return (
@@ -181,11 +151,11 @@ const Categories = () => {
         <CardContent>
           <div className="space-y-4">
             {categories.map((category) => (
-              <div key={category.id} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={category} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center space-x-4">
                   <Tag className="h-5 w-5 text-primary" />
                   <div>
-                    {editingCategory === category.id ? (
+                    {editingCategory === category ? (
                       <Input
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
@@ -198,9 +168,9 @@ const Categories = () => {
                       />
                     ) : (
                       <div>
-                        <h3 className="font-medium text-foreground">{category.name}</h3>
+                        <h3 className="font-medium text-foreground">{category}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {getProductCount(category.id)} product(s)
+                          {getProductCount(category)} product(s)
                         </p>
                       </div>
                     )}
@@ -208,7 +178,7 @@ const Categories = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  {editingCategory === category.id ? (
+                  {editingCategory === category ? (
                     <>
                       <Button onClick={saveEdit} size="sm" variant="outline">
                         <Save className="h-4 w-4" />
@@ -220,14 +190,14 @@ const Categories = () => {
                   ) : (
                     <>
                       <Button 
-                        onClick={() => startEdit(category.id, category.name)} 
+                        onClick={() => startEdit(category)} 
                         size="sm" 
                         variant="outline"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
-                        onClick={() => handleDeleteCategory(category.id, category.name)} 
+                        onClick={() => handleDeleteCategory(category)} 
                         size="sm" 
                         variant="outline"
                         className="text-destructive hover:text-destructive"

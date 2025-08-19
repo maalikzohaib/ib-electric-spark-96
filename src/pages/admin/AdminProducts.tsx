@@ -26,20 +26,20 @@ const AdminProducts = () => {
   // Filter products
   const filteredProducts = products.filter(product => {
     const matchesSearch = !searchQuery || 
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.brand?.toLowerCase().includes(searchQuery.toLowerCase());
+      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.brand.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = categoryFilter === 'all' || product.category_id === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
 
-  const handleDelete = (productId: string, productName: string) => {
-    if (window.confirm(`Are you sure you want to delete "${productName}"?`)) {
+  const handleDelete = (productId: string, productTitle: string) => {
+    if (window.confirm(`Are you sure you want to delete "${productTitle}"?`)) {
       deleteProduct(productId);
       toast({
         title: "Product Deleted",
-        description: `${productName} has been removed from the store.`,
+        description: `${productTitle} has been removed from the store.`,
       });
     }
   };
@@ -95,9 +95,9 @@ const AdminProducts = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {useProductStore.getState().categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
+                {useProductStore.getState().categories.filter(category => category.trim() !== '').map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -112,32 +112,32 @@ const AdminProducts = () => {
           <Card key={product.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300">
             <div className="relative">
               <img
-                src={product.image_url}
-                alt={product.name}
+                src={product.mainImage}
+                alt={product.title}
                 className="w-full h-40 object-cover"
               />
               <Badge 
-                variant={product.in_stock ? 'default' : 'destructive'}
+                variant={product.availability === 'In Stock' ? 'default' : 'destructive'}
                 className="absolute top-2 right-2"
               >
-                {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                {product.availability}
               </Badge>
             </div>
             
             <CardContent className="p-4">
               <div className="space-y-2 mb-4">
                 <h3 className="font-semibold text-foreground line-clamp-2 text-sm">
-                  {product.name}
+                  {product.title}
                 </h3>
                 <p className="text-xs text-muted-foreground">
                   {product.brand}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-primary text-sm">
-                    PKR {product.price.toLocaleString()}
+                    Rs. {product.price.toLocaleString()}
                   </span>
                   <Badge variant="outline" className="text-xs">
-                    {useProductStore.getState().categories.find(c => c.id === product.category_id)?.name || 'Unknown'}
+                    {product.category}
                   </Badge>
                 </div>
               </div>
@@ -158,7 +158,7 @@ const AdminProducts = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => handleDelete(product.id, product.name)}
+                  onClick={() => handleDelete(product.id, product.title)}
                   className="text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-3 w-3" />

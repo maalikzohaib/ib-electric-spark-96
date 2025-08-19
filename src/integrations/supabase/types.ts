@@ -101,7 +101,6 @@ export type Database = {
         Row: {
           brand: string | null
           category_id: string | null
-          color: string | null
           created_at: string
           description: string | null
           featured: boolean | null
@@ -111,12 +110,10 @@ export type Database = {
           name: string
           price: number
           updated_at: string
-          variant: string | null
         }
         Insert: {
           brand?: string | null
           category_id?: string | null
-          color?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
@@ -126,12 +123,10 @@ export type Database = {
           name: string
           price: number
           updated_at?: string
-          variant?: string | null
         }
         Update: {
           brand?: string | null
           category_id?: string | null
-          color?: string | null
           created_at?: string
           description?: string | null
           featured?: boolean | null
@@ -141,7 +136,6 @@ export type Database = {
           name?: string
           price?: number
           updated_at?: string
-          variant?: string | null
         }
         Relationships: [
           {
