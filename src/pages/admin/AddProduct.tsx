@@ -35,6 +35,7 @@ const AddProduct = () => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [newImageUrl, setNewImageUrl] = useState('');
+  const [mainImageIndex, setMainImageIndex] = useState(0);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -80,6 +81,11 @@ const AddProduct = () => {
       setImageUrls(prev => [...prev, ...uploadedUrls]);
       setImageFiles(prev => [...prev, ...newFiles]);
       
+      // If no main image selected and this is first upload, set first uploaded as main
+      if (imageUrls.length === 0 && imageFiles.length === 0) {
+        setMainImageIndex(0);
+      }
+      
       toast({
         title: "Images Uploaded",
         description: `${uploadedUrls.length} image(s) uploaded successfully.`,
@@ -98,16 +104,33 @@ const AddProduct = () => {
 
   const removeImageFile = (index: number) => {
     setImageFiles(prev => prev.filter((_, i) => i !== index));
+    // Adjust main image index if necessary
+    const urlsCount = imageUrls.length;
+    const adjustedIndex = index + urlsCount;
+    if (mainImageIndex === adjustedIndex) {
+      setMainImageIndex(0);
+    } else if (mainImageIndex > adjustedIndex) {
+      setMainImageIndex(mainImageIndex - 1);
+    }
   };
 
   const removeImageUrl = (index: number) => {
     setImageUrls(prev => prev.filter((_, i) => i !== index));
+    // Adjust main image index if necessary
+    const totalImages = imageUrls.length + imageFiles.length;
+    if (mainImageIndex >= totalImages - 1) {
+      setMainImageIndex(Math.max(0, totalImages - 2));
+    }
   };
 
   const addImageUrl = () => {
     if (newImageUrl.trim()) {
       setImageUrls(prev => [...prev, newImageUrl.trim()]);
       setNewImageUrl('');
+      // If this is the first image, set it as main
+      if (imageUrls.length === 0 && imageFiles.length === 0) {
+        setMainImageIndex(0);
+      }
     }
   };
 
@@ -156,13 +179,20 @@ const AddProduct = () => {
         }
       }
       
-      const mainImageUrl = finalImageUrls.length > 0 ? finalImageUrls[0] : '';
+      // Get all images in order (URLs first, then uploaded files)
+      let allImages = [...finalImageUrls];
+      
+      // Determine main image URL
+      let mainImageUrl = '';
+      if (allImages.length > 0) {
+        mainImageUrl = mainImageIndex < allImages.length ? allImages[mainImageIndex] : allImages[0];
+      }
       
       const newProduct = {
         ...formData,
         price: parseFloat(formData.price),
         image_url: mainImageUrl,
-        images: finalImageUrls,
+        images: allImages,
         featured: false,
       };
 
@@ -331,10 +361,24 @@ const AddProduct = () => {
 
               {imageUrls.length > 0 && (
                 <div>
-                  <Label>Added URLs ({imageUrls.length})</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Added URLs ({imageUrls.length})</Label>
+                    {(imageUrls.length > 0 || imageFiles.length > 0) && (
+                      <span className="text-xs text-muted-foreground">
+                        Select main image by clicking the radio button
+                      </span>
+                    )}
+                  </div>
                   <div className="space-y-2 mt-2">
                     {imageUrls.map((url, index) => (
                       <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded">
+                        <input
+                          type="radio"
+                          name="mainImage"
+                          checked={mainImageIndex === index}
+                          onChange={() => setMainImageIndex(index)}
+                          className="w-4 h-4 text-primary"
+                        />
                         <span className="text-sm flex-1 truncate">{url}</span>
                         <Button
                           type="button"
@@ -390,10 +434,26 @@ const AddProduct = () => {
 
               {imageFiles.length > 0 && (
                 <div>
-                  <Label>Uploaded Images ({imageFiles.length})</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Uploaded Images ({imageFiles.length})</Label>
+                    {imageUrls.length === 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        Select main image by clicking the radio button
+                      </span>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-2 mt-2">
                     {imageFiles.map((file, index) => (
                       <div key={index} className="relative">
+                        <div className="absolute top-2 left-2 z-10">
+                          <input
+                            type="radio"
+                            name="mainImage"
+                            checked={mainImageIndex === imageUrls.length + index}
+                            onChange={() => setMainImageIndex(imageUrls.length + index)}
+                            className="w-4 h-4 text-primary bg-white rounded"
+                          />
+                        </div>
                         <img
                           src={URL.createObjectURL(file)}
                           alt={`Upload ${index + 1}`}
@@ -408,6 +468,11 @@ const AddProduct = () => {
                         >
                           <X className="h-3 w-3" />
                         </Button>
+                        {mainImageIndex === imageUrls.length + index && (
+                          <div className="absolute bottom-1 left-1 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+                            Main
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

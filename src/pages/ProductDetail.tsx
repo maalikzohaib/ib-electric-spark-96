@@ -87,25 +87,36 @@ const ProductDetail = () => {
             
             {/* Image Thumbnails */}
             {product.images && product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-3">
-                {product.images.map((imageUrl, index) => (
-                  <div
-                    key={index}
-                    className="relative overflow-hidden rounded-lg bg-card cursor-pointer hover-scale transition-all duration-200 border-2 hover:border-primary"
-                    onClick={() => {
-                      const mainImage = document.getElementById('main-product-image') as HTMLImageElement;
-                      if (mainImage) {
-                        mainImage.src = imageUrl;
-                      }
-                    }}
-                  >
-                    <img
-                      src={imageUrl}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full aspect-square object-cover"
-                    />
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium text-muted-foreground">All Images</h4>
+                <div className="grid grid-cols-4 gap-3">
+                  {product.images.map((imageUrl, index) => (
+                    <div
+                      key={index}
+                      className="relative overflow-hidden rounded-lg bg-card cursor-pointer hover-scale transition-all duration-200 border-2 hover:border-primary active:scale-95"
+                      onClick={() => {
+                        const mainImage = document.getElementById('main-product-image') as HTMLImageElement;
+                        if (mainImage) {
+                          mainImage.src = imageUrl;
+                        }
+                      }}
+                    >
+                      <img
+                        src={imageUrl}
+                        alt={`${product.name} ${index + 1}`}
+                        className="w-full aspect-square object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors duration-200"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Single Image Info */}
+            {(!product.images || product.images.length <= 1) && (
+              <div className="text-center text-sm text-muted-foreground">
+                Single image available
               </div>
             )}
           </div>
