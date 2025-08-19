@@ -115,10 +115,10 @@ const AddProduct = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.price || !formData.category_id || !formData.brand) {
+    if (!formData.name || !formData.description || !formData.price || !formData.category_id || !formData.brand) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields (name, description, price, category, brand).",
         variant: "destructive",
       });
       return;
@@ -134,7 +134,29 @@ const AddProduct = () => {
     }
 
     try {
-      const mainImageUrl = imageUrls.length > 0 ? imageUrls[0] : '';
+      // Handle uploaded files first
+      let finalImageUrls = [...imageUrls];
+      
+      if (imageFiles.length > 0) {
+        for (const file of imageFiles) {
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+          
+          const { data, error } = await supabase.storage
+            .from('product-images')
+            .upload(fileName, file);
+
+          if (error) throw error;
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(fileName);
+
+          finalImageUrls.push(publicUrl);
+        }
+      }
+      
+      const mainImageUrl = finalImageUrls.length > 0 ? finalImageUrls[0] : '';
       
       const newProduct = {
         ...formData,
