@@ -31,7 +31,7 @@ const ProductDetail = () => {
   const handleWhatsAppOrder = (product: any) => {
     const message = `Hi! I'm interested in ordering this product:\n\n*${product.name}*\nPrice: PKR ${product.price.toLocaleString()}\nBrand: ${product.brand}\n\nProduct Link: ${window.location.href}\n\nPlease let me know how to proceed with the order.`;
     
-    const whatsappNumber = "923001234567"; // Replace with your actual WhatsApp number
+    const whatsappNumber = "923014539090"; // Replace with your actual WhatsApp number
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, '_blank');
