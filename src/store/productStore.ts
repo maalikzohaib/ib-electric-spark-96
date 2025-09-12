@@ -8,6 +8,7 @@ export interface Product {
   price: number;
   category_id: string;
   brand: string;
+  size?: string;
   color?: string;
   variant?: string;
   in_stock: boolean;
@@ -93,10 +94,10 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       
       // Use Neon for database operations to avoid RLS recursion issues
       const data = await executeNeonQuerySingle<Product>(
-        `INSERT INTO products (name, description, price, category_id, brand, color, variant, in_stock, image_url, images, featured, page_id, created_at, updated_at) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW()) 
+        `INSERT INTO products (name, description, price, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id, created_at, updated_at) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW()) 
          RETURNING *`,
-        [product.name, product.description, product.price, product.category_id, product.brand, product.color, product.variant, product.in_stock, product.image_url, product.images, product.featured, product.page_id]
+        [product.name, product.description, product.price, product.category_id, product.brand, product.size, product.color, product.variant, product.in_stock, product.image_url, product.images, product.featured, product.page_id]
       );
 
       if (!data) {
