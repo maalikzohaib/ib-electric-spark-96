@@ -134,8 +134,8 @@ const Categories = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Categories</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Categories</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Manage product categories for your store
         </p>
       </div>
@@ -149,7 +149,7 @@ const Categories = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAddCategory} className="flex gap-4">
+          <form onSubmit={handleAddCategory} className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <div className="flex-1">
               <Label htmlFor="new-category">Category Name</Label>
               <Input
@@ -160,8 +160,8 @@ const Categories = () => {
                 required
               />
             </div>
-            <div className="flex items-end">
-              <Button type="submit" variant="store">
+            <div className="flex items-center sm:items-end mt-2 sm:mt-0">
+              <Button type="submit" variant="store" className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Category
               </Button>
@@ -181,8 +181,8 @@ const Categories = () => {
         <CardContent>
           <div className="space-y-4">
             {categories.map((category) => (
-              <div key={category.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div className="flex items-center space-x-4">
+              <div key={category.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 border rounded-lg">
+                <div className="flex items-center space-x-4 mb-2 sm:mb-0">
                   <Tag className="h-5 w-5 text-primary" />
                   <div>
                     {editingCategory === category.id ? (
@@ -207,7 +207,7 @@ const Categories = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-end gap-2">
                   {editingCategory === category.id ? (
                     <>
                       <Button onClick={saveEdit} size="sm" variant="outline">

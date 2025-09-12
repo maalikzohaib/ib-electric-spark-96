@@ -17,12 +17,12 @@ const FeaturedProducts = () => {
     setSelectedProducts(prev => {
       if (prev.includes(productId)) {
         return prev.filter(id => id !== productId);
-      } else if (prev.length < 3) {
+      } else if (prev.length < 6) {
         return [...prev, productId];
       } else {
         toast({
           title: "Maximum Reached",
-          description: "You can only select up to 3 featured products.",
+          description: "You can only select up to 6 featured products.",
           variant: "destructive",
         });
         return prev;
@@ -56,9 +56,9 @@ const FeaturedProducts = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Featured Products</h1>
-        <p className="text-muted-foreground">
-          Select up to 3 products to feature on the homepage
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Featured Products</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Select up to 6 products to feature on the homepage
         </p>
       </div>
 
@@ -66,13 +66,13 @@ const FeaturedProducts = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5" />
-            Select Featured Products ({selectedProducts.length}/3)
+            Select Featured Products ({selectedProducts.length}/6)
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {products.map((product) => (
-              <div key={product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+              <div key={product.id} className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4 space-y-3 sm:space-y-0 p-3 sm:p-4 border rounded-lg">
                 <Checkbox
                   checked={selectedProducts.includes(product.id)}
                   onCheckedChange={() => handleProductToggle(product.id)}
@@ -80,7 +80,7 @@ const FeaturedProducts = () => {
                 <img
                   src={product.image_url}
                   alt={product.name}
-                  className="w-16 h-16 object-cover rounded"
+                  className="w-full sm:w-16 h-32 sm:h-16 object-cover rounded"
                 />
                 <div className="flex-1">
                   <h3 className="font-medium text-foreground">{product.name}</h3>
@@ -91,8 +91,8 @@ const FeaturedProducts = () => {
             ))}
           </div>
           
-          <div className="flex justify-end mt-6">
-            <Button onClick={handleSave} variant="store">
+          <div className="flex justify-center sm:justify-end mt-6">
+            <Button onClick={handleSave} variant="store" className="w-full sm:w-auto">
               Save Featured Products
             </Button>
           </div>

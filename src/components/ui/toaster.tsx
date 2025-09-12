@@ -13,9 +13,18 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
+      {toasts.map(function ({ id, title, description, action, ...props }, index) {
         return (
-          <Toast key={id} {...props}>
+          <Toast 
+            key={id} 
+            {...props} 
+            style={{ 
+              opacity: 1 - (index * 0.1), 
+              transform: `translateY(${index * -5}px)`,
+              zIndex: 100 - index
+            }}
+            className="transition-all duration-300"
+          >
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (

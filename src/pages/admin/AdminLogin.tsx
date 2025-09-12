@@ -55,16 +55,16 @@ const AdminLogin = () => {
       [name]: value
     }));
   };
-  return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
-      <Card className="w-full max-w-md shadow-elegant">
+  return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-elegant mx-auto">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="bg-primary/10 p-3 rounded-full">
               <Lock className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Admin Login</CardTitle>
-          <p className="text-muted-foreground">
+          <CardTitle className="text-xl sm:text-2xl">Admin Login</CardTitle>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Access the IB Electric Store admin panel
           </p>
         </CardHeader>

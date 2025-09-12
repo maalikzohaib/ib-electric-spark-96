@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProductStore } from "@/store/productStore";
+import { usePageStore } from "@/store/pageStore";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Plus, Camera } from "lucide-react";
@@ -14,6 +15,7 @@ import { Upload, X, Plus, Camera } from "lucide-react";
 const AddProduct = () => {
   const navigate = useNavigate();
   const { addProduct, categories, fetchCategories, loading } = useProductStore();
+  const { pages, fetchPages } = usePageStore();
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
@@ -24,12 +26,17 @@ const AddProduct = () => {
     brand: '',
     color: '',
     variant: '',
+    size: '',
     in_stock: true,
+    page_id: '' as string,
   });
+  
+  const [expandedMainPages, setExpandedMainPages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchCategories();
-  }, [fetchCategories]);
+    fetchPages();
+  }, [fetchCategories, fetchPages]);
   
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -48,8 +55,20 @@ const AddProduct = () => {
   const handleSelectChange = (name: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'in_stock' ? value === 'true' : value
+      [name]: name === 'in_stock' ? value === 'true' : 
+             name === 'page_id' && value === 'none' ? '' : value
     }));
+    
+    // Automatically expand the parent page when a subpage is selected
+    if (name === 'page_id' && value !== 'none') {
+      const selectedPage = pages.find(p => p.id === value);
+      if (selectedPage?.parent_id) {
+        setExpandedMainPages(prev => ({
+          ...prev,
+          [selectedPage.parent_id]: true
+        }));
+      }
+    }
   };
 
   const handleImageUpload = async (files: FileList | null) => {
@@ -138,10 +157,10 @@ const AddProduct = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.description || !formData.price || !formData.category_id || !formData.brand) {
+    if (!formData.name || !formData.description || !formData.price || !formData.category_id || !formData.brand || !formData.page_id) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields (name, description, price, category, brand).",
+        description: "Please fill in all required fields (name, description, price, category, brand, page).",
         variant: "destructive",
       });
       return;
@@ -157,30 +176,12 @@ const AddProduct = () => {
     }
 
     try {
-      // Handle uploaded files first
-      let finalImageUrls = [...imageUrls];
+      // Use the already uploaded image URLs - no need to re-upload files that were already processed
+      // by the handleImageUpload function
+      let allImages = [...imageUrls];
       
-      if (imageFiles.length > 0) {
-        for (const file of imageFiles) {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-          
-          const { data, error } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, file);
-
-          if (error) throw error;
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(fileName);
-
-          finalImageUrls.push(publicUrl);
-        }
-      }
-      
-      // Get all images in order (URLs first, then uploaded files)
-      let allImages = [...finalImageUrls];
+      // We don't need to upload files here as they should have already been uploaded
+      // by the handleImageUpload function and their URLs added to imageUrls
       
       // Determine main image URL
       let mainImageUrl = '';
@@ -194,6 +195,7 @@ const AddProduct = () => {
         image_url: mainImageUrl,
         images: allImages,
         featured: false,
+        page_id: formData.page_id || null,
       };
 
       await addProduct(newProduct);
@@ -217,14 +219,14 @@ const AddProduct = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Add Product</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Add Product</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Create a new product for your store
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Basic Information */}
           <Card>
             <CardHeader>
@@ -256,7 +258,7 @@ const AddProduct = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <Label htmlFor="price">Price (Rs.) *</Label>
                   <Input
@@ -298,7 +300,7 @@ const AddProduct = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div>
                   <Label htmlFor="color">Color</Label>
                   <Input
@@ -318,6 +320,93 @@ const AddProduct = () => {
                     onChange={handleInputChange}
                     placeholder="Enter product variant"
                   />
+                </div>
+                <div>
+                  <Label htmlFor="size">Size</Label>
+                  <Input
+                    id="size"
+                    name="size"
+                    value={formData.size}
+                    onChange={handleInputChange}
+                    placeholder="Enter product size"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="page_id">Select Page (Required)</Label>
+                <div className="space-y-4 mt-2 border rounded-md p-4">
+                  {/* Main pages with plus buttons */}
+                  <div className="space-y-2">
+                    {pages
+                      .filter(page => page.parent_id === null && page.name && page.name.trim() !== '') // Only show main pages with valid names
+                      .map((mainPage) => {
+                        const subPages = pages.filter(p => p.parent_id === mainPage.id && p.name && p.name.trim() !== '');
+                        const isExpanded = expandedMainPages[mainPage.id] || false;
+                        
+                        return (
+                          <div key={mainPage.id} className="space-y-2">
+                            <div className="flex items-center">
+                              <span className="flex-1 font-medium">{mainPage.name}</span>
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => setExpandedMainPages(prev => ({
+                                  ...prev,
+                                  [mainPage.id]: !isExpanded
+                                }))}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            
+                            {isExpanded && (
+                              <div className="pl-4 space-y-2 border-l-2 border-gray-200">
+                                {subPages.length > 0 ? (
+                                  subPages.map(subPage => (
+                                    <div key={subPage.id} className="flex items-center">
+                                      <input
+                                        type="radio"
+                                        id={`page-${subPage.id}`}
+                                        name="page_id"
+                                        value={subPage.id}
+                                        checked={formData.page_id === subPage.id}
+                                        onChange={() => handleSelectChange('page_id', subPage.id)}
+                                        className="mr-2"
+                                      />
+                                      <label htmlFor={`page-${subPage.id}`} className="text-sm">
+                                        {subPage.name}
+                                      </label>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <p className="text-sm text-muted-foreground">No subpages available</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                  </div>
+                  
+                  {/* Preview of selected page */}
+                  {formData.page_id && (
+                    <div className="mt-4 p-2 bg-muted rounded-md">
+                      <p className="text-sm font-medium">Selected Page:</p>
+                      <p className="text-sm">
+                        {(() => {
+                          const selectedPage = pages.find(p => p.id === formData.page_id);
+                          const parentPage = selectedPage?.parent_id ? 
+                            pages.find(p => p.id === selectedPage.parent_id) : null;
+                          
+                          return parentPage ? 
+                            `${parentPage.name} → ${selectedPage?.name}` : 
+                            selectedPage?.name;
+                        })()}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -345,7 +434,7 @@ const AddProduct = () => {
             <CardContent className="space-y-4">
               <div>
                 <Label htmlFor="image-url">Add Image URLs</Label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     id="image-url"
                     value={newImageUrl}
@@ -353,7 +442,7 @@ const AddProduct = () => {
                     placeholder="Enter image URL"
                     onKeyPress={(e) => e.key === 'Enter' && addImageUrl()}
                   />
-                  <Button type="button" onClick={addImageUrl} disabled={!newImageUrl.trim()}>
+                  <Button type="button" onClick={addImageUrl} disabled={!newImageUrl.trim()} className="w-full sm:w-auto mt-2 sm:mt-0">
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>

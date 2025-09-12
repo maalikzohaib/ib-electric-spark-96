@@ -1,0 +1,18 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "local_endpoint": "http://localhost:8081",
+  "tests": [
+    "../main_test.js",
+    "../product_browsing_test.js",
+    "../product_details_test.js",
+    "../cart_test.js",
+    "../favorites_test.js",
+    "../product_component_test.js"
+  ],
+  "login": {
+    "username": "admin",
+    "password": "Electric@12345"
+  }
+}

@@ -93,7 +93,7 @@ ${formData.message}`;
         </div>
 
         {/* Support Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16 animate-scale-in">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-16 animate-scale-in">
           <Card className="text-center p-6 shadow-card hover:shadow-elegant transition-all duration-300 group">
             <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
               <MessageCircle className="h-8 w-8 text-green-600" />
@@ -117,7 +117,7 @@ ${formData.message}`;
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-12">
           {/* Contact Information */}
           <div className="space-y-6 animate-fade-in">
             <div>

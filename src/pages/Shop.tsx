@@ -108,13 +108,24 @@ const Shop = () => {
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-            <Input
-              placeholder="Search for electrical products, brands, categories..."
-              value={filters.search}
-              onChange={(e) => updateFilter('search', e.target.value)}
-              className="pl-12 h-14 text-lg border-2 focus:border-primary shadow-lg"
-            />
+            <form onSubmit={(e) => { e.preventDefault(); }}>
+              <div className="relative flex items-center w-full">
+                <Input
+                  placeholder="Search for electrical products, brands, categories..."
+                  value={filters.search}
+                  onChange={(e) => updateFilter('search', e.target.value)}
+                  className="pr-12 h-12 text-base border focus:border-primary shadow-md rounded-md"
+                />
+                <Button 
+                  type="submit" 
+                  variant="default" 
+                  size="icon"
+                  className="absolute right-1 h-10 w-10 bg-primary text-white rounded-md"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -296,13 +307,21 @@ const Shop = () => {
 
             {/* Products Grid */}
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div 
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"
+                aria-busy="true"
+                aria-label="Loading products"
+              >
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-96 bg-card rounded-lg animate-pulse"></div>
+                  <div key={i} className="h-96 bg-card rounded-lg animate-pulse" role="presentation"></div>
                 ))}
               </div>
             ) : filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div 
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 px-2 sm:px-0"
+                role="region"
+                aria-label="Products grid"
+              >
                 {filteredProducts.map((product) => (
                   <div key={product.id} className="animate-fade-in hover-scale">
                     <ProductCard product={product} />
@@ -310,7 +329,11 @@ const Shop = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
+              <div 
+                className="text-center py-16"
+                role="region"
+                aria-label="No products found"
+              >
                 <img 
                   src={emptyCart} 
                   alt="No products found" 
@@ -322,7 +345,12 @@ const Shop = () => {
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                   We couldn't find any products matching your criteria. Try adjusting your filters or search terms.
                 </p>
-                <Button variant="outline" onClick={clearFilters} className="px-8">
+                <Button 
+                  variant="outline" 
+                  onClick={clearFilters} 
+                  className="px-8"
+                  aria-label="Clear all filters"
+                >
                   Clear All Filters
                 </Button>
               </div>

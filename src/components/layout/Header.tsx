@@ -1,13 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, ChevronDown, ChevronRight, Heart, ShoppingCart, Plus } from "lucide-react";
 import { Button } from "@/components/ui/enhanced-button";
 import { Input } from "@/components/ui/input";
+import { usePageStore } from "@/store/pageStore";
+import { useFavoriteStore } from "@/store/favoriteStore";
+import { useCartStore } from "@/store/cartStore";
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [hoveredPage, setHoveredPage] = useState<string | null>(null);
+  const [isShopHovered, setIsShopHovered] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [expandedMobileItems, setExpandedMobileItems] = useState<string[]>([]);
+  const shopDropdownRef = useRef<HTMLDivElement>(null);
+  const shopButtonRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const location = useLocation();
+  const { fetchPages, getMainPagesWithChildren } = usePageStore();
+  const favoriteStore = useFavoriteStore();
+  const cartStore = useCartStore();
+
+  useEffect(() => {
+    fetchPages();
+  }, [fetchPages]);
+  
+  // Handle click outside to close dropdown and search
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        shopDropdownRef.current && 
+        shopButtonRef.current &&
+        !shopDropdownRef.current.contains(event.target as Node) &&
+        !shopButtonRef.current.contains(event.target as Node)
+      ) {
+        handleShopMouseLeave();
+      }
+      
+      // Close search when clicking outside
+      const searchButton = document.querySelector('[data-search-button]');
+      if (
+        isSearchOpen &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node) &&
+        searchButton && !searchButton.contains(event.target as Node)
+      ) {
+        setIsSearchOpen(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSearchOpen]);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -15,18 +65,53 @@ const Header = () => {
     { name: "Contact", path: "/contact" },
   ];
 
+  const mainPagesWithChildren = getMainPagesWithChildren();
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       window.location.href = `/shop?search=${encodeURIComponent(searchQuery)}`;
     }
   };
+  
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    // Focus the input when search is opened
+    if (!isSearchOpen) {
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
+  };
+  
+  const handleShopMouseEnter = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setIsShopHovered(true);
+  };
+  
+  const handleShopMouseLeave = () => {
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsShopHovered(false);
+      closeTimeoutRef.current = null;
+    }, 300); // 300ms delay before closing the dropdown
+  };
+  
+  const toggleMobileItem = (itemId: string) => {
+    setExpandedMobileItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId) 
+        : [...prev, itemId]
+    );
+  };
 
   return (
     <header className="bg-background shadow-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+          {/* Logo - Left */}
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png" 
@@ -35,35 +120,14 @@ const Header = () => {
             />
           </Link>
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <form onSubmit={handleSearch} className="flex w-full">
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="rounded-r-none border-r-0"
-              />
-              <Button 
-                type="submit" 
-                variant="store" 
-                size="default"
-                className="rounded-l-none"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
-
-          {/* Navigation - Desktop */}
-          <div className="hidden lg:flex items-center space-x-6">
-            <nav className="flex space-x-6">
+          {/* Navigation - Desktop - Center */}
+          <div className="hidden lg:flex items-center justify-center flex-1">
+            <nav className="flex space-x-6 items-center">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                  className={`text-sm font-medium transition-colors hover:text-primary uppercase ${
                     location.pathname === item.path
                       ? "text-primary"
                       : "text-muted-foreground"
@@ -72,49 +136,116 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              
+              {/* Dynamic Pages Navigation removed - pages now only in Shop dropdown */}
+              
+              {/* Shop Button */}
+              <div 
+                className="relative"
+                ref={shopButtonRef}
+                onMouseEnter={handleShopMouseEnter}
+                onMouseLeave={handleShopMouseLeave}
+              >
+                <div className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary cursor-pointer uppercase">
+                  Shop
+                  <ChevronDown className="ml-1 h-3 w-3" />
+                </div>
+              </div>
             </nav>
-            <Link to="/shop">
-              <Button variant="store" size="sm" className="ml-4">
-                Shop
-              </Button>
-            </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          {/* Right Side - Search, Favorites, Cart */}
+          <div className="flex items-center space-x-4">
+            {/* Search Button and Input - Only visible on desktop */}
+            <div className="relative hidden lg:block">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative" 
+                onClick={toggleSearch}
+                data-search-button
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+              
+              {isSearchOpen && (
+                <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-2">
+                  <form onSubmit={handleSearch} className="flex">
+                    <div className="relative flex items-center w-full">
+                      <Input
+                        ref={searchInputRef}
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pr-12 rounded-md border focus:border-primary"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSearch(e);
+                          }
+                        }}
+                      />
+                      <Button 
+                        type="submit" 
+                        variant="default" 
+                        size="icon"
+                        className="absolute right-1 h-8 w-8 bg-primary text-white rounded-md"
+                      >
+                        <Search className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+            
+            {/* Favorites Button - Only shown when there are favorites */}
+            {favoriteStore.getFavoritesCount() > 0 && (
+              <Link to="/favorites">
+                <Button variant="ghost" size="icon" className="relative">
+                  <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {favoriteStore.getFavoritesCount()}
+                  </span>
+                </Button>
+              </Link>
+            )}
+            
+            {/* Cart Button */}
+            <Link to="/cart">
+              <Button variant="ghost" size="icon" className="relative">
+                {cartStore.getCartCount() > 0 ? (
+                  <>
+                    <ShoppingCart className="h-5 w-5 text-primary" />
+                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartStore.getCartCount()}
+                    </span>
+                  </>
+                ) : (
+                  <ShoppingCart className="h-5 w-5" />
+                )}
+              </Button>
+             </Link>
+            
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        <div className="md:hidden pb-4">
-          <form onSubmit={handleSearch} className="flex">
-            <Input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-r-none border-r-0"
-            />
-            <Button 
-              type="submit" 
-              variant="store" 
-              size="default"
-              className="rounded-l-none"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
-          </form>
-        </div>
+
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="lg:hidden pb-4 space-y-2 border-t pt-4">
+        <div className="lg:hidden">
+          <nav 
+            className={`pb-4 space-y-2 border-t pt-4 ${isMenuOpen ? 'animate-slide-in-from-left' : 'hidden'}`}
+          >
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -129,16 +260,114 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/shop"
-              className="block py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <Button variant="store" size="sm" className="w-full">
-                Shop
-              </Button>
-            </Link>
+            
+            {/* Mobile Pages Navigation with dropdown arrows */}
+            
+            <div className="block py-2">
+              <div className="space-y-1">
+                <div 
+                  className="py-2 text-sm font-medium text-muted-foreground flex items-center justify-between cursor-pointer"
+                  onClick={() => toggleMobileItem('shop')}
+                >
+                  <span>Shop</span>
+                  <ChevronRight 
+                    className={`h-4 w-4 transition-transform ${expandedMobileItems.includes('shop') ? 'rotate-90' : ''}`} 
+                  />
+                </div>
+                
+                {expandedMobileItems.includes('shop') && mainPagesWithChildren.map((mainPage) => (
+                  <div key={mainPage.id} className="space-y-1">
+                    <div 
+                      className="py-2 pl-4 text-sm font-medium text-muted-foreground flex items-center justify-between cursor-pointer"
+                      onClick={() => toggleMobileItem(mainPage.id)}
+                    >
+                      <span>{mainPage.name}</span>
+                      <ChevronRight 
+                        className={`h-4 w-4 transition-transform ${expandedMobileItems.includes(mainPage.id) ? 'rotate-90' : ''}`} 
+                      />
+                    </div>
+                    
+                    {expandedMobileItems.includes(mainPage.id) && mainPage.children && mainPage.children.map((subPage) => (
+                      <Link
+                        key={subPage.id}
+                        to={`/${mainPage.slug}/${subPage.slug}`}
+                        className="block py-2 pl-8 text-sm text-muted-foreground hover:text-primary transition-colors relative group"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        <span className="group-hover:text-primary group-hover:translate-x-1 transition-all duration-200 inline-block">
+                          {subPage.name}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Mobile Search Bar */}
+            <div className="py-2 mt-4 border-t pt-4">
+              <form onSubmit={handleSearch} className="flex items-center">
+                <div className="relative flex-1">
+                  <Input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pr-10 rounded-md border focus:border-primary"
+                  />
+                  <Button 
+                    type="submit" 
+                    variant="default" 
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 bg-primary text-white rounded-md"
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
+              </form>
+            </div>
           </nav>
+        </div>
+
+        {/* Full-page Shop dropdown menu */}
+        {isShopHovered && (
+          <div 
+            ref={shopDropdownRef}
+            className="fixed left-0 w-screen bg-white border-b border-gray-200 shadow-lg z-50" 
+            style={{ top: '4rem', width: '100vw' }}
+            onMouseEnter={handleShopMouseEnter}
+            onMouseLeave={handleShopMouseLeave}
+          >
+            <div className="container mx-auto px-4 py-8 flex justify-center">
+              <div className="grid grid-cols-4 gap-12 max-w-5xl">
+                {/* Main categories view */}
+                {mainPagesWithChildren.map((mainPage) => (
+                  <div key={mainPage.id} className="space-y-4">
+                    <div className="text-2xl font-semibold text-primary border-b pb-2 mb-2 pointer-events-none">
+                      {mainPage.name}
+                    </div>
+                    {mainPage.children && mainPage.children.length > 0 ? (
+                      <div className="space-y-2">
+                        {mainPage.children.map((subPage) => (
+                          <Link
+                            key={subPage.id}
+                            to={`/${mainPage.slug}/${subPage.slug}`}
+                            className="block text-lg text-muted-foreground hover:text-primary transition-colors relative group"
+                          >
+                            <span className="group-hover:text-primary group-hover:translate-x-1 transition-all duration-200 inline-block">
+                              {subPage.name}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">No subcategories available</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </header>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProductStore } from '@/store/productStore';
+import { useCartStore } from '@/store/cartStore';
+import { useFavoriteStore } from '@/store/favoriteStore';
 import { Button } from '@/components/ui/enhanced-button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,9 +13,12 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getProductById } = useProductStore();
+  const { addToCart } = useCartStore();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavoriteStore();
   const { toast } = useToast();
 
   const product = id ? getProductById(id) : undefined;
+  const isProductFavorite = product ? isFavorite(product.id) : false;
 
   if (!product) {
     return (
@@ -53,6 +58,36 @@ const ProductDetail = () => {
     }
   };
 
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart.`,
+      });
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    if (!product) return;
+    
+    if (isProductFavorite) {
+      removeFromFavorites(product.id);
+      toast({
+        title: "Removed from favorites",
+        description: `${product.name} has been removed from your favorites.`,
+        variant: "default"
+      });
+    } else {
+      addToFavorites(product);
+      toast({
+        title: "Added to favorites",
+        description: `${product.name} has been added to your favorites.`,
+        variant: "default"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
@@ -73,7 +108,7 @@ const ProductDetail = () => {
               <img
                 src={product.images && product.images.length > 0 ? product.images[0] : product.image_url}
                 alt={product.name}
-                className="w-full aspect-square object-cover"
+                className="w-full aspect-square object-contain"
                 id="main-product-image"
               />
               {!product.in_stock && (
@@ -104,7 +139,7 @@ const ProductDetail = () => {
                       <img
                         src={imageUrl}
                         alt={`${product.name} ${index + 1}`}
-                        className="w-full aspect-square object-cover"
+                        className="w-full aspect-square object-contain"
                       />
                       <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors duration-200"></div>
                     </div>
@@ -162,6 +197,12 @@ const ProductDetail = () => {
                       <span className="ml-2 text-foreground">{product.variant}</span>
                     </div>
                   )}
+                  {product.size && (
+                    <div>
+                      <span className="font-medium text-muted-foreground">Size:</span>
+                      <span className="ml-2 text-foreground">{product.size}</span>
+                    </div>
+                  )}
                   <div>
                     <span className="font-medium text-muted-foreground">Availability:</span>
                     <span className="ml-2 text-foreground">
@@ -177,7 +218,7 @@ const ProductDetail = () => {
               <Button
                 variant="store"
                 size="lg"
-                className="flex-1 hover-scale"
+                className="flex-1 hover-scale py-6 text-lg"
                 onClick={() => handleWhatsAppOrder(product)}
                 disabled={!product.in_stock}
               >
@@ -186,7 +227,35 @@ const ProductDetail = () => {
                 </svg>
                 {product.in_stock ? 'Buy with WhatsApp' : 'Out of Stock'}
               </Button>
-              <Button variant="outline" size="lg" onClick={handleShare} className="hover-scale">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleAddToCart}
+                disabled={!product.in_stock}
+                className="flex-1 hover-scale"
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Add to Cart
+              </Button>
+            </div>
+            
+            {/* Share and Favorites */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={handleToggleFavorite} 
+                className="flex-1 hover-scale"
+              >
+                <Heart className={`mr-2 h-4 w-4 ${isProductFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                {isProductFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={handleShare} 
+                className="flex-1 hover-scale"
+              >
                 <Share2 className="mr-2 h-4 w-4" />
                 Share
               </Button>

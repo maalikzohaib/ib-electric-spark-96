@@ -16,6 +16,7 @@ export const useAdminStore = create<AdminStore>()((set) => ({
   login: (username: string, password: string) => {
     // Only allow login with exact credentials
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      console.log('✅ Admin authenticated successfully');
       set({ isAuthenticated: true });
       return true;
     }
@@ -23,6 +24,7 @@ export const useAdminStore = create<AdminStore>()((set) => ({
   },
   
   logout: () => {
+    console.log('✅ Admin logged out');
     set({ isAuthenticated: false });
   },
 }));

@@ -1,0 +1,179 @@
+{
+  "tech_stacks": {
+    "frontend": {
+      "framework": "React",
+      "language": "TypeScript",
+      "ui_library": "Custom UI components with Tailwind CSS",
+      "state_management": "Zustand",
+      "routing": "React Router"
+    },
+    "backend": {
+      "database": "Supabase",
+      "api": "Supabase API"
+    },
+    "build_tools": {
+      "bundler": "Vite"
+    }
+  },
+  "features": [
+    {
+      "name": "Product Browsing",
+      "description": "Users can browse products with filtering and search capabilities",
+      "components": ["Shop.tsx", "ProductCard.tsx"]
+    },
+    {
+      "name": "Product Details",
+      "description": "Users can view detailed information about products",
+      "components": ["ProductDetail.tsx"]
+    },
+    {
+      "name": "Shopping Cart",
+      "description": "Users can add products to cart and manage quantities",
+      "components": ["Cart.tsx", "cartStore.ts"]
+    },
+    {
+      "name": "Favorites",
+      "description": "Users can mark products as favorites and view them later",
+      "components": ["Favorites.tsx", "favoriteStore.ts", "ProductCard.tsx"]
+    },
+    {
+      "name": "Admin Dashboard",
+      "description": "Admins can view statistics and manage products",
+      "components": ["AdminDashboard.tsx", "AdminProducts.tsx"]
+    },
+    {
+      "name": "Admin Product Management",
+      "description": "Admins can add, edit, and delete products",
+      "components": ["AddProduct.tsx", "EditProduct.tsx", "AdminProducts.tsx"]
+    },
+    {
+      "name": "Admin Category Management",
+      "description": "Admins can manage product categories",
+      "components": ["Categories.tsx"]
+    },
+    {
+      "name": "Admin Page Management",
+      "description": "Admins can manage site pages",
+      "components": ["AdminPages.tsx", "pageStore.ts"]
+    },
+    {
+      "name": "Admin Featured Products",
+      "description": "Admins can select products to be featured on the homepage",
+      "components": ["FeaturedProducts.tsx"]
+    },
+    {
+      "name": "Authentication",
+      "description": "Users and admins can log in to access restricted features",
+      "components": ["AdminLogin.tsx", "adminStore.ts"]
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "component": "Home",
+      "description": "Homepage with featured products"
+    },
+    {
+      "path": "/shop",
+      "component": "Shop",
+      "description": "Product listing page with filters"
+    },
+    {
+      "path": "/products/:id",
+      "component": "ProductDetail",
+      "description": "Detailed view of a specific product"
+    },
+    {
+      "path": "/favorites",
+      "component": "Favorites",
+      "description": "User's favorite products"
+    },
+    {
+      "path": "/cart",
+      "component": "Cart",
+      "description": "Shopping cart page"
+    },
+    {
+      "path": "/about",
+      "component": "About",
+      "description": "About page"
+    },
+    {
+      "path": "/contact",
+      "component": "Contact",
+      "description": "Contact page"
+    },
+    {
+      "path": "/admin",
+      "component": "AdminDashboard",
+      "description": "Admin dashboard"
+    },
+    {
+      "path": "/admin/products",
+      "component": "AdminProducts",
+      "description": "Admin product management"
+    },
+    {
+      "path": "/admin/products/add",
+      "component": "AddProduct",
+      "description": "Add new product form"
+    },
+    {
+      "path": "/admin/products/edit/:id",
+      "component": "EditProduct",
+      "description": "Edit existing product form"
+    },
+    {
+      "path": "/admin/featured",
+      "component": "FeaturedProducts",
+      "description": "Manage featured products"
+    },
+    {
+      "path": "/admin/categories",
+      "component": "Categories",
+      "description": "Manage product categories"
+    },
+    {
+      "path": "/admin/pages",
+      "component": "AdminPages",
+      "description": "Manage site pages"
+    },
+    {
+      "path": "/admin/login",
+      "component": "AdminLogin",
+      "description": "Admin login page"
+    }
+  ],
+  "stores": [
+    {
+      "name": "productStore",
+      "description": "Manages product data and operations",
+      "state": ["products", "categories", "featuredProducts"],
+      "actions": ["fetchProducts", "createProduct", "updateProduct", "deleteProduct"]
+    },
+    {
+      "name": "cartStore",
+      "description": "Manages shopping cart state",
+      "state": ["items"],
+      "actions": ["addToCart", "removeFromCart", "updateQuantity", "clearCart", "getCartCount", "getTotalPrice"]
+    },
+    {
+      "name": "favoriteStore",
+      "description": "Manages user favorites",
+      "state": ["favorites"],
+      "actions": ["addToFavorites", "removeFromFavorites", "isFavorite", "clearFavorites", "getFavoritesCount"]
+    },
+    {
+      "name": "pageStore",
+      "description": "Manages site pages",
+      "state": ["pages", "mainPages"],
+      "actions": ["fetchPages", "createMainPage", "createSubPage", "updatePage", "deletePage", "reorderPages"]
+    },
+    {
+      "name": "adminStore",
+      "description": "Manages admin authentication",
+      "state": ["isAuthenticated", "user"],
+      "actions": ["login", "logout", "checkAuth"]
+    }
+  ]
+}

@@ -97,6 +97,44 @@ export type Database = {
         }
         Relationships: []
       }
+      pages: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          name: string
+          parent_id: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           brand: string | null
@@ -110,6 +148,7 @@ export type Database = {
           images: string[] | null
           in_stock: boolean | null
           name: string
+          page_id: string | null
           price: number
           updated_at: string
           variant: string | null
@@ -126,6 +165,7 @@ export type Database = {
           images?: string[] | null
           in_stock?: boolean | null
           name: string
+          page_id?: string | null
           price: number
           updated_at?: string
           variant?: string | null
@@ -142,6 +182,7 @@ export type Database = {
           images?: string[] | null
           in_stock?: boolean | null
           name?: string
+          page_id?: string | null
           price?: number
           updated_at?: string
           variant?: string | null
@@ -152,6 +193,13 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
             referencedColumns: ["id"]
           },
         ]

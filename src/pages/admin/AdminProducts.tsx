@@ -58,15 +58,15 @@ const AdminProducts = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Products</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Products</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your product catalog
           </p>
         </div>
-        <Link to="/admin/add-product">
-          <Button variant="store">
+        <Link to="/admin/add-product" className="w-full sm:w-auto">
+          <Button variant="store" className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Add Product
           </Button>
@@ -76,17 +76,24 @@ const AdminProducts = () => {
       {/* Filters */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <form onSubmit={handleSearch} className="flex flex-1 gap-2">
-              <Input
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
-              />
-              <Button type="submit" variant="outline">
-                <Search className="h-4 w-4" />
-              </Button>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <form onSubmit={handleSearch} className="flex flex-1">
+              <div className="relative flex items-center w-full">
+                <Input
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pr-12 border focus:border-primary rounded-md"
+                />
+                <Button 
+                  type="submit" 
+                  variant="default" 
+                  size="icon"
+                  className="absolute right-1 h-8 w-8 bg-primary text-white rounded-md"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+              </div>
             </form>
             
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -107,7 +114,7 @@ const AdminProducts = () => {
       </Card>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
         {filteredProducts.map((product) => (
           <Card key={product.id} className="overflow-hidden hover:shadow-elegant transition-all duration-300">
             <div className="relative">
@@ -142,26 +149,29 @@ const AdminProducts = () => {
                 </div>
               </div>
               
-              <div className="flex gap-2">
-                <Link to={`/product/${product.id}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Eye className="h-3 w-3 mr-1" />
-                    View
-                  </Button>
-                </Link>
-                <Link to={`/admin/edit-product/${product.id}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Edit className="h-3 w-3 mr-1" />
-                    Edit
-                  </Button>
-                </Link>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
+                <div className="flex gap-2 sm:gap-2">
+                  <Link to={`/product/${product.id}`} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Eye className="h-3 w-3 mr-1" />
+                      View
+                    </Button>
+                  </Link>
+                  <Link to={`/admin/edit-product/${product.id}`} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Edit className="h-3 w-3 mr-1" />
+                      Edit
+                    </Button>
+                  </Link>
+                </div>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => handleDelete(product.id, product.name)}
-                  className="text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive mt-2 sm:mt-0 sm:w-auto"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  <span className="sm:hidden">Delete</span>
                 </Button>
               </div>
             </CardContent>

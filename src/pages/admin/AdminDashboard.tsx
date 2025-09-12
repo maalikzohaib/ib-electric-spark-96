@@ -30,23 +30,23 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your electrical products and store operations
           </p>
         </div>
-        <Link to="/admin/add-product">
-          <Button variant="store" size="lg">
-            <Plus className="mr-2 h-5 w-5" />
+        <Link to="/admin/add-product" className="w-full sm:w-auto">
+          <Button variant="store" size="sm" className="w-full sm:w-auto sm:size-lg">
+            <Plus className="mr-1 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5" />
             Add Product
           </Button>
         </Link>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Recent Products and Featured Products */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
         {/* Recent Products */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
@@ -115,7 +115,7 @@ const AdminDashboard = () => {
           <CardContent className="space-y-4">
             {recentProducts.length > 0 ? (
               recentProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div key={product.id} className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                   <img
                     src={product.image_url}
                     alt={product.name}
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
           <CardContent className="space-y-4">
             {featuredProducts.length > 0 ? (
               featuredProducts.map((product) => (
-                <div key={product.id} className="flex items-center gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
+                <div key={product.id} className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 border rounded-lg hover:bg-muted/50 transition-colors">
                   <img
                     src={product.image_url}
                     alt={product.name}
@@ -196,7 +196,7 @@ const AdminDashboard = () => {
           <CardTitle>Quick Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <Link to="/admin/add-product">
               <Button variant="outline" className="w-full h-20 flex flex-col gap-2">
                 <Plus className="h-6 w-6" />
