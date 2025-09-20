@@ -82,6 +82,16 @@ const Footer = () => {
         <div className="border-t mt-8 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
             © 2024 IB Electric Store. All rights reserved.
+            <span className="mx-2">•</span>
+            Developed by{' '}
+            <a
+              href="https://wa.me/923259885086"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Muhammad Zohaib
+            </a>
           </p>
         </div>
       </div>
@@ -90,3 +100,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
