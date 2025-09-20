@@ -22,6 +22,7 @@ const Header = () => {
   const shopDropdownRef = useRef<HTMLDivElement>(null);
   const shopButtonRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   const location = useLocation();
@@ -47,14 +48,11 @@ const Header = () => {
       }
       
       // Close search when clicking outside
-      const searchButton = document.querySelector('[data-search-button]');
-      if (
-        isSearchOpen &&
-        searchInputRef.current &&
-        !searchInputRef.current.contains(event.target as Node) &&
-        searchButton && !searchButton.contains(event.target as Node)
-      ) {
-        setIsSearchOpen(false);
+      if (isSearchOpen) {
+        const container = searchContainerRef.current;
+        if (container && !container.contains(event.target as Node)) {
+          setIsSearchOpen(false);
+        }
       }
     };
     
@@ -131,8 +129,72 @@ const Header = () => {
   return (
     <header className="bg-background shadow-card border-b sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo - Left */}
+        {
+          isSearchOpen && (
+            <div className="flex items-center h-16 animate-slide-down-quick">
+              <div ref={searchContainerRef} className="w-full relative">
+              <form onSubmit={handleSearch} className="w-full">
+                <div className="relative">
+                  <Input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-12 w-full pr-12 rounded-md border focus:border-input focus-visible:ring-0 focus-visible:ring-offset-0"
+                    onFocus={() => setShowSuggestions(searchQuery.trim().length > 0)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+                    onKeyDown={(e) => {
+                      const hasItems = computedSuggestions.length > 0;
+                      if (!hasItems) {
+                        if (e.key === 'Enter') handleSearch(e);
+                        return;
+                      }
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setHighlightedIndex((prev) => Math.min(prev + 1, computedSuggestions.length - 1));
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                      } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (highlightedIndex >= 0) {
+                          const sel = computedSuggestions[highlightedIndex];
+                          window.location.href = `/product/${sel.id}`;
+                        } else {
+                          handleSearch(e);
+                        }
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false);
+                        setIsSearchOpen(false);
+                      }
+                    }}
+                  />
+                  <Button 
+                    type="submit" 
+                    variant="default" 
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 bg-primary text-white rounded-md"
+                  >
+                    <Search className="h-5 w-5" />
+                  </Button>
+                  <SearchSuggestions
+                    items={computedSuggestions}
+                    visible={showSuggestions}
+                    highlightedIndex={highlightedIndex}
+                    onHover={setHighlightedIndex}
+                    onSelect={(item) => {
+                      window.location.href = `/product/${item.id}`;
+                    }}
+                  />
+                </div>
+              </form>
+              </div>
+            </div>
+        )}
+        {!isSearchOpen && (
+          <div className="flex items-center justify-between h-16">
+            {/* Logo - Left */}
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png" 
@@ -189,65 +251,7 @@ const Header = () => {
                 <Search className="h-5 w-5" />
               </Button>
               
-              {isSearchOpen && (
-                <div className="absolute right-0 top-full mt-2 w-72 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-2">
-                  <form onSubmit={handleSearch} className="flex">
-                    <div className="relative flex items-center w-full">
-                      <Input
-                        ref={searchInputRef}
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pr-12 rounded-md border focus:border-primary"
-                        onFocus={() => setShowSuggestions(searchQuery.trim().length > 0)}
-                        onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
-                        onKeyDown={(e) => {
-                          const hasItems = computedSuggestions.length > 0;
-                          if (!hasItems) {
-                            if (e.key === 'Enter') handleSearch(e);
-                            return;
-                          }
-                          if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            setHighlightedIndex((prev) => Math.min(prev + 1, computedSuggestions.length - 1));
-                          } else if (e.key === 'ArrowUp') {
-                            e.preventDefault();
-                            setHighlightedIndex((prev) => Math.max(prev - 1, 0));
-                          } else if (e.key === 'Enter') {
-                            e.preventDefault();
-                            if (highlightedIndex >= 0) {
-                              const sel = computedSuggestions[highlightedIndex];
-                              window.location.href = `/product/${sel.id}`;
-                            } else {
-                              handleSearch(e);
-                            }
-                          } else if (e.key === 'Escape') {
-                            setShowSuggestions(false);
-                          }
-                        }}
-                      />
-                      <Button 
-                        type="submit" 
-                        variant="default" 
-                        size="icon"
-                        className="absolute right-1 h-8 w-8 bg-primary text-white rounded-md"
-                      >
-                        <Search className="h-4 w-4" />
-                      </Button>
-                      <SearchSuggestions
-                        items={computedSuggestions}
-                        visible={showSuggestions}
-                        highlightedIndex={highlightedIndex}
-                        onHover={setHighlightedIndex}
-                        onSelect={(item) => {
-                          window.location.href = `/product/${item.id}`;
-                        }}
-                      />
-                    </div>
-                  </form>
-                </div>
-              )}
+              {/* inline dropdown removed; full-width bar appears instead */}
             </div>
             
             {/* Favorites Button - Only shown when there are favorites */}
@@ -288,7 +292,8 @@ const Header = () => {
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
-        </div>
+          </div>
+        )}
 
 
 

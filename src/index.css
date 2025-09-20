@@ -130,3 +130,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Quick, smooth slide-down for header search */
+@layer utilities {
+  @keyframes slide-down-quick {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-slide-down-quick {
+    animation: slide-down-quick 180ms ease-out both;
+  }
+}
