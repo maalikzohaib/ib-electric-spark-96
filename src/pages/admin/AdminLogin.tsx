@@ -65,7 +65,7 @@ const AdminLogin = () => {
           </div>
           <CardTitle className="text-xl sm:text-2xl">Admin Login</CardTitle>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Access the IB Electric Store admin panel
+            Access the Ijaz Brothers Electric Store admin panel
           </p>
         </CardHeader>
         <CardContent>

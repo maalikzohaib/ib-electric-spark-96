@@ -106,7 +106,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               
               <img 
                 src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png" 
-                alt="IB Electric Store" 
+                alt="Ijaz Brothers Electric Store" 
                 className="h-8 w-auto"
               />
               <h1 className="text-lg md:text-xl font-bold text-foreground">Admin</h1>

@@ -22,7 +22,7 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Choose IB Electric Store?
+              Why Choose Ijaz Brothers Electric Store?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               We provide the best electrical solutions with unmatched quality and service

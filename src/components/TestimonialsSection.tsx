@@ -16,7 +16,7 @@ const TestimonialsSection = () => {
       role: "Interior Designer",
       avatar: "FK",
       rating: 5,
-      content: "IB Electric Store has the best LED bulbs in the market. Their energy-efficient solutions have helped me create amazing lighting designs for my clients."
+      content: "Ijaz Brothers Electric Store has the best LED bulbs in the market. Their energy-efficient solutions have helped me create amazing lighting designs for my clients."
     },
     {
       name: "Mohammad Ali",

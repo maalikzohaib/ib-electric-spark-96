@@ -32,7 +32,7 @@ const About = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">About IB Electric Store</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">About Ijaz Brothers Electric Store</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Your trusted partner for quality electrical solutions since our establishment. 
             We specialize in providing premium fans and bulbs for homes and businesses.
@@ -99,7 +99,7 @@ const About = () => {
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-4">Our Story</h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                IB Electric Store was founded with a simple mission: to provide high-quality electrical 
+                Ijaz Brothers Electric Store was founded with a simple mission: to provide high-quality electrical 
                 products at competitive prices with exceptional customer service. Over the years, we have 
                 built a reputation as a reliable source for ceiling fans and LED bulbs in our community.
               </p>

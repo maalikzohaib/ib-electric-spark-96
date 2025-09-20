@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="space-y-4">
             <img 
               src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png" 
-              alt="IB Electric Store" 
+              alt="Ijaz Brothers Electric Store" 
               className="h-12 w-auto"
             />
             <p className="text-muted-foreground text-sm">
@@ -81,7 +81,7 @@ const Footer = () => {
 
         <div className="border-t mt-8 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © 2024 IB Electric Store. All rights reserved.
+            © 2024 Ijaz Brothers Electric Store. All rights reserved.
             <span className="mx-2">•</span>
             Developed by{' '}
             <a
@@ -100,4 +100,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

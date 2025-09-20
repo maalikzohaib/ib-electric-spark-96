@@ -1,8 +1,8 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* IB Electric Store Design System - Clean white theme with blue accents */
+/* Ijaz Brothers Electric Store Design System - Clean white theme with blue accents */
 
 @layer base {
   :root {
@@ -141,3 +141,4 @@
     animation: slide-down-quick 180ms ease-out both;
   }
 }
+
