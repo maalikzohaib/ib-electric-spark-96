@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import { Button } from "@/components/ui/enhanced-button";
