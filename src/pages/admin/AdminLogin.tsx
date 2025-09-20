@@ -90,7 +90,7 @@ const AdminLogin = () => {
             
             <div className="mt-4">
               <p className="text-xs text-muted-foreground font-medium">
-                Private
+                admin only
               </p>
             </div>
           </div>
