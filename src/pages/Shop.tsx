@@ -4,6 +4,7 @@ import { useProductStore } from "@/store/productStore";
 import { useProductData } from "@/hooks/useProductData";
 import ProductCard from "@/components/ProductCard";
 import { Input } from "@/components/ui/input";
+import SearchSuggestions from "@/components/ui/search-suggestions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,6 +29,8 @@ const Shop = () => {
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   // Update filters when URL params change
   useEffect(() => {
@@ -60,6 +63,19 @@ const Shop = () => {
 
     return matchesSearch && matchesCategory && matchesBrand && matchesAvailability && matchesPrice;
   });
+
+  const searchQuery = filters.search.trim().toLowerCase();
+  const suggestions = searchQuery
+    ? products.filter(p =>
+        p.name.toLowerCase().includes(searchQuery) || (p.brand || '').toLowerCase().includes(searchQuery)
+      ).slice(0, 8)
+    : [];
+
+  useEffect(() => {
+    const hasQuery = filters.search.trim().length > 0;
+    setShowSuggestions(hasQuery);
+    if (!hasQuery) setHighlightedIndex(-1);
+  }, [filters.search]);
 
   const updateFilter = (key: string, value: string) => {
     const newParams = new URLSearchParams(searchParams);
@@ -115,6 +131,24 @@ const Shop = () => {
                   value={filters.search}
                   onChange={(e) => updateFilter('search', e.target.value)}
                   className="pr-12 h-12 text-base border focus:border-primary shadow-md rounded-md"
+                  onFocus={() => setShowSuggestions(suggestions.length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+                  onKeyDown={(e) => {
+                    if (suggestions.length === 0) return;
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+                    } else if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                    } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                      e.preventDefault();
+                      const sel = suggestions[highlightedIndex];
+                      window.location.href = `/product/${sel.id}`;
+                    } else if (e.key === 'Escape') {
+                      setShowSuggestions(false);
+                    }
+                  }}
                 />
                 <Button 
                   type="submit" 
@@ -124,6 +158,15 @@ const Shop = () => {
                 >
                   <Search className="h-5 w-5" />
                 </Button>
+                <SearchSuggestions 
+                  items={suggestions}
+                  visible={showSuggestions}
+                  highlightedIndex={highlightedIndex}
+                  onHover={setHighlightedIndex}
+                  onSelect={(item) => {
+                    window.location.href = `/product/${item.id}`;
+                  }}
+                />
               </div>
             </form>
           </div>

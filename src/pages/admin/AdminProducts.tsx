@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useProductStore } from "@/store/productStore";
 import { Button } from "@/components/ui/enhanced-button";
 import { Input } from "@/components/ui/input";
+import SearchSuggestions from "@/components/ui/search-suggestions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,6 +23,14 @@ const AdminProducts = () => {
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category') || 'all');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  useEffect(() => {
+    const hasQuery = searchQuery.trim().length > 0;
+    setShowSuggestions(hasQuery);
+    if (!hasQuery) setHighlightedIndex(-1);
+  }, [searchQuery]);
 
   // Filter products
   const filteredProducts = products.filter(product => {
@@ -84,6 +93,25 @@ const AdminProducts = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-12 border focus:border-primary rounded-md"
+                  onFocus={() => setShowSuggestions(filteredProducts.slice(0, 8).length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+                  onKeyDown={(e) => {
+                    const suggestions = filteredProducts.slice(0, 8);
+                    if (suggestions.length === 0) return;
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+                    } else if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                    } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                      e.preventDefault();
+                      const sel = suggestions[highlightedIndex];
+                      window.location.href = `/product/${sel.id}`;
+                    } else if (e.key === 'Escape') {
+                      setShowSuggestions(false);
+                    }
+                  }}
                 />
                 <Button 
                   type="submit" 
@@ -93,6 +121,15 @@ const AdminProducts = () => {
                 >
                   <Search className="h-4 w-4" />
                 </Button>
+                <SearchSuggestions
+                  items={filteredProducts.slice(0, 8)}
+                  visible={showSuggestions}
+                  highlightedIndex={highlightedIndex}
+                  onHover={setHighlightedIndex}
+                  onSelect={(item) => {
+                    window.location.href = `/product/${item.id}`;
+                  }}
+                />
               </div>
             </form>
             

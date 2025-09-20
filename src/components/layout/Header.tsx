@@ -7,6 +7,8 @@ import { usePageStore } from "@/store/pageStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { useCartStore } from "@/store/cartStore";
 import { cn } from "@/lib/utils";
+import { useProductStore } from "@/store/productStore";
+import SearchSuggestions from "@/components/ui/search-suggestions";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,6 +16,8 @@ const Header = () => {
   const [hoveredPage, setHoveredPage] = useState<string | null>(null);
   const [isShopHovered, setIsShopHovered] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [expandedMobileItems, setExpandedMobileItems] = useState<string[]>([]);
   const shopDropdownRef = useRef<HTMLDivElement>(null);
   const shopButtonRef = useRef<HTMLDivElement>(null);
@@ -24,6 +28,7 @@ const Header = () => {
   const { fetchPages, getMainPagesWithChildren } = usePageStore();
   const favoriteStore = useFavoriteStore();
   const cartStore = useCartStore();
+  const { products } = useProductStore();
 
   useEffect(() => {
     fetchPages();
@@ -73,6 +78,22 @@ const Header = () => {
       window.location.href = `/shop?search=${encodeURIComponent(searchQuery)}`;
     }
   };
+
+  const computedSuggestions = (() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [] as { id: string; name: string; brand?: string; image_url?: string; price?: number }[];
+    const matches = products.filter(p =>
+      p.name.toLowerCase().includes(q) || (p.brand || '').toLowerCase().includes(q)
+    );
+    return matches.slice(0, 8);
+  })();
+
+  useEffect(() => {
+    // Show suggestion container as soon as user types; component hides itself if no items
+    const hasQuery = searchQuery.trim().length > 0;
+    setShowSuggestions(hasQuery);
+    if (!hasQuery) setHighlightedIndex(-1);
+  }, [searchQuery]);
   
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
@@ -179,9 +200,30 @@ const Header = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pr-12 rounded-md border focus:border-primary"
+                        onFocus={() => setShowSuggestions(searchQuery.trim().length > 0)}
+                        onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSearch(e);
+                          const hasItems = computedSuggestions.length > 0;
+                          if (!hasItems) {
+                            if (e.key === 'Enter') handleSearch(e);
+                            return;
+                          }
+                          if (e.key === 'ArrowDown') {
+                            e.preventDefault();
+                            setHighlightedIndex((prev) => Math.min(prev + 1, computedSuggestions.length - 1));
+                          } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                          } else if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (highlightedIndex >= 0) {
+                              const sel = computedSuggestions[highlightedIndex];
+                              window.location.href = `/product/${sel.id}`;
+                            } else {
+                              handleSearch(e);
+                            }
+                          } else if (e.key === 'Escape') {
+                            setShowSuggestions(false);
                           }
                         }}
                       />
@@ -193,6 +235,15 @@ const Header = () => {
                       >
                         <Search className="h-4 w-4" />
                       </Button>
+                      <SearchSuggestions
+                        items={computedSuggestions}
+                        visible={showSuggestions}
+                        highlightedIndex={highlightedIndex}
+                        onHover={setHighlightedIndex}
+                        onSelect={(item) => {
+                          window.location.href = `/product/${item.id}`;
+                        }}
+                      />
                     </div>
                   </form>
                 </div>
@@ -314,6 +365,27 @@ const Header = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pr-10 rounded-md border focus:border-primary"
+                    onFocus={() => setShowSuggestions(searchQuery.trim().length > 0)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+                    onKeyDown={(e) => {
+                      const hasItems = computedSuggestions.length > 0;
+                      if (!hasItems) return;
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setHighlightedIndex((prev) => Math.min(prev + 1, computedSuggestions.length - 1));
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                      } else if (e.key === 'Enter') {
+                        if (highlightedIndex >= 0) {
+                          e.preventDefault();
+                          const sel = computedSuggestions[highlightedIndex];
+                          window.location.href = `/product/${sel.id}`;
+                        }
+                      } else if (e.key === 'Escape') {
+                        setShowSuggestions(false);
+                      }
+                    }}
                   />
                   <Button 
                     type="submit" 
@@ -323,6 +395,15 @@ const Header = () => {
                   >
                     <Search className="h-4 w-4" />
                   </Button>
+                  <SearchSuggestions
+                    items={computedSuggestions}
+                    visible={showSuggestions}
+                    highlightedIndex={highlightedIndex}
+                    onHover={setHighlightedIndex}
+                    onSelect={(item) => {
+                      window.location.href = `/product/${item.id}`;
+                    }}
+                  />
                 </div>
               </form>
             </div>

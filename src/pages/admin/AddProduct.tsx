@@ -178,6 +178,11 @@ const AddProduct = () => {
     }
 
     setIsSubmitting(true);
+    // Inform user immediately and prevent duplicate submissions
+    toast({
+      title: "Listing Product",
+      description: "Your product will be listed shortly.",
+    });
 
     try {
       // Use the already uploaded image URLs - no need to re-upload files that were already processed

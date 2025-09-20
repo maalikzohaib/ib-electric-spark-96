@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProductStore } from '@/store/productStore';
 import { usePageStore } from '@/store/pageStore';
 import { Button } from '@/components/ui/enhanced-button';
+import SearchSuggestions from '@/components/ui/search-suggestions';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Zap } from 'lucide-react';
@@ -18,6 +19,8 @@ const PageProducts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [loading, setLoading] = useState(true);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   useEffect(() => {
     const loadData = async () => {
@@ -88,6 +91,12 @@ const PageProducts = () => {
     );
   }
 
+  useEffect(() => {
+    const hasQuery = searchTerm.trim().length > 0;
+    setShowSuggestions(hasQuery);
+    if (!hasQuery) setHighlightedIndex(-1);
+  }, [searchTerm]);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -125,16 +134,51 @@ const PageProducts = () => {
         {/* Search and Filter Controls */}
         <Card className="mb-8">
           <CardContent className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
                 <Input
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full"
+                  onFocus={() => setShowSuggestions(searchTerm.trim().length > 0)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+                  onKeyDown={(e) => {
+                    const suggestions = pageProducts
+                      .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || (p.brand || '').toLowerCase().includes(searchTerm.toLowerCase()))
+                      .slice(0, 8);
+                    if (suggestions.length === 0) return;
+                    if (e.key === 'ArrowDown') {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+                    } else if (e.key === 'ArrowUp') {
+                      e.preventDefault();
+                      setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+                    } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                      e.preventDefault();
+                      const sel = suggestions[highlightedIndex];
+                      window.location.href = `/product/${sel.id}`;
+                    } else if (e.key === 'Escape') {
+                      setShowSuggestions(false);
+                    }
+                  }}
+                />
+                <SearchSuggestions
+                  items={pageProducts
+                    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()) || (p.brand || '').toLowerCase().includes(searchTerm.toLowerCase()))
+                    .slice(0, 8)
+                  }
+                  visible={showSuggestions}
+                  highlightedIndex={highlightedIndex}
+                  onHover={setHighlightedIndex}
+                  onSelect={(item) => {
+                    window.location.href = `/product/${item.id}`;
+                  }}
                 />
               </div>
-              <div className="w-full sm:w-48">
+            </div>
+            <div className="w-full sm:w-48">
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sort by" />
