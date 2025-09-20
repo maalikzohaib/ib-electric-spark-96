@@ -14,7 +14,7 @@ import { Upload, X, Plus, Camera } from "lucide-react";
 
 const AddProduct = () => {
   const navigate = useNavigate();
-  const { addProduct, categories, fetchCategories, loading } = useProductStore();
+  const { addProduct, categories, fetchCategories } = useProductStore();
   const { pages, fetchPages } = usePageStore();
   const { toast } = useToast();
   
@@ -43,6 +43,8 @@ const AddProduct = () => {
   const [uploading, setUploading] = useState(false);
   const [newImageUrl, setNewImageUrl] = useState('');
   const [mainImageIndex, setMainImageIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isProductListed, setIsProductListed] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -175,6 +177,8 @@ const AddProduct = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       // Use the already uploaded image URLs - no need to re-upload files that were already processed
       // by the handleImageUpload function
@@ -201,9 +205,12 @@ const AddProduct = () => {
       await addProduct(newProduct);
       
       toast({
-        title: "Product Added",
-        description: `${formData.name} has been added to the store.`,
+        title: "Product Listed Successfully",
+        description: `${formData.name} has been listed in the store.`,
       });
+      
+      // Mark product as listed to disable the button
+      setIsProductListed(true);
 
       navigate('/admin/products');
     } catch (error) {
@@ -212,6 +219,8 @@ const AddProduct = () => {
         description: "Failed to add product. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -608,8 +617,8 @@ const AddProduct = () => {
           >
             Cancel
           </Button>
-          <Button type="submit" variant="store" disabled={loading}>
-            {loading ? 'Listing Product...' : 'List Product'}
+          <Button type="submit" variant="store" disabled={isSubmitting || isProductListed}>
+            {isProductListed ? 'Product Listed' : isSubmitting ? 'Listing Product...' : 'List Product'}
           </Button>
         </div>
       </form>
@@ -618,3 +627,4 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
+
