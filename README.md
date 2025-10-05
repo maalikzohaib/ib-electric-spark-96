@@ -1,73 +1,73 @@
-# Welcome to your Lovable project
+# Ijaz Brothers Electric Store
 
-## Project info
+This is the official repository for the Ijaz Brothers Electric Store website.
 
-**URL**: https://lovable.dev/projects/e401f384-194f-4f22-a29d-3fcdd2950f23
+## 🚀 Introduction
 
-## How can I edit this code?
+Welcome to the Ijaz Brothers Electric Store project! This is a modern, responsive e-commerce website built to showcase and sell a wide variety of electrical supplies.
 
-There are several ways of editing your application.
+## ✨ Features
 
-**Use Lovable**
+*   **Product Catalog:** Browse a comprehensive catalog of electrical products.
+*   **Search & Filtering:** Easily find products with powerful search and filtering options.
+*   **User Accounts:** Customers can create accounts to manage their orders and personal information.
+*   **Shopping Cart:** A fully functional shopping cart for a seamless checkout experience.
+*   **Responsive Design:** The website is optimized for all devices, including desktops, tablets, and smartphones.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e401f384-194f-4f22-a29d-3fcdd2950f23) and start prompting.
+## 🛠️ Technologies Used
 
-Changes made via Lovable will be committed automatically to this repo.
+This project is built with a modern tech stack:
 
-**Use your preferred IDE**
+*   **Frontend:**
+    *   [Vite](https://vitejs.dev/) - A next-generation frontend tooling.
+    *   [React](https://reactjs.org/) - A JavaScript library for building user interfaces.
+    *   [TypeScript](https://www.typescriptlang.org/) - A typed superset of JavaScript.
+    *   [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework.
+    *   [shadcn-ui](https://ui.shadcn.com/) - Re-usable components built using Radix UI and Tailwind CSS.
+*   **Backend & Database:**
+    *   [Supabase](https://supabase.io/) - The open source Firebase alternative.
+    *   [Neon](https://neon.tech/) - Serverless Postgres.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🏁 Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+To get a local copy up and running, follow these simple steps.
 
-Follow these steps:
+### Prerequisites
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+You need to have [Node.js](https://nodejs.org/en/) and [npm](https://www.npmjs.com/) installed on your machine. It's recommended to use [nvm](https://github.com/nvm-sh/nvm) to manage Node.js versions.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Installation
 
-# Step 3: Install the necessary dependencies.
-npm i
+1.  **Clone the repo**
+    ```sh
+    git clone <YOUR_GIT_URL>
+    ```
+2.  **Navigate to the project directory**
+    ```sh
+    cd <YOUR_PROJECT_NAME>
+    ```
+3.  **Install NPM packages**
+    ```sh
+    npm install
+    ```
+4.  **Set up environment variables**
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+    Create a `.env.local` file in the root of the project and add your Supabase credentials:
 
-**Edit a file directly in GitHub**
+    ```env
+    VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+    VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+    ```
+5.  **Run the development server**
+    ```sh
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🚀 Deployment
 
-**Use GitHub Codespaces**
+This project can be easily deployed using platforms like [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/).
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/e401f384-194f-4f22-a29d-3fcdd2950f23) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Happy Coding!
