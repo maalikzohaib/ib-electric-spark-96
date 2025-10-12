@@ -175,3 +175,4 @@ Go to: **http://localhost:8080/admin/add-product**
 Go to **http://localhost:8080** to see your featured product on the homepage!
 
 
+

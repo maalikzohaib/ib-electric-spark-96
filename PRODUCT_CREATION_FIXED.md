@@ -170,3 +170,4 @@ All product-related API endpoints were updated to use Supabase's built-in query 
 Go to **http://localhost:8080/admin** and start adding your electrical products!
 
 
+
