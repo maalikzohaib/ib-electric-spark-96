@@ -1,0 +1,56 @@
+
+Website Project Summary: Ijaz Brother Electric Store
+
+🏪 Project Name: Ijaz Brother Electric Store
+A dynamic Supabase-based web project designed for electric item listings, page management, and secure access control.
+
+🧠 Summary
+Backend: Supabase (PostgreSQL-based DB + RLS)
+Frontend: Likely React/TSX with TailwindCSS
+Runtime: Bun (JS runtime alternative to Node.js)
+DB Features: Pages, Roles, Secure Access Policies
+Security: Row-Level Security (RLS) enabled
+Customization: Pages and roles editable via scripts
+
+🗂️ Major Features
+1. Dynamic Page System
+- Pages created in DB: Home, Products, About, Contact
+- Supports types: main/sub, display order, hierarchy
+
+2. Role Management
+- user_roles table with RLS
+- Allows authenticated user control
+
+3. Access Control (Policies)
+- Public can read pages
+- Admins have full control
+- Contact submissions are limited to logged-in users
+
+4. Supabase Integration
+- JS API Client connected
+- Full page lifecycle via scripts
+
+5. Tailwind + TSX + ESLint
+- Tailwind CSS styling
+- TypeScript + React likely
+- ESLint config for clean coding
+
+🔐 Security Mapping
+pages: Public Read ✅ | Admin Full Access ✅
+user_roles: Admins Only ✅
+contact_submissions: Authenticated Only ✅
+RLS: Enabled on all sensitive tables
+
+🛠️ Technologies Used
+Supabase | PostgreSQL | JavaScript (Bun)
+Tailwind CSS | React + TSX (inferred)
+ESLint + TypeScript
+
+🧪 Scripts Included
+- create-pages-table-complete.sql: Setup page system
+- apply-database-fix.js: Test & patch structure
+- fix-user-roles-recursion.sql: Resolve policy loops
+- check-schema.js, fix-database.js: Schema validators
+
+💡 Summary
+This website is ideal for a growing online electronics store that wants to manage its content dynamically through a secure, Supabase-backed dashboard. Public users can browse the content, while authenticated admins control everything from a backend system.

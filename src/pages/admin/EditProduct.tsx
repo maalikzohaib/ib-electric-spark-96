@@ -9,13 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useProductStore } from "@/store/productStore";
 import { usePageStore } from "@/store/pageStore";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Plus, Camera } from "lucide-react";
 
 const EditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { getProductById, updateProduct, categories } = useProductStore();
+  const { getProductById, updateProduct, categories, fetchProducts, productsFetched } = useProductStore();
   const { pages, fetchPages } = usePageStore();
   const { toast } = useToast();
   
@@ -43,7 +42,13 @@ const EditProduct = () => {
 
   useEffect(() => {
     fetchPages();
-    
+    // Fetch products if not already loaded
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [fetchPages, fetchProducts, productsFetched]);
+
+  useEffect(() => {
     if (!product) {
       toast({
         title: "Product Not Found",
@@ -107,54 +112,12 @@ const EditProduct = () => {
     }
   };
 
-  const handleImageUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    
-    setUploading(true);
-    const newFiles = Array.from(files);
-    
-    try {
-      const uploadedUrls: string[] = [];
-      
-      for (const file of newFiles) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        
-        const { data, error } = await supabase.storage
-          .from('product-images')
-          .upload(fileName, file);
-
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(fileName);
-
-        uploadedUrls.push(publicUrl);
-      }
-      
-      setImageUrls(prev => [...prev, ...uploadedUrls]);
-      setImageFiles(prev => [...prev, ...newFiles]);
-      
-      // If no main image selected and this is first upload, set first uploaded as main
-      if (imageUrls.length === 0 && imageFiles.length === 0) {
-        setMainImageIndex(0);
-      }
-      
-      toast({
-        title: "Images Uploaded",
-        description: `${uploadedUrls.length} image(s) uploaded successfully.`,
-      });
-    } catch (error) {
-      console.error('Error uploading images:', error);
-      toast({
-        title: "Upload Error",
-        description: "Failed to upload images. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
+  const handleImageUpload = async (_files: FileList | null) => {
+    toast({
+      title: "Uploads Disabled",
+      description: "Image uploads are disabled. Please use image URLs.",
+      variant: "destructive",
+    });
   };
 
   const removeImageFile = (index: number) => {

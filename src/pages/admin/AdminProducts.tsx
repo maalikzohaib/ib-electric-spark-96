@@ -18,13 +18,20 @@ import { useToast } from "@/hooks/use-toast";
 
 const AdminProducts = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { products, deleteProduct } = useProductStore();
+  const { products, deleteProduct, fetchProducts, productsFetched } = useProductStore();
   const { toast } = useToast();
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
   const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category') || 'all');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  // Fetch products if not already loaded
+  useEffect(() => {
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [productsFetched, fetchProducts]);
 
   useEffect(() => {
     const hasQuery = searchQuery.trim().length > 0;

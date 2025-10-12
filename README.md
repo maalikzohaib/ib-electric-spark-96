@@ -71,3 +71,43 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Environment & Database Setup
+
+This project uses **Supabase** as the PostgreSQL database. You need to set up environment variables for database connection.
+
+### Required Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Supabase Configuration
+SUPABASE_URL=https://okbomxxronimfqehcjvz.supabase.co
+SUPABASE_SERVICE_KEY=sbp_4106aec120b0aab8f0552ca0d2ef77bfda138378
+
+# Supabase PostgreSQL Connection String
+# Get this from: Supabase Dashboard > Project Settings > Database > Connection String (URI)
+DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.okbomxxronimfqehcjvz.supabase.co:5432/postgres
+
+# For Vite (frontend) - optional
+VITE_SUPABASE_URL=https://okbomxxronimfqehcjvz.supabase.co
+VITE_SUPABASE_SERVICE_KEY=sbp_4106aec120b0aab8f0552ca0d2ef77bfda138378
+VITE_DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.okbomxxronimfqehcjvz.supabase.co:5432/postgres
+```
+
+### Getting Your Supabase Credentials
+
+1. Go to your [Supabase Dashboard](https://supabase.com/dashboard/project/okbomxxronimfqehcjvz)
+2. Click on **Settings** (gear icon) → **Database**
+3. Copy the **Connection String** (URI format) and replace `[YOUR-PASSWORD]` with your actual database password
+4. For the API keys, go to **Settings** → **API**
+
+### Running Migrations
+
+Run migrations to set up the database schema:
+
+```bash
+npm run migrate
+```
+
+This executes `create_missing_tables.sql` and `fix-pages-table.sql` against your Supabase database to create the `pages`, `products`, `categories`, and related tables.

@@ -16,8 +16,15 @@ import emptyCart from "@/assets/empty-cart.jpg";
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { products, categories } = useProductStore();
+  const { products, categories, fetchProducts, productsFetched } = useProductStore();
   const { loading } = useProductData();
+  
+  // Fetch products when the Shop page loads
+  useEffect(() => {
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [productsFetched, fetchProducts]);
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',

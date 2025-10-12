@@ -1,18 +1,26 @@
 import dotenv from 'dotenv';
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 
 dotenv.config();
 
 async function checkSchema() {
+  const sql = postgres(process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL, {
+    ssl: 'require',
+    max: 1,
+  });
+
   try {
-    console.log('Database URL:', process.env.VITE_DATABASE_URL ? 'Defined' : 'Undefined');
-    
-    const sql = neon(process.env.VITE_DATABASE_URL);
-    console.log('Neon client created');
+    console.log('Database URL:', process.env.DATABASE_URL ? 'Defined' : 'Undefined');
+    console.log('Supabase PostgreSQL client created');
     
     // Now try the schema query
     console.log('Running schema query...');
-    const result = await sql.query('SELECT column_name, data_type FROM information_schema.columns WHERE table_name = \'products\' ORDER BY ordinal_position');
+    const result = await sql`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'products' 
+      ORDER BY ordinal_position
+    `;
     
     if (result && Array.isArray(result)) {
       console.log('Products table schema:');
@@ -30,6 +38,8 @@ async function checkSchema() {
     }
   } catch (error) {
     console.error('Error checking schema:', error);
+  } finally {
+    await sql.end();
   }
 }
 

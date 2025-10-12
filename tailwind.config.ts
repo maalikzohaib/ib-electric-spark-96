@@ -161,6 +161,10 @@ export default {
 						transform: 'translateX(-100%)',
 						opacity: '0'
 					}
+				},
+				'wave-pulse': {
+					'0%, 100%': { opacity: '0.4' },
+					'50%': { opacity: '0.7' }
 				}
 			},
 			animation: {
@@ -171,7 +175,8 @@ export default {
 				'scale-in': 'scale-in 0.5s ease-out',
 				'float': 'float 6s ease-in-out infinite',
 				'slide-in-from-left': 'slide-in-from-left 0.3s ease-out',
-				'slide-out-to-left': 'slide-out-to-left 0.3s ease-out'
+				'slide-out-to-left': 'slide-out-to-left 0.3s ease-out',
+				'wave-pulse': 'wave-pulse 4s ease-in-out infinite'
 			}
 		}
 	},

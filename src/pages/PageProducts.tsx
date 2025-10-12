@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const PageProducts = () => {
   const { mainPageSlug, subPageSlug } = useParams<{ mainPageSlug: string, subPageSlug: string }>();
   const navigate = useNavigate();
-  const { products } = useProductStore();
+  const { products, fetchProducts, productsFetched } = useProductStore();
   const { pages, fetchPages } = usePageStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
@@ -22,13 +22,24 @@ const PageProducts = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
+  // All hooks must be called before any conditional returns
   useEffect(() => {
     const loadData = async () => {
       await fetchPages();
+      // Fetch products if not already loaded
+      if (!productsFetched) {
+        await fetchProducts();
+      }
       setLoading(false);
     };
     loadData();
-  }, [fetchPages]);
+  }, [fetchPages, fetchProducts, productsFetched]);
+
+  useEffect(() => {
+    const hasQuery = searchTerm.trim().length > 0;
+    setShowSuggestions(hasQuery);
+    if (!hasQuery) setHighlightedIndex(-1);
+  }, [searchTerm]);
 
   // Find the current page by matching the subpage slug
   const currentPage = pages.find(page => page.slug === subPageSlug);
@@ -44,7 +55,7 @@ const PageProducts = () => {
   const filteredProducts = pageProducts
     .filter(product => 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+      (product.brand || '').toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => {
       switch (sortBy) {
@@ -53,7 +64,7 @@ const PageProducts = () => {
         case 'price-high':
           return b.price - a.price;
         case 'brand':
-          return a.brand.localeCompare(b.brand);
+          return (a.brand || '').localeCompare(b.brand || '');
         default:
           return a.name.localeCompare(b.name);
       }
@@ -90,12 +101,6 @@ const PageProducts = () => {
       </div>
     );
   }
-
-  useEffect(() => {
-    const hasQuery = searchTerm.trim().length > 0;
-    setShowSuggestions(hasQuery);
-    if (!hasQuery) setHighlightedIndex(-1);
-  }, [searchTerm]);
 
   return (
     <div className="min-h-screen bg-background">

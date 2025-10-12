@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { useProductStore } from '@/store/productStore';
 import { useProductData } from '@/hooks/useProductData';
 import HeroSection from '@/components/HeroSection';
-import StatsSection from '@/components/StatsSection';
-import TestimonialsSection from '@/components/TestimonialsSection';
+import { useIdle } from '@/hooks/useIdle';
+const StatsSection = lazy(() => import('@/components/StatsSection'));
+const TestimonialsSection = lazy(() => import('@/components/TestimonialsSection'));
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/enhanced-button';
 import { ArrowRight, Zap, Sparkles } from 'lucide-react';
@@ -12,6 +13,7 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   const { featuredProducts } = useProductStore();
   const { loading } = useProductData();
+  const isIdle = useIdle(0);
 
   return (
     <main className="min-h-screen">
@@ -108,7 +110,11 @@ const Home = () => {
         </div>
       </section>
       
-      <TestimonialsSection />
+      {isIdle && (
+        <Suspense fallback={null}>
+          <TestimonialsSection />
+        </Suspense>
+      )}
     </main>
   );
 };

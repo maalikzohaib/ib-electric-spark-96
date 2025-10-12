@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { supabase, executeNeonQuery, executeNeonQuerySingle } from '@/integrations/supabase/client';
 
 export interface Product {
   id: string;
@@ -34,6 +33,7 @@ interface ProductStore {
   featuredProducts: Product[];
   loading: boolean;
   error: string | null;
+  productsFetched: boolean;
   
   // Product actions
   fetchProducts: () => Promise<void>;
@@ -51,6 +51,11 @@ interface ProductStore {
   // Featured products
   fetchFeaturedProducts: () => Promise<void>;
   setFeaturedProduct: (productId: string, featured: boolean) => Promise<void>;
+
+  // Boot setters (from /api/boot)
+  setFeaturedProducts: (items: Product[]) => void;
+  setCategories: (items: Category[]) => void;
+  setProducts: (items: Product[]) => void;
 }
 
 export const useProductStore = create<ProductStore>((set, get) => ({
@@ -59,29 +64,19 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   featuredProducts: [],
   loading: false,
   error: null,
+  productsFetched: false,
 
   fetchProducts: async () => {
+    // Defer heavy product list until needed (lazy-load in Shop)
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      const products = await executeNeonQuery<Product>(
-        'SELECT * FROM products ORDER BY created_at DESC'
-      );
-      
-      if (!products) {
-        throw new Error('Failed to fetch products. Please try again later.');
-      }
-      
-      set({ products: products, loading: false });
+      const resp = await fetch('/api/products');
+      if (!resp.ok) throw new Error('Failed to load products');
+      const data = await resp.json();
+      set({ products: data?.products || [], loading: false, productsFetched: true });
     } catch (error) {
-      console.error('Error fetching products from Neon:', error);
-      set({ 
-        error: (error as Error).message || 'An unexpected error occurred while fetching products', 
-        loading: false,
-        products: [] // Set empty array on error to prevent undefined issues
-      });
-      // Re-throw the error to be handled by the component
-      throw error;
+      console.error('Error fetching products:', error);
+      set({ error: (error as Error).message, loading: false, products: [], productsFetched: false });
     }
   },
 
@@ -92,26 +87,27 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         throw new Error('Missing required product information');
       }
       
-      // Use Neon for database operations to avoid RLS recursion issues
-      const data = await executeNeonQuerySingle<Product>(
-        `INSERT INTO products (name, description, price, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id, created_at, updated_at) 
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW(), NOW()) 
-         RETURNING *`,
-        [product.name, product.description, product.price, product.category_id, product.brand, product.size, product.color, product.variant, product.in_stock, product.image_url, product.images, product.featured, product.page_id]
-      );
-
-      if (!data) {
-        throw new Error('Failed to add product. Please try again.');
+      // Route to API (to be implemented server-side); provide optimistic local update as fallback
+      const resp = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product),
+      })
+      if (resp.ok) {
+        const data = await resp.json()
+        // Only add to local state if products have been fetched before
+        // This prevents stale data when products haven't been loaded yet
+        set((state) => {
+          if (state.productsFetched) {
+            return { products: [data, ...state.products], loading: false };
+          }
+          return { loading: false };
+        })
+        return data
       }
-
-      set((state) => ({
-        products: [data, ...state.products],
-        loading: false
-      }));
-      
-      return data;
+      throw new Error('Failed to add product. Please try again.')
     } catch (error) {
-      console.error('Error adding product to Neon:', error);
+      console.error('Error adding product:', error);
       set({ 
         error: (error as Error).message || 'An unexpected error occurred while adding the product', 
         loading: false 
@@ -123,15 +119,13 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   updateProduct: async (id, productUpdate) => {
     set({ loading: true, error: null });
     try {
-      // Build dynamic SQL query for updates
-      const updateFields = Object.keys(productUpdate).filter(key => key !== 'id');
-      const setClause = updateFields.map((field, index) => `${field} = $${index + 2}`).join(', ');
-      
-      // Use Neon for database operations to avoid RLS recursion issues
-      const data = await executeNeonQuerySingle<Product>(
-        `UPDATE products SET ${setClause}, updated_at = NOW() WHERE id = $1 RETURNING *`,
-        [id, ...updateFields.map(field => productUpdate[field as keyof Product])]
-      );
+      const resp = await fetch(`/api/products/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productUpdate),
+      })
+      if (!resp.ok) throw new Error('Failed to update product')
+      const data = await resp.json()
 
       set((state) => ({
         products: state.products.map((product) =>
@@ -140,7 +134,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         loading: false
       }));
     } catch (error) {
-      console.error('Error updating product in Neon:', error);
+      console.error('Error updating product:', error);
       set({ error: (error as Error).message, loading: false });
       throw error;
     }
@@ -149,11 +143,8 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   deleteProduct: async (id) => {
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      await executeNeonQuery(
-        'DELETE FROM products WHERE id = $1',
-        [id]
-      );
+      const resp = await fetch(`/api/products/${id}`, { method: 'DELETE' })
+      if (!resp.ok) throw new Error('Failed to delete product')
 
       set((state) => ({
         products: state.products.filter((product) => product.id !== id),
@@ -161,7 +152,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         loading: false
       }));
     } catch (error) {
-      console.error('Error deleting product in Neon:', error);
+      console.error('Error deleting product:', error);
       set({ error: (error as Error).message, loading: false });
       throw error;
     }
@@ -174,35 +165,33 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   fetchCategories: async () => {
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      const categories = await executeNeonQuery<Category>(
-        'SELECT * FROM categories ORDER BY name'
-      );
-      
-      set({ categories: categories || [], loading: false });
+      const resp = await fetch('/api/boot')
+      if (!resp.ok) throw new Error('Failed to load categories')
+      const data = await resp.json()
+      set({ categories: data?.categories || [], loading: false });
     } catch (error) {
-      console.error('Error fetching categories from Neon:', error);
-      set({ error: (error as Error).message, loading: false });
+      console.error('Error fetching categories:', error);
+      set({ error: (error as Error).message, loading: false, categories: [] });
     }
   },
 
   addCategory: async (category) => {
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      const data = await executeNeonQuerySingle<Category>(
-        `INSERT INTO categories (name, description, icon, created_at) 
-         VALUES ($1, $2, $3, NOW()) 
-         RETURNING *`,
-        [category.name, category.description, category.icon]
-      );
+      const resp = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(category),
+      })
+      if (!resp.ok) throw new Error('Failed to add category')
+      const data = await resp.json()
 
       set((state) => ({
         categories: [...state.categories, data],
         loading: false
       }));
     } catch (error) {
-      console.error('Error adding category to Neon:', error);
+      console.error('Error adding category:', error);
       set({ error: (error as Error).message, loading: false });
       throw error;
     }
@@ -211,15 +200,13 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   updateCategory: async (id, categoryUpdate) => {
     set({ loading: true, error: null });
     try {
-      // Build dynamic SQL query for updates
-      const updateFields = Object.keys(categoryUpdate).filter(key => key !== 'id');
-      const setClause = updateFields.map((field, index) => `${field} = $${index + 2}`).join(', ');
-      
-      // Use Neon for database operations to avoid RLS recursion issues
-      const data = await executeNeonQuerySingle<Category>(
-        `UPDATE categories SET ${setClause} WHERE id = $1 RETURNING *`,
-        [id, ...updateFields.map(field => categoryUpdate[field as keyof Category])]
-      );
+      const resp = await fetch(`/api/categories/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categoryUpdate),
+      })
+      if (!resp.ok) throw new Error('Failed to update category')
+      const data = await resp.json()
 
       set((state) => ({
         categories: state.categories.map((category) =>
@@ -228,7 +215,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         loading: false
       }));
     } catch (error) {
-      console.error('Error updating category in Neon:', error);
+      console.error('Error updating category:', error);
       set({ error: (error as Error).message, loading: false });
       throw error;
     }
@@ -237,18 +224,15 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   deleteCategory: async (id) => {
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      await executeNeonQuery(
-        'DELETE FROM categories WHERE id = $1',
-        [id]
-      );
+      const resp = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
+      if (!resp.ok) throw new Error('Failed to delete category')
 
       set((state) => ({
         categories: state.categories.filter((category) => category.id !== id),
         loading: false
       }));
     } catch (error) {
-      console.error('Error deleting category from Neon:', error);
+      console.error('Error deleting category:', error);
       set({ error: (error as Error).message, loading: false });
       throw error;
     }
@@ -257,34 +241,38 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   fetchFeaturedProducts: async () => {
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      const featuredProducts = await executeNeonQuery<Product>(
-        'SELECT * FROM products WHERE featured = true LIMIT 6'
-      );
-      
-      set({ featuredProducts: featuredProducts || [], loading: false });
+      // Prefer consolidated boot endpoint
+      const resp = await fetch('/api/boot')
+      if (!resp.ok) throw new Error('Failed to load featured products')
+      const data = await resp.json()
+      set({ featuredProducts: data?.featuredProducts || [], loading: false })
     } catch (error) {
-      console.error('Error fetching featured products from Neon:', error);
-      set({ error: (error as Error).message, loading: false });
+      console.error('Error fetching featured products:', error);
+      set({ error: (error as Error).message, loading: false, featuredProducts: [] });
     }
   },
 
   setFeaturedProduct: async (productId, featured) => {
     set({ loading: true, error: null });
     try {
-      // Use Neon for database operations to avoid RLS recursion issues
-      await executeNeonQuery(
-        'UPDATE products SET featured = $1, updated_at = NOW() WHERE id = $2',
-        [featured, productId]
-      );
+      const resp = await fetch(`/api/products/${productId}/featured`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ featured }),
+      })
+      if (!resp.ok) throw new Error('Failed to update featured flag')
 
       // Refresh products and featured products
       await get().fetchProducts();
       await get().fetchFeaturedProducts();
     } catch (error) {
-      console.error('Error updating featured product in Neon:', error);
+      console.error('Error updating featured product:', error);
       set({ error: (error as Error).message, loading: false });
       throw error;
     }
   },
+
+  setFeaturedProducts: (items) => set({ featuredProducts: items || [] }),
+  setCategories: (items) => set({ categories: items || [] }),
+  setProducts: (items) => set({ products: items || [] }),
 }));

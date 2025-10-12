@@ -9,14 +9,14 @@ import { useToast } from '@/hooks/use-toast';
 
 const Favorites = () => {
   const { favorites, clearFavorites } = useFavoriteStore();
-  const { products, fetchProducts } = useProductStore();
+  const { products, fetchProducts, productsFetched } = useProductStore();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (products.length === 0) {
+    if (!productsFetched) {
       fetchProducts();
     }
-  }, [products, fetchProducts]);
+  }, [productsFetched, fetchProducts]);
 
   const favoriteProducts = products.filter(product => 
     favorites.includes(product.id)

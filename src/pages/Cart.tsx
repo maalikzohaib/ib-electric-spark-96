@@ -8,14 +8,14 @@ import { useToast } from '@/hooks/use-toast';
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, getTotalPrice } = useCartStore();
-  const { products, fetchProducts } = useProductStore();
+  const { products, fetchProducts, productsFetched } = useProductStore();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (products.length === 0) {
+    if (!productsFetched) {
       fetchProducts();
     }
-  }, [products, fetchProducts]);
+  }, [productsFetched, fetchProducts]);
 
   // The cart items already contain the product information
   const cartItems = items.map(cartItem => ({

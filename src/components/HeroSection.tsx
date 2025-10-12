@@ -1,18 +1,37 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/enhanced-button";
 import { ArrowRight, Zap, Star } from "lucide-react";
+import { Waves } from "@/components/ui/waves-background";
 import heroFan from "@/assets/hero-fan.jpg";
 import heroBulbs from "@/assets/hero-bulbs.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-subtle overflow-hidden">
+    <section className="relative min-h-screen flex items-center bg-gradient-subtle overflow-hidden pt-20">
+      {/* Waves Background */}
+      <div className="absolute inset-0 z-0">
+        <Waves
+          lineColor="rgba(59, 130, 246, 0.3)"
+          backgroundColor="transparent"
+          waveSpeedX={0.02}
+          waveSpeedY={0.01}
+          waveAmpX={60}
+          waveAmpY={30}
+          friction={0.9}
+          tension={0.01}
+          maxCursorMove={120}
+          xGap={20}
+          yGap={50}
+          className="opacity-100"
+        />
+      </div>
+      
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,.2)_50%,transparent_75%,transparent_100%)] bg-[length:250px_250px]"></div>
       </div>
 
-      <div className="container mx-auto px-4 relative">
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Column - Content */}
@@ -78,6 +97,7 @@ const HeroSection = () => {
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-primary rounded-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
                 <img
+                  fetchpriority="high"
                   src={heroFan}
                   alt="Premium Ceiling Fan"
                   className="w-full h-64 object-cover rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-500 transform group-hover:scale-105"
@@ -94,6 +114,7 @@ const HeroSection = () => {
               <div className="relative group mt-8">
                 <div className="absolute inset-0 bg-gradient-accent rounded-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
                 <img
+                  fetchpriority="high"
                   src={heroBulbs}
                   alt="LED Bulbs Collection"
                   className="w-full h-64 object-cover rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-500 transform group-hover:scale-105"

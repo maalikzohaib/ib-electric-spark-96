@@ -1,10 +1,11 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider, useParams, Navigate, ScrollRestoration } from "react-router-dom";
 import { useProductData } from "@/hooks/useProductData";
-import Header from "./components/layout/Header";
+import { Navbar1 } from "./components/ui/navbar-1";
 import Footer from "./components/layout/Footer";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
@@ -13,15 +14,15 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Favorites from "./pages/Favorites";
 import Cart from "./pages/Cart";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/AdminProducts";
-import AddProduct from "./pages/admin/AddProduct";
-import EditProduct from "./pages/admin/EditProduct";
-import FeaturedProducts from "./pages/admin/FeaturedProducts";
-import Categories from "./pages/admin/Categories";
-import AdminPages from "./components/admin/AdminPages";
-import AdminLayout from "./components/admin/AdminLayout";
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminProducts = lazy(() => import('./pages/admin/AdminProducts'));
+const AddProduct = lazy(() => import('./pages/admin/AddProduct'));
+const EditProduct = lazy(() => import('./pages/admin/EditProduct'));
+const FeaturedProducts = lazy(() => import('./pages/admin/FeaturedProducts'));
+const Categories = lazy(() => import('./pages/admin/Categories'));
+const AdminPages = lazy(() => import('./components/admin/AdminPages'));
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 import NotFound from "./pages/NotFound";
 import PageProducts from "./pages/PageProducts";
 import { usePageStore } from "./store/pageStore";
@@ -48,7 +49,7 @@ const queryClient = new QueryClient();
 // Layout component to wrap public routes
 const PublicLayout = ({ children }: { children: React.ReactNode }) => (
   <>
-    <Header />
+    <Navbar1 />
     {children}
     <Footer />
   </>
@@ -135,9 +136,17 @@ function AppContent() {
       path: "*",
       element: <NotFound />,
     },
-  ]);
+  ], {
+    future: {
+      v7_startTransition: true
+    }
+  });
   
-  return <RouterProvider router={router} />;
+  return (
+    <Suspense fallback={null}>
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 }
 
 const App = () => (

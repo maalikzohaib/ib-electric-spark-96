@@ -1,0 +1,11 @@
+# Copy this content to create your .env file
+# File name: .env (in the root of your project)
+
+SUPABASE_URL=https://okbomxxronimfqehcjvz.supabase.co
+SUPABASE_SERVICE_KEY=sbp_4106aec120b0aab8f0552ca0d2ef77bfda138378
+DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.okbomxxronimfqehcjvz.supabase.co:5432/postgres
+SUPABASE_DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.okbomxxronimfqehcjvz.supabase.co:5432/postgres
+VITE_SUPABASE_URL=https://okbomxxronimfqehcjvz.supabase.co
+VITE_SUPABASE_SERVICE_KEY=sbp_4106aec120b0aab8f0552ca0d2ef77bfda138378
+VITE_DATABASE_URL=postgresql://postgres:[YOUR-PASSWORD]@db.okbomxxronimfqehcjvz.supabase.co:5432/postgres
+

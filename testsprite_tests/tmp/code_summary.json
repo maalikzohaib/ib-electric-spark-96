@@ -1,179 +1,151 @@
 {
-  "tech_stacks": {
-    "frontend": {
-      "framework": "React",
-      "language": "TypeScript",
-      "ui_library": "Custom UI components with Tailwind CSS",
-      "state_management": "Zustand",
-      "routing": "React Router"
-    },
-    "backend": {
-      "database": "Supabase",
-      "api": "Supabase API"
-    },
-    "build_tools": {
-      "bundler": "Vite"
-    }
-  },
+  "tech_stack": [
+    "TypeScript",
+    "React",
+    "Vite",
+    "Tailwind CSS",
+    "Zustand",
+    "React Router",
+    "Supabase",
+    "Neon Database",
+    "Radix UI",
+    "Lucide React",
+    "React Hook Form",
+    "TanStack Query"
+  ],
   "features": [
     {
-      "name": "Product Browsing",
-      "description": "Users can browse products with filtering and search capabilities",
-      "components": ["Shop.tsx", "ProductCard.tsx"]
-    },
-    {
-      "name": "Product Details",
-      "description": "Users can view detailed information about products",
-      "components": ["ProductDetail.tsx"]
+      "name": "Product Management",
+      "description": "Complete product CRUD operations with categories, brands, and inventory management",
+      "files": [
+        "src/store/productStore.ts",
+        "src/hooks/useProductData.ts",
+        "src/pages/admin/AdminProducts.tsx",
+        "src/pages/admin/AddProduct.tsx",
+        "src/pages/admin/EditProduct.tsx"
+      ]
     },
     {
       "name": "Shopping Cart",
-      "description": "Users can add products to cart and manage quantities",
-      "components": ["Cart.tsx", "cartStore.ts"]
+      "description": "Persistent shopping cart with add/remove/update functionality",
+      "files": [
+        "src/store/cartStore.ts",
+        "src/pages/Cart.tsx",
+        "src/components/ProductCard.tsx"
+      ]
     },
     {
-      "name": "Favorites",
-      "description": "Users can mark products as favorites and view them later",
-      "components": ["Favorites.tsx", "favoriteStore.ts", "ProductCard.tsx"]
+      "name": "Favorites System",
+      "description": "User favorites with add/remove functionality",
+      "files": [
+        "src/store/favoriteStore.ts",
+        "src/pages/Favorites.tsx",
+        "src/components/ProductCard.tsx"
+      ]
+    },
+    {
+      "name": "Product Browsing",
+      "description": "Advanced product search, filtering, and browsing with categories",
+      "files": [
+        "src/pages/Shop.tsx",
+        "src/pages/Home.tsx",
+        "src/components/ProductCard.tsx",
+        "src/components/ui/search-suggestions.tsx"
+      ]
+    },
+    {
+      "name": "Product Details",
+      "description": "Detailed product view with images, specifications, and actions",
+      "files": [
+        "src/pages/ProductDetail.tsx",
+        "src/components/ProductCard.tsx"
+      ]
     },
     {
       "name": "Admin Dashboard",
-      "description": "Admins can view statistics and manage products",
-      "components": ["AdminDashboard.tsx", "AdminProducts.tsx"]
+      "description": "Complete admin interface for managing products, categories, and store operations",
+      "files": [
+        "src/pages/admin/AdminDashboard.tsx",
+        "src/pages/admin/AdminLogin.tsx",
+        "src/components/admin/AdminLayout.tsx",
+        "src/components/admin/AdminPages.tsx",
+        "src/store/adminStore.ts"
+      ]
     },
     {
-      "name": "Admin Product Management",
-      "description": "Admins can add, edit, and delete products",
-      "components": ["AddProduct.tsx", "EditProduct.tsx", "AdminProducts.tsx"]
+      "name": "Category Management",
+      "description": "Product category CRUD operations",
+      "files": [
+        "src/pages/admin/Categories.tsx",
+        "src/store/productStore.ts"
+      ]
     },
     {
-      "name": "Admin Category Management",
-      "description": "Admins can manage product categories",
-      "components": ["Categories.tsx"]
+      "name": "Featured Products",
+      "description": "Featured product management and display",
+      "files": [
+        "src/pages/admin/FeaturedProducts.tsx",
+        "src/store/productStore.ts"
+      ]
     },
     {
-      "name": "Admin Page Management",
-      "description": "Admins can manage site pages",
-      "components": ["AdminPages.tsx", "pageStore.ts"]
+      "name": "Page Management",
+      "description": "Dynamic page creation and management system",
+      "files": [
+        "src/pages/admin/AdminPages.tsx",
+        "src/pages/PageProducts.tsx",
+        "src/store/pageStore.ts"
+      ]
     },
     {
-      "name": "Admin Featured Products",
-      "description": "Admins can select products to be featured on the homepage",
-      "components": ["FeaturedProducts.tsx"]
+      "name": "Database Integration",
+      "description": "Hybrid database setup with Supabase auth and Neon database",
+      "files": [
+        "src/integrations/supabase/client.ts",
+        "src/integrations/supabase/types.ts",
+        "src/integrations/neon/client.ts"
+      ]
     },
     {
-      "name": "Authentication",
-      "description": "Users and admins can log in to access restricted features",
-      "components": ["AdminLogin.tsx", "adminStore.ts"]
-    }
-  ],
-  "routes": [
-    {
-      "path": "/",
-      "component": "Home",
-      "description": "Homepage with featured products"
+      "name": "UI Components",
+      "description": "Reusable UI components with Radix UI and custom styling",
+      "files": [
+        "src/components/ui/",
+        "src/components/layout/Header.tsx",
+        "src/components/layout/Footer.tsx",
+        "src/components/HeroSection.tsx",
+        "src/components/StatsSection.tsx",
+        "src/components/TestimonialsSection.tsx"
+      ]
     },
     {
-      "path": "/shop",
-      "component": "Shop",
-      "description": "Product listing page with filters"
+      "name": "Routing System",
+      "description": "Complete routing with public and admin routes",
+      "files": [
+        "src/App.tsx",
+        "src/pages/Home.tsx",
+        "src/pages/Shop.tsx",
+        "src/pages/About.tsx",
+        "src/pages/Contact.tsx",
+        "src/pages/NotFound.tsx"
+      ]
     },
     {
-      "path": "/products/:id",
-      "component": "ProductDetail",
-      "description": "Detailed view of a specific product"
+      "name": "WhatsApp Integration",
+      "description": "WhatsApp checkout functionality for cart orders",
+      "files": [
+        "src/pages/Cart.tsx",
+        "src/pages/ProductDetail.tsx"
+      ]
     },
     {
-      "path": "/favorites",
-      "component": "Favorites",
-      "description": "User's favorite products"
-    },
-    {
-      "path": "/cart",
-      "component": "Cart",
-      "description": "Shopping cart page"
-    },
-    {
-      "path": "/about",
-      "component": "About",
-      "description": "About page"
-    },
-    {
-      "path": "/contact",
-      "component": "Contact",
-      "description": "Contact page"
-    },
-    {
-      "path": "/admin",
-      "component": "AdminDashboard",
-      "description": "Admin dashboard"
-    },
-    {
-      "path": "/admin/products",
-      "component": "AdminProducts",
-      "description": "Admin product management"
-    },
-    {
-      "path": "/admin/products/add",
-      "component": "AddProduct",
-      "description": "Add new product form"
-    },
-    {
-      "path": "/admin/products/edit/:id",
-      "component": "EditProduct",
-      "description": "Edit existing product form"
-    },
-    {
-      "path": "/admin/featured",
-      "component": "FeaturedProducts",
-      "description": "Manage featured products"
-    },
-    {
-      "path": "/admin/categories",
-      "component": "Categories",
-      "description": "Manage product categories"
-    },
-    {
-      "path": "/admin/pages",
-      "component": "AdminPages",
-      "description": "Manage site pages"
-    },
-    {
-      "path": "/admin/login",
-      "component": "AdminLogin",
-      "description": "Admin login page"
-    }
-  ],
-  "stores": [
-    {
-      "name": "productStore",
-      "description": "Manages product data and operations",
-      "state": ["products", "categories", "featuredProducts"],
-      "actions": ["fetchProducts", "createProduct", "updateProduct", "deleteProduct"]
-    },
-    {
-      "name": "cartStore",
-      "description": "Manages shopping cart state",
-      "state": ["items"],
-      "actions": ["addToCart", "removeFromCart", "updateQuantity", "clearCart", "getCartCount", "getTotalPrice"]
-    },
-    {
-      "name": "favoriteStore",
-      "description": "Manages user favorites",
-      "state": ["favorites"],
-      "actions": ["addToFavorites", "removeFromFavorites", "isFavorite", "clearFavorites", "getFavoritesCount"]
-    },
-    {
-      "name": "pageStore",
-      "description": "Manages site pages",
-      "state": ["pages", "mainPages"],
-      "actions": ["fetchPages", "createMainPage", "createSubPage", "updatePage", "deletePage", "reorderPages"]
-    },
-    {
-      "name": "adminStore",
-      "description": "Manages admin authentication",
-      "state": ["isAuthenticated", "user"],
-      "actions": ["login", "logout", "checkAuth"]
+      "name": "Analytics Dashboard",
+      "description": "Store analytics and statistics",
+      "files": [
+        "src/components/AdminAnalytics.tsx",
+        "src/components/ShopStats.tsx",
+        "src/components/SalesChart.tsx"
+      ]
     }
   ]
 }

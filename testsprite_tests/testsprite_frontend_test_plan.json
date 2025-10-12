@@ -1,0 +1,472 @@
+[
+  {
+    "id": "TC001",
+    "title": "Create New Product Successfully",
+    "description": "Verify that an admin user can create a new product with valid details including category, brand, inventory, and specifications.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in to admin dashboard with valid admin credentials"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to 'Add Product' page"
+      },
+      {
+        "type": "action",
+        "description": "Input all required product fields with valid data: name, category, brand, price, inventory, images, and specifications"
+      },
+      {
+        "type": "action",
+        "description": "Submit the new product form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the product is saved in the database and appears in the product list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product can be searched and filtered on the public shop page"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Edit Existing Product Details",
+    "description": "Check if an admin can update product details such as price, inventory, or description and changes persist accurately.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in to admin dashboard with admin credentials"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the existing product's edit page"
+      },
+      {
+        "type": "action",
+        "description": "Modify product price, inventory count, and description fields"
+      },
+      {
+        "type": "action",
+        "description": "Submit the updated product form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated product details are saved and visible in the product list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated details are reflected on the public product detail page"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Delete Product from Inventory",
+    "description": "Ensure that an admin can delete a product and the product is removed from all listings and user favorites.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to product management in admin dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Select a product and perform delete operation"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm product is removed from the database"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify product no longer appears in shop or favorites for any user"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Persistent Shopping Cart Functionality",
+    "description": "Validate that the shopping cart preserves added products, quantities, and changes persist across sessions and page reloads.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Visit the shop page and add multiple products with different quantities to the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify added items show correctly in the cart with accurate quantities"
+      },
+      {
+        "type": "action",
+        "description": "Reload the page or close and reopen the browser, then revisit the cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify cart content remains intact with saved products and quantities"
+      },
+      {
+        "type": "action",
+        "description": "Update quantity of an item and remove another"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm cart updates reflect the changes immediately and persist on reload"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Add and Remove Product from Favorites",
+    "description": "Test that authenticated users can add a product to favorites and remove it, with favorites persisting across sessions.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as a registered user"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to product detail and add the product to favorites"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product appears in the favorites list"
+      },
+      {
+        "type": "action",
+        "description": "Remove the product from favorites"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product is no longer in the favorites list"
+      },
+      {
+        "type": "action",
+        "description": "Log out and log back in"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify favorites persist correctly for the user"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Advanced Product Search and Filtering",
+    "description": "Verify functionality of searching products by keywords and filtering by categories, brands, and price ranges returns accurate results.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to shop page"
+      },
+      {
+        "type": "action",
+        "description": "Input search terms matching product names and keywords"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify displayed results match the search criteria"
+      },
+      {
+        "type": "action",
+        "description": "Apply category and brand filters"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the product list updates accordingly showing only relevant products"
+      },
+      {
+        "type": "action",
+        "description": "Apply price range filter"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify products displayed fall within the selected price range"
+      },
+      {
+        "type": "action",
+        "description": "Clear all filters and verify the full product list returns"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Dynamic Page Creation and Ordering",
+    "description": "Validate that admins can create dynamic pages with hierarchical structure and ordering which appear correctly on the public site.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to dynamic page management section"
+      },
+      {
+        "type": "action",
+        "description": "Create multiple pages with titles and set parent-child hierarchy"
+      },
+      {
+        "type": "action",
+        "description": "Set page display order for sibling pages"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pages are listed correctly with hierarchy in admin dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Access the public site and navigate to created pages"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pages load correctly following the defined order and hierarchy"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Role-Based Access Control Enforcement",
+    "description": "Check that role-based access control and Row-Level Security restricts data and operations properly for different user roles.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to access admin dashboard as unauthenticated user"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied and user is redirected appropriately"
+      },
+      {
+        "type": "action",
+        "description": "Log in as a regular user (non-admin)"
+      },
+      {
+        "type": "action",
+        "description": "Try to perform admin functions such as product CRUD via UI and API calls"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all admin functions are blocked for this user role"
+      },
+      {
+        "type": "action",
+        "description": "Log in as admin and perform product CRUD successfully"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify full access to admin features"
+      },
+      {
+        "type": "action",
+        "description": "Test accessing another admin's restricted data via API"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify Row-Level Security prevents unauthorized data access"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "WhatsApp Checkout Integration",
+    "description": "Verify that initiating checkout from the cart generates the correct order data and opens WhatsApp chat with prefilled order message.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Add multiple products to the cart with varying quantities"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the cart page"
+      },
+      {
+        "type": "action",
+        "description": "Click the WhatsApp checkout button"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the WhatsApp window or link opens with message containing detailed order information (products, quantities, prices)"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the message format is clear and accurate representing the cart content"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Admin Dashboard Full Functionality",
+    "description": "Validate that all admin dashboard features including product, category, featured product, and page management work correctly and data updates reflect promptly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in with admin credentials"
+      },
+      {
+        "type": "action",
+        "description": "Navigate through Admin Products, Categories, Featured Products, and Pages sections"
+      },
+      {
+        "type": "action",
+        "description": "Perform create, update, and delete operations in each section"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify data is updated instantly and accurately on UI and backend"
+      },
+      {
+        "type": "action",
+        "description": "Check for proper validation and error messages on invalid inputs"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Routing System Navigation and Security",
+    "description": "Test that routing correctly separates public and admin areas ensuring no unauthorized permissions or leaks occur.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Access various public pages like Home, Shop, Product Detail, About, and Contact"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pages load correctly and UI components render properly"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to navigate directly to admin URLs without authentication"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify redirection to login page or access denied message"
+      },
+      {
+        "type": "action",
+        "description": "Log in as admin and verify access to admin routing paths"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify successful navigation between admin subpages without errors or permission issues"
+      },
+      {
+        "type": "action",
+        "description": "Verify non-existent routes display a 404 not found page"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Analytics Dashboard Accuracy",
+    "description": "Ensure store performance and sales metrics in the analytics dashboard accurately reflect underlying data and update dynamically.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as admin"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to Analytics Dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify displayed sales, revenue, product performance, and user metrics match database contents"
+      },
+      {
+        "type": "action",
+        "description": "Perform product sales and order activities impacting analytics"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify analytics update accordingly to reflect recent sales and changes"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Responsive UI and Accessibility Check",
+    "description": "Validate that UI components render correctly across different devices and screen sizes and meet accessibility standards.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open public and admin pages on desktop, tablet, and mobile viewport sizes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify layout adjusts responsively without breaking elements or functionality"
+      },
+      {
+        "type": "assertion",
+        "description": "Check all interactive elements are keyboard navigable and accessible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify color contrast and ARIA attributes follow accessibility guidelines"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Error Handling and Invalid Input Validation",
+    "description": "Test how the system handles invalid inputs during product creation, login attempts, and cart operations with appropriate error messages.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to create a new product with missing mandatory fields or invalid data types"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify validation messages appear clearly and form submission is blocked"
+      },
+      {
+        "type": "action",
+        "description": "Attempt login with incorrect credentials multiple times"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error message for invalid login is displayed and rate limiting or lockout applies after repeated attempts"
+      },
+      {
+        "type": "action",
+        "description": "Add invalid quantity (e.g., negative number) to cart"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error message appears and cart does not update with invalid data"
+      }
+    ]
+  }
+]

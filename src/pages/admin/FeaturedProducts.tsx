@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProductStore } from "@/store/productStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
@@ -7,11 +7,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Star } from "lucide-react";
 
 const FeaturedProducts = () => {
-  const { products, featuredProducts, setFeaturedProduct } = useProductStore();
+  const { products, featuredProducts, setFeaturedProduct, fetchProducts, productsFetched } = useProductStore();
   const { toast } = useToast();
   const [selectedProducts, setSelectedProducts] = useState<string[]>(
     featuredProducts.map(p => p.id)
   );
+
+  // Fetch products if not already loaded
+  useEffect(() => {
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [productsFetched, fetchProducts]);
 
   const handleProductToggle = (productId: string) => {
     setSelectedProducts(prev => {

@@ -1,0 +1,206 @@
+{
+  "meta": {
+    "project": "Ijaz Brother Electric Store",
+    "date": "2025-10-04",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "Ijaz Brother Electric Store is a secure, dynamic web platform tailored for managing and showcasing electric products. Backed by Supabase and Neon databases, it offers rich product management, user role control, and an intuitive admin dashboard to streamline store operations while ensuring seamless user experience across browsing, shopping, and checkout.",
+  "core_goals": [
+    "Enable comprehensive product management with CRUD operations including categories, brands, and inventory.",
+    "Support dynamic page creation and management for flexible content presentation.",
+    "Implement secure role-based access control with Row-Level Security ensuring data integrity and privacy.",
+    "Provide an intuitive admin interface to manage store content, products, categories, and analytics.",
+    "Offer a seamless shopping experience with persistent cart, favorites, and WhatsApp-integrated checkout.",
+    "Enable advanced product search, filtering, and detailed product views for enriched user browsing.",
+    "Utilize modern tech stack (React, TypeScript, Tailwind CSS) for scalable, maintainable, and responsive UI/UX."
+  ],
+  "key_features": [
+    "Complete product CRUD with inventory, categories, and brand management.",
+    "Persistent shopping cart with add, remove, and update functionalities.",
+    "Favorites system for users to bookmark products.",
+    "Advanced product search, filtering, and browsing capabilities.",
+    "Detailed product pages with images, specifications, and direct actions.",
+    "Admin dashboard supporting product, category, featured product, and page management.",
+    "Database integration using Supabase for authentication and Neon for data storage ensuring robust backend.",
+    "Role-based access control with strict RLS policies for security.",
+    "Dynamic page system supporting hierarchical page types and display ordering.",
+    "WhatsApp checkout integration for easy order placement via chat.",
+    "Reusable UI component library with Radix UI and Tailwind styling.",
+    "Routing system for public and admin areas ensuring smooth navigation.",
+    "Analytics dashboard displaying store performance and sales metrics."
+  ],
+  "user_flow_summary": [
+    "User visits the public website to browse products using search and filters.",
+    "User views detailed product pages to check specifications and images.",
+    "User adds products to a persistent shopping cart and can update quantities or remove items.",
+    "User may save favorite products for quick access later.",
+    "Authenticated users can log in as admins to access the admin dashboard.",
+    "Admins manage products, categories, featured products, and dynamic pages through the dashboard interface.",
+    "Admins review analytics to monitor store performance and make data-driven decisions.",
+    "User checks out products via WhatsApp integration from the cart page.",
+    "Public access is restricted to content browsing; authenticated role-based access for sensitive operations."
+  ],
+  "validation_criteria": [
+    "All product CRUD operations work correctly with consistent data updates in the database.",
+    "Dynamic pages load correctly in the public site with proper ordering and hierarchy.",
+    "Access control policies via RLS are strictly enforced - only authorized roles can perform restricted actions.",
+    "Shopping cart persists correctly across sessions and reflects accurate item states.",
+    "WhatsApp checkout initiates the proper order data and contact flow.",
+    "Admin dashboard functions allow full management of products, categories, pages, and featured items.",
+    "Search and filter functions return relevant and accurate results efficiently.",
+    "UI components render responsively and are accessible across devices and browsers.",
+    "Routing correctly directs users between public pages and admin sections without permission leaks.",
+    "Analytics dashboard accurately records and displays key metrics and sales data."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Tailwind CSS",
+      "Zustand",
+      "React Router",
+      "Supabase",
+      "Neon Database",
+      "Radix UI",
+      "Lucide React",
+      "React Hook Form",
+      "TanStack Query"
+    ],
+    "features": [
+      {
+        "name": "Product Management",
+        "description": "Complete product CRUD operations with categories, brands, and inventory management",
+        "files": [
+          "src/store/productStore.ts",
+          "src/hooks/useProductData.ts",
+          "src/pages/admin/AdminProducts.tsx",
+          "src/pages/admin/AddProduct.tsx",
+          "src/pages/admin/EditProduct.tsx"
+        ]
+      },
+      {
+        "name": "Shopping Cart",
+        "description": "Persistent shopping cart with add/remove/update functionality",
+        "files": [
+          "src/store/cartStore.ts",
+          "src/pages/Cart.tsx",
+          "src/components/ProductCard.tsx"
+        ]
+      },
+      {
+        "name": "Favorites System",
+        "description": "User favorites with add/remove functionality",
+        "files": [
+          "src/store/favoriteStore.ts",
+          "src/pages/Favorites.tsx",
+          "src/components/ProductCard.tsx"
+        ]
+      },
+      {
+        "name": "Product Browsing",
+        "description": "Advanced product search, filtering, and browsing with categories",
+        "files": [
+          "src/pages/Shop.tsx",
+          "src/pages/Home.tsx",
+          "src/components/ProductCard.tsx",
+          "src/components/ui/search-suggestions.tsx"
+        ]
+      },
+      {
+        "name": "Product Details",
+        "description": "Detailed product view with images, specifications, and actions",
+        "files": [
+          "src/pages/ProductDetail.tsx",
+          "src/components/ProductCard.tsx"
+        ]
+      },
+      {
+        "name": "Admin Dashboard",
+        "description": "Complete admin interface for managing products, categories, and store operations",
+        "files": [
+          "src/pages/admin/AdminDashboard.tsx",
+          "src/pages/admin/AdminLogin.tsx",
+          "src/components/admin/AdminLayout.tsx",
+          "src/components/admin/AdminPages.tsx",
+          "src/store/adminStore.ts"
+        ]
+      },
+      {
+        "name": "Category Management",
+        "description": "Product category CRUD operations",
+        "files": [
+          "src/pages/admin/Categories.tsx",
+          "src/store/productStore.ts"
+        ]
+      },
+      {
+        "name": "Featured Products",
+        "description": "Featured product management and display",
+        "files": [
+          "src/pages/admin/FeaturedProducts.tsx",
+          "src/store/productStore.ts"
+        ]
+      },
+      {
+        "name": "Page Management",
+        "description": "Dynamic page creation and management system",
+        "files": [
+          "src/pages/admin/AdminPages.tsx",
+          "src/pages/PageProducts.tsx",
+          "src/store/pageStore.ts"
+        ]
+      },
+      {
+        "name": "Database Integration",
+        "description": "Hybrid database setup with Supabase auth and Neon database",
+        "files": [
+          "src/integrations/supabase/client.ts",
+          "src/integrations/supabase/types.ts",
+          "src/integrations/neon/client.ts"
+        ]
+      },
+      {
+        "name": "UI Components",
+        "description": "Reusable UI components with Radix UI and custom styling",
+        "files": [
+          "src/components/ui/",
+          "src/components/layout/Header.tsx",
+          "src/components/layout/Footer.tsx",
+          "src/components/HeroSection.tsx",
+          "src/components/StatsSection.tsx",
+          "src/components/TestimonialsSection.tsx"
+        ]
+      },
+      {
+        "name": "Routing System",
+        "description": "Complete routing with public and admin routes",
+        "files": [
+          "src/App.tsx",
+          "src/pages/Home.tsx",
+          "src/pages/Shop.tsx",
+          "src/pages/About.tsx",
+          "src/pages/Contact.tsx",
+          "src/pages/NotFound.tsx"
+        ]
+      },
+      {
+        "name": "WhatsApp Integration",
+        "description": "WhatsApp checkout functionality for cart orders",
+        "files": [
+          "src/pages/Cart.tsx",
+          "src/pages/ProductDetail.tsx"
+        ]
+      },
+      {
+        "name": "Analytics Dashboard",
+        "description": "Store analytics and statistics",
+        "files": [
+          "src/components/AdminAnalytics.tsx",
+          "src/components/ShopStats.tsx",
+          "src/components/SalesChart.tsx"
+        ]
+      }
+    ]
+  }
+}

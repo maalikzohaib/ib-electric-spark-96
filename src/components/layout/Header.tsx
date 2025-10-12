@@ -31,9 +31,7 @@ const Header = () => {
   const cartStore = useCartStore();
   const { products } = useProductStore();
 
-  useEffect(() => {
-    fetchPages();
-  }, [fetchPages]);
+  // Pages load via consolidated /api/boot on app start
   
   // Handle click outside to close dropdown and search
   useEffect(() => {

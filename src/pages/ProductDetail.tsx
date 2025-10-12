@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProductStore } from '@/store/productStore';
 import { useCartStore } from '@/store/cartStore';
@@ -12,10 +12,17 @@ import { useToast } from '@/hooks/use-toast';
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getProductById } = useProductStore();
+  const { getProductById, fetchProducts, productsFetched } = useProductStore();
   const { addToCart } = useCartStore();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavoriteStore();
   const { toast } = useToast();
+
+  // Fetch products if not already loaded
+  useEffect(() => {
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [productsFetched, fetchProducts]);
 
   const product = id ? getProductById(id) : undefined;
   const isProductFavorite = product ? isFavorite(product.id) : false;
