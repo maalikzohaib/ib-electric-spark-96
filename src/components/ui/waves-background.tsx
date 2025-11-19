@@ -272,10 +272,6 @@ export function Waves({
       requestAnimationFrame(tick)
     }
 
-    function onResize() {
-      setSize()
-      setLines()
-    }
     function onMouseMove(e) {
       updateMouse(e.pageX, e.pageY)
     }
@@ -298,15 +294,22 @@ export function Waves({
       }
     }
 
-    setSize()
-    setLines()
+    const resizeObserver = new ResizeObserver(() => {
+      setSize()
+      setLines()
+    })
+    if (container) {
+      resizeObserver.observe(container)
+    }
+
     requestAnimationFrame(tick)
-    window.addEventListener("resize", onResize)
     window.addEventListener("mousemove", onMouseMove)
     window.addEventListener("touchmove", onTouchMove, { passive: false })
 
     return () => {
-      window.removeEventListener("resize", onResize)
+      if (container) {
+        resizeObserver.unobserve(container)
+      }
       window.removeEventListener("mousemove", onMouseMove)
       window.removeEventListener("touchmove", onTouchMove)
     }

@@ -13,14 +13,13 @@ import SearchSuggestions from "@/components/ui/search-suggestions";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [hoveredPage, setHoveredPage] = useState<string | null>(null);
   const [isShopHovered, setIsShopHovered] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [expandedMobileItems, setExpandedMobileItems] = useState<string[]>([]);
   const shopDropdownRef = useRef<HTMLDivElement>(null);
-  const shopButtonRef = useRef<HTMLDivElement>(null);
+  const shopButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -125,12 +124,11 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-background shadow-card border-b sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        {
-          isSearchOpen && (
-            <div className="flex items-center h-16 animate-slide-down-quick">
-              <div ref={searchContainerRef} className="w-full relative">
+    <header className="sticky top-0 z-50 bg-gradient-to-b from-white/85 via-white/65 to-transparent backdrop-blur-xl">
+      <div className="container mx-auto px-4 py-4">
+        {isSearchOpen && (
+          <div className="flex items-center h-16 animate-slide-down-quick">
+            <div ref={searchContainerRef} className="relative w-full">
               <form onSubmit={handleSearch} className="w-full">
                 <div className="relative">
                   <Input
@@ -139,22 +137,22 @@ const Header = () => {
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-12 w-full pr-12 rounded-md border focus:border-input focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="h-12 w-full rounded-md border pr-12 focus:border-input focus-visible:ring-0 focus-visible:ring-offset-0"
                     onFocus={() => setShowSuggestions(searchQuery.trim().length > 0)}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
                     onKeyDown={(e) => {
                       const hasItems = computedSuggestions.length > 0;
                       if (!hasItems) {
-                        if (e.key === 'Enter') handleSearch(e);
+                        if (e.key === "Enter") handleSearch(e);
                         return;
                       }
-                      if (e.key === 'ArrowDown') {
+                      if (e.key === "ArrowDown") {
                         e.preventDefault();
                         setHighlightedIndex((prev) => Math.min(prev + 1, computedSuggestions.length - 1));
-                      } else if (e.key === 'ArrowUp') {
+                      } else if (e.key === "ArrowUp") {
                         e.preventDefault();
                         setHighlightedIndex((prev) => Math.max(prev - 1, 0));
-                      } else if (e.key === 'Enter') {
+                      } else if (e.key === "Enter") {
                         e.preventDefault();
                         if (highlightedIndex >= 0) {
                           const sel = computedSuggestions[highlightedIndex];
@@ -162,17 +160,17 @@ const Header = () => {
                         } else {
                           handleSearch(e);
                         }
-                      } else if (e.key === 'Escape') {
+                      } else if (e.key === "Escape") {
                         setShowSuggestions(false);
                         setIsSearchOpen(false);
                       }
                     }}
                   />
-                  <Button 
-                    type="submit" 
-                    variant="default" 
+                  <Button
+                    type="submit"
+                    variant="default"
                     size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 bg-primary text-white rounded-md"
+                    className="absolute right-1 top-1/2 h-10 w-10 -translate-y-1/2 rounded-md bg-primary text-white"
                   >
                     <Search className="h-5 w-5" />
                   </Button>
@@ -187,113 +185,230 @@ const Header = () => {
                   />
                 </div>
               </form>
-              </div>
             </div>
+          </div>
         )}
         {!isSearchOpen && (
-          <div className="flex items-center justify-between h-16">
-            {/* Logo - Left */}
-          <Link to="/" className="flex items-center">
-            <img 
-              src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png" 
-              alt="Ijaz Brothers Electric Store" 
-              className="h-12 w-auto"
-            />
-          </Link>
+          <div className="relative">
+            <div
+              className={cn(
+                "flex h-16 w-full items-center justify-between rounded-3xl border border-slate-200/60 bg-white/90 px-4 shadow-[0_18px_44px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-all lg:px-8",
+                "dark:border-slate-700/60 dark:bg-slate-900/85",
+                isShopHovered && "ring-1 ring-primary/25 shadow-[0_24px_60px_rgba(59,130,246,0.18)]"
+              )}
+            >
+              {/* Logo - Left */}
+              <Link to="/" className="flex items-center">
+                <img
+                  src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png"
+                  alt="Ijaz Brothers Electric Store"
+                  className="h-12 w-auto"
+                />
+              </Link>
 
-          {/* Navigation - Desktop - Center */}
-          <div className="hidden lg:flex items-center justify-center flex-1">
-            <nav className="flex space-x-6 items-center">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className={`text-sm font-medium transition-colors hover:text-primary uppercase ${
-                    location.pathname === item.path
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {item.name}
+              {/* Navigation - Desktop - Center */}
+              <div className="hidden flex-1 items-center justify-center lg:flex">
+                <nav className="flex items-center gap-8">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      className={cn(
+                        "relative text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 transition-all duration-200 hover:text-primary",
+                        "after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-primary/70 after:transition-transform after:duration-300",
+                        location.pathname === item.path ? "text-primary after:scale-x-100" : "hover:after:scale-x-100"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+
+                  {/* Shop Button + Floating Dropdown (relative wrapper) */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      className={cn(
+                        "group flex items-center gap-2 rounded-full border border-transparent px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-600 transition-all duration-200",
+                        "cursor-pointer hover:border-primary/40 hover:bg-primary/5 hover:text-primary",
+                        isShopHovered && "border-primary/60 bg-primary/10 text-primary shadow-[inset_0_2px_12px_rgba(59,130,246,0.25)]"
+                      )}
+                      ref={shopButtonRef}
+                      onMouseEnter={handleShopMouseEnter}
+                      onMouseLeave={handleShopMouseLeave}
+                      onFocus={handleShopMouseEnter}
+                      onBlur={handleShopMouseLeave}
+                      aria-expanded={isShopHovered}
+                      aria-haspopup="true"
+                    >
+                      <span>Shop</span>
+                      <ChevronDown
+                        className={cn("h-3 w-3 transition-transform duration-200", isShopHovered && "-rotate-180")}
+                      />
+                    </button>
+
+                    {/* Compact floating dropdown card positioned under the Shop button */}
+                    {isShopHovered && (
+                      <div
+                        ref={shopDropdownRef}
+                        className="absolute left-0 top-full z-50 mt-2 min-w-[220px] max-w-[320px] w-auto rounded-[12px] bg-white border border-slate-200 shadow-[0_8px_24px_rgba(2,6,23,0.08)] p-2 transition-all duration-200 ease-out opacity-100 transform translate-y-0 dark:bg-slate-900 dark:border-slate-700"
+                        onMouseEnter={handleShopMouseEnter}
+                        onMouseLeave={handleShopMouseLeave}
+                        onFocus={handleShopMouseEnter}
+                        onBlur={handleShopMouseLeave}
+                        role="menu"
+                        aria-label="Shop menu"
+                      >
+                        <div className="flex flex-col gap-1">
+                          {mainPagesWithChildren.map((mainPage, mIdx) => (
+                            <div key={mainPage.id} className="group">
+                              <div className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                                {mainPage.name}
+                              </div>
+                              {mainPage.children && mainPage.children.length > 0 ? (
+                                <div className="flex flex-col">
+                                  {mainPage.children.map((subPage) => (
+                                    <Link
+                                      key={subPage.id}
+                                      to={`/${mainPage.slug}/${subPage.slug}`}
+                                      className="block px-3 py-2 text-sm text-slate-700 rounded-[8px] hover:bg-slate-100 transition-colors duration-150"
+                                      role="menuitem"
+                                      onClick={() => setIsShopHovered(false)}
+                                    >
+                                      {subPage.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              ) : (
+                                <Link
+                                  to={`/${mainPage.slug}`}
+                                  className="block px-3 py-2 text-sm text-slate-700 rounded-[8px] hover:bg-slate-100 transition-colors duration-150"
+                                  role="menuitem"
+                                  onClick={() => setIsShopHovered(false)}
+                                >
+                                  View
+                                </Link>
+                              )}
+                              {mIdx < mainPagesWithChildren.length - 1 && <div className="mx-2 my-1 h-px bg-slate-100" />}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </nav>
+              </div>
+
+              {/* Right Side - Search, Favorites, Cart */}
+              <div className="flex items-center gap-3">
+                <div className="relative hidden lg:block">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative rounded-full border border-transparent bg-white/60 text-slate-600 transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+                    onClick={toggleSearch}
+                    data-search-button
+                  >
+                    <Search className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                {favoriteStore.getFavoritesCount() > 0 && (
+                  <Link to="/favorites">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative rounded-full border border-transparent bg-white/60 text-slate-600 transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+                    >
+                      <Heart className="h-5 w-5 fill-red-500 text-red-500" />
+                      <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
+                        {favoriteStore.getFavoritesCount()}
+                      </span>
+                    </Button>
+                  </Link>
+                )}
+
+                <Link to="/cart">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative rounded-full border border-transparent bg-white/60 text-slate-600 transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+                  >
+                    {cartStore.getCartCount() > 0 ? (
+                      <>
+                        <ShoppingCart className="h-5 w-5 text-primary" />
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">
+                          {cartStore.getCartCount()}
+                        </span>
+                      </>
+                    ) : (
+                      <ShoppingCart className="h-5 w-5" />
+                    )}
+                  </Button>
                 </Link>
-              ))}
-              
-              {/* Dynamic Pages Navigation removed - pages now only in Shop dropdown */}
-              
-              {/* Shop Button */}
-              <div 
-                className="relative"
-                ref={shopButtonRef}
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full border border-transparent bg-white/60 text-slate-600 transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:text-primary lg:hidden"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  aria-label="Toggle navigation menu"
+                >
+                  {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                </Button>
+              </div>
+            </div>
+
+            {/* Shop mega menu */}
+            {isShopHovered && (
+              <div
+                ref={shopDropdownRef}
+                className="absolute left-1/2 top-full z-50 hidden w-[min(92vw,_1080px)] -translate-x-1/2 translate-y-6 overflow-hidden rounded-3xl border border-slate-200/70 bg-white/95 shadow-[0_28px_80px_rgba(15,23,42,0.18)] backdrop-blur-2xl transition-all lg:block dark:border-slate-700/70 dark:bg-slate-900/92"
                 onMouseEnter={handleShopMouseEnter}
                 onMouseLeave={handleShopMouseLeave}
+                onFocus={handleShopMouseEnter}
+                onBlur={handleShopMouseLeave}
               >
-                <div className="flex items-center text-sm font-medium text-muted-foreground hover:text-primary cursor-pointer uppercase">
-                  Shop
-                  <ChevronDown className="ml-1 h-3 w-3" />
+                <span className="pointer-events-none absolute left-1/2 top-0 h-12 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/25 blur-2xl" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.16),transparent_65%)]" />
+                <div className="relative grid gap-8 px-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+                  {/* Main categories view */}
+                  {mainPagesWithChildren.map((mainPage, index) => (
+                    <div
+                      key={mainPage.id}
+                      className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-500"
+                      style={{ animationDelay: `${index * 75}ms` }}
+                    >
+                      <div className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-500">
+                        {mainPage.name}
+                      </div>
+                      {mainPage.children && mainPage.children.length > 0 ? (
+                        <div className="space-y-2.5">
+                          {mainPage.children.map((subPage) => (
+                            <Link
+                              key={subPage.id}
+                              to={`/${mainPage.slug}/${subPage.slug}`}
+                              className="group flex items-center gap-4 rounded-2xl border border-transparent bg-white/0 px-4 py-3 text-sm font-medium text-slate-600 transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:bg-primary/5 hover:text-primary hover:shadow-xl"
+                            >
+                              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-white group-hover:shadow-lg">
+                                <ChevronRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                              </span>
+                              <span className="flex-1">{subPage.name}</span>
+                              <Plus className="h-4 w-4 opacity-0 text-primary transition-opacity duration-300 group-hover:opacity-100" />
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-slate-200/80 bg-slate-50/70 px-4 py-6 text-center text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
+                          No subcategories
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
-            </nav>
-          </div>
-
-          {/* Right Side - Search, Favorites, Cart */}
-          <div className="flex items-center space-x-4">
-            {/* Search Button and Input - Only visible on desktop */}
-            <div className="relative hidden lg:block">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="relative" 
-                onClick={toggleSearch}
-                data-search-button
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-              
-              {/* inline dropdown removed; full-width bar appears instead */}
-            </div>
-            
-            {/* Favorites Button - Only shown when there are favorites */}
-            {favoriteStore.getFavoritesCount() > 0 && (
-              <Link to="/favorites">
-                <Button variant="ghost" size="icon" className="relative">
-                  <Heart className="h-5 w-5 fill-red-500 text-red-500" />
-                  <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {favoriteStore.getFavoritesCount()}
-                  </span>
-                </Button>
-              </Link>
             )}
-            
-            {/* Cart Button */}
-            <Link to="/cart">
-              <Button variant="ghost" size="icon" className="relative">
-                {cartStore.getCartCount() > 0 ? (
-                  <>
-                    <ShoppingCart className="h-5 w-5 text-primary" />
-                    <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartStore.getCartCount()}
-                    </span>
-                  </>
-                ) : (
-                  <ShoppingCart className="h-5 w-5" />
-                )}
-              </Button>
-             </Link>
-            
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
           </div>
         )}
-
-
 
         {/* Mobile Navigation */}
         <div className="lg:hidden">
@@ -412,47 +527,6 @@ const Header = () => {
             </div>
           </nav>
         </div>
-
-        {/* Full-page Shop dropdown menu */}
-        {isShopHovered && (
-          <div 
-            ref={shopDropdownRef}
-            className="fixed left-0 w-screen bg-white border-b border-gray-200 shadow-lg z-50" 
-            style={{ top: '4rem', width: '100vw' }}
-            onMouseEnter={handleShopMouseEnter}
-            onMouseLeave={handleShopMouseLeave}
-          >
-            <div className="container mx-auto px-4 py-8 flex justify-center">
-              <div className="grid grid-cols-4 gap-12 max-w-5xl">
-                {/* Main categories view */}
-                {mainPagesWithChildren.map((mainPage) => (
-                  <div key={mainPage.id} className="space-y-4">
-                    <div className="text-2xl font-semibold text-primary border-b pb-2 mb-2 pointer-events-none">
-                      {mainPage.name}
-                    </div>
-                    {mainPage.children && mainPage.children.length > 0 ? (
-                      <div className="space-y-2">
-                        {mainPage.children.map((subPage) => (
-                          <Link
-                            key={subPage.id}
-                            to={`/${mainPage.slug}/${subPage.slug}`}
-                            className="block text-lg text-muted-foreground hover:text-primary transition-colors relative group"
-                          >
-                            <span className="group-hover:text-primary group-hover:translate-x-1 transition-all duration-200 inline-block">
-                              {subPage.name}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-sm text-muted-foreground">No subcategories available</div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );
