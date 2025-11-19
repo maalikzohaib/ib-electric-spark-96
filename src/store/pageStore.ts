@@ -125,7 +125,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
   updatePage: async (id: string, updates: Partial<Page>) => {
     set({ loading: true, error: null });
     try {
-      const resp = await fetch(`/api/pages/${id}`, {
+      const resp = await fetch(`/api/pages?id=${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates)
@@ -155,7 +155,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
     set({ loading: true, error: null });
     try {
       // Cascade behavior would be implemented server-side
-      await fetch(`/api/pages/${id}`, { method: 'DELETE' })
+      await fetch(`/api/pages?id=${id}`, { method: 'DELETE' })
 
       set((state) => ({
         pages: state.pages.filter((page) => page.id !== id),
@@ -180,7 +180,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
         id: page.id,
         display_order: index + 1
       }));
-      await fetch('/api/pages/reorder', {
+      await fetch('/api/pages?action=reorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ updates })

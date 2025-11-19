@@ -119,7 +119,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   updateProduct: async (id, productUpdate) => {
     set({ loading: true, error: null });
     try {
-      const resp = await fetch(`/api/products/${id}`, {
+      const resp = await fetch(`/api/products?id=${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productUpdate),
@@ -143,7 +143,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   deleteProduct: async (id) => {
     set({ loading: true, error: null });
     try {
-      const resp = await fetch(`/api/products/${id}`, { method: 'DELETE' })
+      const resp = await fetch(`/api/products?id=${id}`, { method: 'DELETE' })
       if (!resp.ok) throw new Error('Failed to delete product')
 
       set((state) => ({
@@ -200,7 +200,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   updateCategory: async (id, categoryUpdate) => {
     set({ loading: true, error: null });
     try {
-      const resp = await fetch(`/api/categories/${id}`, {
+      const resp = await fetch(`/api/categories?id=${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(categoryUpdate),
@@ -224,7 +224,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   deleteCategory: async (id) => {
     set({ loading: true, error: null });
     try {
-      const resp = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
+      const resp = await fetch(`/api/categories?id=${id}`, { method: 'DELETE' })
       if (!resp.ok) throw new Error('Failed to delete category')
 
       set((state) => ({
@@ -255,7 +255,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   setFeaturedProduct: async (productId, featured) => {
     set({ loading: true, error: null });
     try {
-      const resp = await fetch(`/api/products/${productId}/featured`, {
+      const resp = await fetch(`/api/products?id=${productId}&action=featured`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ featured }),
