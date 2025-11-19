@@ -8,6 +8,21 @@ const CACHE_TTL_MS = 30 * 1000
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
+    // Check environment variables
+    const supabaseUrl = process.env.SUPABASE_URL
+    const supabaseKey = process.env.SUPABASE_SERVICE_KEY
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing environment variables:', {
+        SUPABASE_URL: supabaseUrl ? 'set' : 'MISSING',
+        SUPABASE_SERVICE_KEY: supabaseKey ? 'set' : 'MISSING'
+      })
+      return res.status(500).json({ 
+        error: 'Server configuration error',
+        details: 'Missing required environment variables. Please check Vercel environment settings.'
+      })
+    }
+
     const cached = cache.get<any>(CACHE_KEY)
     if (cached) {
       res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate')
@@ -53,7 +68,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json(payload)
   } catch (err: any) {
     console.error('Error in /api/boot:', err)
-    return res.status(500).json({ error: err.message || 'Internal Server Error' })
+    console.error('Error details:', {
+      message: err.message,
+      code: err.code,
+      details: err.details,
+      hint: err.hint,
+      stack: err.stack
+    })
+    return res.status(500).json({ 
+      error: err.message || 'Internal Server Error',
+      code: err.code || 'UNKNOWN_ERROR',
+      hint: err.hint || 'Check server logs for details'
+    })
   }
 }
 

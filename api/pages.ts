@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabase } from '../src/lib/db.js'
-import cache from '../src/lib/cache.js'
+import { supabase } from '../src/lib/db'
+import cache from '../src/lib/cache'
 
 function slugify(input: string) {
   return (input || '')
