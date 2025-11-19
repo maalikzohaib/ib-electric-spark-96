@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { supabase } from '../../src/lib/db'
+import cache from '../../src/lib/cache'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -22,6 +23,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         throw error
       }
     }
+    
+    // Invalidate boot cache so fresh data is fetched
+    cache.del('boot:data')
     
     return res.status(204).end()
   } catch (err: any) {

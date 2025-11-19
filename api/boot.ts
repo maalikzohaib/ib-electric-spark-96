@@ -10,7 +10,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const cached = cache.get<any>(CACHE_KEY)
     if (cached) {
-      res.setHeader('Cache-Control', 'public, max-age=60')
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate')
       return res.status(200).json(cached)
     }
 
@@ -48,7 +48,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Cache in-memory
     cache.set(CACHE_KEY, payload, CACHE_TTL_MS)
 
-    res.setHeader('Cache-Control', 'public, max-age=60')
+    // Use no-cache for browser to always revalidate, but allow CDN caching
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate')
     return res.status(200).json(payload)
   } catch (err: any) {
     console.error('Error in /api/boot:', err)

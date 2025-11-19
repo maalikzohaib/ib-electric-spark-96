@@ -216,7 +216,7 @@ const AdminPages = () => {
   const { pages, fetchPages, deletePage, getMainPagesWithChildren, reorderPages } = usePageStore();
 
   useEffect(() => {
-    fetchPages();
+    fetchPages(); // Load pages if not already loaded
   }, [fetchPages]);
 
   const mainPagesWithChildren = getMainPagesWithChildren();

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { supabase } from '../../src/lib/db'
+import cache from '../../src/lib/cache'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -138,6 +139,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         })
       }
       
+      // Invalidate boot cache so fresh data is fetched
+      cache.del('boot:data')
+      
       console.log('�o. Page updated successfully:', data)
       return res.status(200).json(data)
     }
@@ -175,6 +179,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         console.error('Delete error:', deleteError)
         throw deleteError
       }
+      
+      // Invalidate boot cache so fresh data is fetched
+      cache.del('boot:data')
       
       return res.status(204).end()
     }

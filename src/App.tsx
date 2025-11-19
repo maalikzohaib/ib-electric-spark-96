@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { setQueryClient } from "@/lib/queryClient";
 import { createBrowserRouter, RouterProvider, useParams, Navigate, ScrollRestoration } from "react-router-dom";
 import { useProductData } from "@/hooks/useProductData";
 import { Navbar1 } from "./components/ui/navbar-1";
@@ -45,6 +46,9 @@ const MainPageRedirect = () => {
 };
 
 const queryClient = new QueryClient();
+
+// Make query client globally accessible for cache invalidation
+setQueryClient(queryClient);
 
 // Layout component to wrap public routes
 const PublicLayout = ({ children }: { children: React.ReactNode }) => (

@@ -10,12 +10,19 @@ export const useProductData = () => {
   const query = useQuery({
     queryKey: ['boot'],
     queryFn: async () => {
-      const resp = await fetch('/api/boot')
+      // Add cache-busting timestamp for critical data
+      const resp = await fetch('/api/boot', {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       if (!resp.ok) throw new Error('Failed to load initial data')
       return resp.json()
     },
-    staleTime: 60_000,
-    refetchOnWindowFocus: false,
+    staleTime: 30_000, // Reduced from 60s to 30s
+    refetchOnWindowFocus: true, // Changed to true to refetch when user returns to tab
+    refetchOnMount: true, // Always refetch when component mounts
   })
 
   useEffect(() => {

@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { invalidateBootCache } from '@/lib/queryClient';
+
 let pagesInFlight: Promise<void> | null = null;
 
 export interface Page {
@@ -22,15 +24,15 @@ interface PageStore {
   mainPages: PageWithChildren[];
   loading: boolean;
   error: string | null;
-  
+
   // CRUD operations
-  fetchPages: () => Promise<void>;
+  fetchPages: (force?: boolean) => Promise<void>;
   createMainPage: (name: string) => Promise<Page>;
   createSubPage: (name: string, parentId: string) => Promise<Page>;
   updatePage: (id: string, updates: Partial<Page>) => Promise<void>;
   deletePage: (id: string, cascadeDelete?: boolean) => Promise<void>;
   reorderPages: (pages: Page[]) => Promise<void>;
-  
+
   // Helper functions
   getPageById: (id: string) => Page | undefined;
   getMainPagesWithChildren: () => PageWithChildren[];
@@ -46,9 +48,10 @@ export const usePageStore = create<PageStore>((set, get) => ({
   loading: false,
   error: null,
 
-  fetchPages: async () => {
-    // Avoid duplicate boot fetch; if pages already loaded, skip
-    if (get().pages.length > 0) return;
+  fetchPages: async (force: boolean = false) => {
+    // Skip if pages already loaded and not forcing refresh
+    if (!force && get().pages.length > 0) return;
+    // Avoid duplicate concurrent fetches
     if (pagesInFlight) { await pagesInFlight; return; }
     set({ loading: true, error: null });
     try {
@@ -82,6 +85,10 @@ export const usePageStore = create<PageStore>((set, get) => ({
       set((state) => ({ pages: [...state.pages, data], loading: false }))
       const mainPagesWithChildren = get().getMainPagesWithChildren();
       set({ mainPages: mainPagesWithChildren });
+      
+      // Invalidate React Query cache to ensure fresh data on next fetch
+      invalidateBootCache();
+      
       return data
     } catch (error) {
       console.error('Error creating main page:', error);
@@ -103,6 +110,10 @@ export const usePageStore = create<PageStore>((set, get) => ({
       set((state) => ({ pages: [...state.pages, data], loading: false }));
       const mainPagesWithChildren = get().getMainPagesWithChildren();
       set({ mainPages: mainPagesWithChildren });
+      
+      // Invalidate React Query cache to ensure fresh data on next fetch
+      invalidateBootCache();
+      
       return data;
     } catch (error) {
       console.error('Error creating subpage:', error);
@@ -130,6 +141,9 @@ export const usePageStore = create<PageStore>((set, get) => ({
       }));
       const mainPagesWithChildren = get().getMainPagesWithChildren();
       set({ mainPages: mainPagesWithChildren });
+      
+      // Invalidate React Query cache to ensure fresh data on next fetch
+      invalidateBootCache();
     } catch (error) {
       console.error('Error updating page:', error);
       set({ error: (error as Error).message, loading: false });
@@ -149,6 +163,9 @@ export const usePageStore = create<PageStore>((set, get) => ({
       }));
       const mainPagesWithChildren = get().getMainPagesWithChildren();
       set({ mainPages: mainPagesWithChildren });
+      
+      // Invalidate React Query cache to ensure fresh data on next fetch
+      invalidateBootCache();
     } catch (error) {
       console.error('Error deleting page:', error);
       set({ error: (error as Error).message, loading: false });
@@ -179,6 +196,9 @@ export const usePageStore = create<PageStore>((set, get) => ({
       }));
       const mainPagesWithChildren = get().getMainPagesWithChildren();
       set({ mainPages: mainPagesWithChildren });
+      
+      // Invalidate React Query cache to ensure fresh data on next fetch
+      invalidateBootCache();
     } catch (error) {
       console.error('Error reordering pages:', error);
       set({ error: (error as Error).message, loading: false });
@@ -194,7 +214,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
     const { pages } = get();
     const mainPages = pages.filter(p => p.type === 'main')
       .sort((a, b) => a.display_order - b.display_order);
-    
+
     return mainPages.map(mainPage => ({
       ...mainPage,
       children: pages

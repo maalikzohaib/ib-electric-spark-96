@@ -25,7 +25,7 @@ const PageProducts = () => {
   // All hooks must be called before any conditional returns
   useEffect(() => {
     const loadData = async () => {
-      await fetchPages();
+      await fetchPages(); // Load pages if not already loaded
       // Fetch products if not already loaded
       if (!productsFetched) {
         await fetchProducts();

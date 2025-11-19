@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { supabase } from '../../src/lib/db.js'
+import cache from '../../src/lib/cache.js'
 
 function slugify(input: string) {
   return (input || '')
@@ -93,6 +94,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('Insert error:', error)
       throw error
     }
+
+    // Invalidate boot cache so fresh data is fetched
+    cache.del('boot:data')
 
     return res.status(200).json(data)
   } catch (err: any) {
