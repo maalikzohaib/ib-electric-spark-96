@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabase } from '../src/lib/db'
-import cache from '../src/lib/cache'
+import { createClient } from '@supabase/supabase-js'
 
 function slugify(input: string) {
   return (input || '')
@@ -15,10 +14,28 @@ function slugify(input: string) {
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
+// Create Supabase client
+const getSupabase = () => {
+  const supabaseUrl = process.env.SUPABASE_URL || 'https://okbomxxronimfqehcjvz.supabase.co'
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY
+  
+  if (!supabaseKey) {
+    throw new Error('SUPABASE_SERVICE_KEY is not set')
+  }
+  
+  return createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { id, action } = req.query as { id?: string; action?: string }
 
   try {
+    const supabase = getSupabase()
     // POST /api/pages (Create new page)
     if (req.method === 'POST' && !id && !action) {
       const { name, type, parent_id } = (req.body || {}) as { name?: string; type?: 'main' | 'sub'; parent_id?: string | null }
@@ -95,7 +112,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         throw error
       }
 
-      cache.del('boot:data')
       return res.status(200).json(data)
     }
 
@@ -121,7 +137,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
       
-      cache.del('boot:data')
       return res.status(204).end()
     }
 
@@ -239,7 +254,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         })
       }
       
-      cache.del('boot:data')
       return res.status(200).json(data)
     }
 
@@ -275,7 +289,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         throw deleteError
       }
       
-      cache.del('boot:data')
       return res.status(204).end()
     }
 

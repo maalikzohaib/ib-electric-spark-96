@@ -1,10 +1,28 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabase } from '../src/lib/db'
+import { createClient } from '@supabase/supabase-js'
+
+// Create Supabase client
+const getSupabase = () => {
+  const supabaseUrl = process.env.SUPABASE_URL || 'https://okbomxxronimfqehcjvz.supabase.co'
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY
+  
+  if (!supabaseKey) {
+    throw new Error('SUPABASE_SERVICE_KEY is not set')
+  }
+  
+  return createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { id } = req.query as { id?: string }
 
   try {
+    const supabase = getSupabase()
     // POST /api/categories (Create new category)
     if (req.method === 'POST' && !id) {
       const c = req.body || {}
