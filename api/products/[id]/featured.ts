@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabase } from '../../../src/lib/db'
+import { supabase } from '../../../src/lib/db.js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { id } = req.query as { id: string }
@@ -7,14 +7,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' })
-    
+
     const { featured } = req.body || {}
-    
+
     const { error } = await supabase
       .from('products')
-      .update({ 
-        featured: !!featured, 
-        updated_at: new Date().toISOString() 
+      .update({
+        featured: !!featured,
+        updated_at: new Date().toISOString()
       })
       .eq('id', id)
 

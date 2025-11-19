@@ -1,5 +1,6 @@
+```typescript
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabase } from '../../src/lib/db'
+import { supabase } from '../src/lib/db.js'.js'
 
 function slugify(input: string) {
   return (input || '')
@@ -47,7 +48,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       
       resolvedParent = parent_id
-      baseSlug = `${parentData.slug}-${baseSlug}`
+      baseSlug = `${ parentData.slug } -${ baseSlug } `
     }
 
     // Check if slug exists and find unique slug
@@ -60,7 +61,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .limit(1)
         
       if (!existing || existing.length === 0) break
-      slug = `${baseSlug}-${suffix}`
+      slug = `${ baseSlug } -${ suffix } `
     }
 
     // Get next display order
