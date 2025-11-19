@@ -10,8 +10,7 @@ import { Lock } from "lucide-react";
 const AdminLogin = () => {
   const {
     isAuthenticated,
-    login,
-    logout
+    login
   } = useAdminStore();
   const {
     toast
@@ -20,13 +19,6 @@ const AdminLogin = () => {
     username: '',
     password: ''
   });
-
-  // Always ensure user is logged out when accessing login page
-  React.useEffect(() => {
-    logout();
-    localStorage.clear(); // Clear all localStorage data
-    sessionStorage.clear(); // Clear all sessionStorage data
-  }, [logout]);
   if (isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
   }
@@ -56,46 +48,46 @@ const AdminLogin = () => {
     }));
   };
   return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-elegant mx-auto">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-primary/10 p-3 rounded-full">
-              <Lock className="h-8 w-8 text-primary" />
-            </div>
+    <Card className="w-full max-w-md shadow-elegant mx-auto">
+      <CardHeader className="text-center">
+        <div className="flex justify-center mb-4">
+          <div className="bg-primary/10 p-3 rounded-full">
+            <Lock className="h-8 w-8 text-primary" />
           </div>
-          <CardTitle className="text-xl sm:text-2xl">Admin Login</CardTitle>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Access the Ijaz Brothers Electric Store admin panel
-          </p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" name="username" type="text" required value={credentials.username} onChange={handleInputChange} placeholder="Enter username" />
-            </div>
-            
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required value={credentials.password} onChange={handleInputChange} placeholder="Enter password" />
-            </div>
-            
-            <Button type="submit" variant="store" className="w-full">
-              Login
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            
-            
-            <div className="mt-4">
-              <p className="text-xs text-muted-foreground font-medium">
-                admin only
-              </p>
-            </div>
+        </div>
+        <CardTitle className="text-xl sm:text-2xl">Admin Login</CardTitle>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Access the Ijaz Brothers Electric Store admin panel
+        </p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="username">Username</Label>
+            <Input id="username" name="username" type="text" required value={credentials.username} onChange={handleInputChange} placeholder="Enter username" />
           </div>
-        </CardContent>
-      </Card>
-    </div>;
+
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" name="password" type="password" required value={credentials.password} onChange={handleInputChange} placeholder="Enter password" />
+          </div>
+
+          <Button type="submit" variant="store" className="w-full">
+            Login
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center">
+
+
+          <div className="mt-4">
+            <p className="text-xs text-muted-foreground font-medium">
+              admin only
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </div>;
 };
 export default AdminLogin;

@@ -1,11 +1,11 @@
 import { Navigate, Link, useLocation } from "react-router-dom";
 import { useAdminStore } from "@/store/adminStore";
 import { Button } from "@/components/ui/enhanced-button";
-import { 
-  LayoutDashboard, 
-  Package, 
-  Plus, 
-  Star, 
+import {
+  LayoutDashboard,
+  Package,
+  Plus,
+  Star,
   Tag,
   LogOut,
   FileText,
@@ -19,22 +19,27 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
-  const { isAuthenticated, logout } = useAdminStore();
+  const { isAuthenticated, logout, checkSession } = useAdminStore();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Check session on mount and route change
+  useEffect(() => {
+    checkSession();
+  }, [location.pathname, checkSession]);
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Initial check
     checkMobile();
-    
+
     // Add event listener
     window.addEventListener('resize', checkMobile);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -95,18 +100,18 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-2 md:space-x-4">
               {/* Mobile menu toggle */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden" 
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               >
                 {isSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
-              
-              <img 
-                src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png" 
-                alt="Ijaz Brothers Electric Store" 
+
+              <img
+                src="/lovable-uploads/2ffc2111-6050-4ee5-b5f5-0768169c2a5b.png"
+                alt="Ijaz Brothers Electric Store"
                 className="h-8 w-auto"
               />
               <h1 className="text-lg md:text-xl font-bold text-foreground">Admin</h1>
@@ -120,9 +125,9 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                   Back to Website
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                size={isMobile ? "sm" : "default"} 
+              <Button
+                variant="outline"
+                size={isMobile ? "sm" : "default"}
                 onClick={handleLogout}
                 className="whitespace-nowrap"
               >
@@ -137,14 +142,14 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       <div className="flex relative">
         {/* Mobile Sidebar Overlay */}
         {isSidebarOpen && isMobile && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40"
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
-        
+
         {/* Sidebar */}
-        <aside 
+        <aside
           className={`${isMobile ? 'fixed left-0 top-16 bottom-0 z-50' : 'relative'} 
             ${isMobile && !isSidebarOpen ? '-translate-x-full' : 'translate-x-0'}
             w-64 bg-card border-r min-h-[calc(100vh-64px)] transition-transform duration-300 ease-in-out`}
@@ -156,11 +161,10 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
+                  className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
                   onClick={() => isMobile && setIsSidebarOpen(false)}
                 >
                   {item.icon}

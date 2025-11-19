@@ -1,6 +1,5 @@
-```typescript
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { supabase } from '../src/lib/db.js'.js'
+import { supabase } from '../../src/lib/db.js'
 
 function slugify(input: string) {
   return (input || '')
@@ -35,20 +34,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!parent_id) {
         return res.status(400).json({ error: 'parent_id required for sub page' })
       }
-      
+
       // Get parent page slug using Supabase
       const { data: parentData, error: parentError } = await supabase
         .from('pages')
         .select('slug')
         .eq('id', parent_id)
         .single()
-        
+
       if (parentError || !parentData) {
         return res.status(400).json({ error: 'Invalid parent_id' })
       }
-      
+
       resolvedParent = parent_id
-      baseSlug = `${ parentData.slug } -${ baseSlug } `
+      baseSlug = `${parentData.slug}-${baseSlug}`
     }
 
     // Check if slug exists and find unique slug
@@ -59,9 +58,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .select('id')
         .eq('slug', slug)
         .limit(1)
-        
+
       if (!existing || existing.length === 0) break
-      slug = `${ baseSlug } -${ suffix } `
+      slug = `${baseSlug}-${suffix}`
     }
 
     // Get next display order
@@ -71,7 +70,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .is('parent_id', type === 'main' ? null : resolvedParent)
       .order('display_order', { ascending: false })
       .limit(1)
-      
+
     const displayOrder = orderData && orderData.length > 0 ? (orderData[0].display_order || 0) + 1 : 1
 
     // Insert new page using Supabase
