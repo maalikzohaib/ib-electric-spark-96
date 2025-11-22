@@ -40,46 +40,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('📡 Fetching data from Supabase...')
 
-    // Fetch data using Supabase query builder with error resilience
-    let pagesResult, categoriesResult, featuredProductsResult
-    
-    try {
-      [pagesResult, categoriesResult, featuredProductsResult] = await Promise.all([
-        supabase
-          .from('pages')
-          .select('*'),
-        
-        supabase
-          .from('categories')
-          .select('id, name, icon')
-          .order('name', { ascending: true }),
-        
-        supabase
-          .from('products')
-          .select('id, name, price, image_url, brand')
-          .eq('featured', true)
-          .order('created_at', { ascending: false })
-          .limit(6)
-      ])
-    } catch (queryError: any) {
-      console.error('❌ Query execution failed:', queryError)
-      // Return default empty results if queries fail
-      pagesResult = { data: [], error: null }
-      categoriesResult = { data: [], error: null }
-      featuredProductsResult = { data: [], error: null }
-    }
+    // Fetch data using Supabase query builder
+    const [pagesResult, categoriesResult, featuredProductsResult] = await Promise.all([
+      supabase
+        .from('pages')
+        .select('*'),
+      
+      supabase
+        .from('categories')
+        .select('id, name, icon')
+        .order('name', { ascending: true }),
+      
+      supabase
+        .from('products')
+        .select('id, name, price, image_url, brand')
+        .eq('featured', true)
+        .order('created_at', { ascending: false })
+        .limit(6)
+    ])
 
     console.log('📊 Results received')
 
-    // Log any errors but don't fail completely - return empty arrays instead
+    // Log any errors but don't fail - return empty arrays for failed queries
     if (pagesResult.error) {
-      console.warn('⚠️ Pages query error (returning empty array):', pagesResult.error)
+      console.warn('⚠️ Pages query error:', pagesResult.error)
     }
     if (categoriesResult.error) {
-      console.warn('⚠️ Categories query error (returning empty array):', categoriesResult.error)
+      console.warn('⚠️ Categories query error:', categoriesResult.error)
     }
     if (featuredProductsResult.error) {
-      console.warn('⚠️ Featured products query error (returning empty array):', featuredProductsResult.error)
+      console.warn('⚠️ Featured products query error:', featuredProductsResult.error)
     }
 
     // Ensure data arrays exist and sort pages by display_order if column exists
