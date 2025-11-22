@@ -1,8 +1,10 @@
 .\deploy-fix.ps1import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { createClient } from '@supabase/supabase-js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
+    // Dynamic import of Supabase to avoid bundling issues
+    const { createClient } = await import('@supabase/supabase-js')
+    
     // Get environment variables
     const supabaseUrl = process.env.SUPABASE_URL || 'https://okbomxxronimfqehcjvz.supabase.co'
     const supabaseKey = process.env.SUPABASE_SERVICE_KEY
@@ -47,7 +49,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('Error in /api/boot:', err)
     return res.status(500).json({ 
       error: err.message || 'Internal Server Error',
-      details: err.details || null
+      details: err.details || null,
+      stack: err.stack
     })
   }
 }
