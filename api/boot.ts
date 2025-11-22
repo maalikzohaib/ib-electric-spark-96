@@ -2,6 +2,15 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Add CORS headers for better compatibility
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end()
+  }
+  
   try {
     // Get environment variables
     const supabaseUrl = process.env.SUPABASE_URL || 'https://okbomxxronimfqehcjvz.supabase.co'
@@ -19,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('✅ Environment variables loaded')
     console.log('📍 Supabase URL:', supabaseUrl)
-    console.log('🔑 Service key length:', supabaseKey.length)
+    console.log('🔑 Service key present:', !!supabaseKey)
 
     // Create Supabase client directly in this file
     const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -31,44 +40,60 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('📡 Fetching data from Supabase...')
 
-    // Fetch data using Supabase query builder
-    const [pagesResult, categoriesResult, featuredProductsResult] = await Promise.all([
-      supabase
-        .from('pages')
-        .select('id, name, title, slug, parent_id, type, display_order')
-        .order('display_order', { ascending: true }),
-      
-      supabase
-        .from('categories')
-        .select('id, name, icon')
-        .order('name', { ascending: true }),
-      
-      supabase
-        .from('products')
-        .select('id, name, price, image_url, brand')
-        .eq('featured', true)
-        .order('created_at', { ascending: false })
-        .limit(6)
-    ])
+    // Fetch data using Supabase query builder with error resilience
+    let pagesResult, categoriesResult, featuredProductsResult
+    
+    try {
+      [pagesResult, categoriesResult, featuredProductsResult] = await Promise.all([
+        supabase
+          .from('pages')
+          .select('*'),
+        
+        supabase
+          .from('categories')
+          .select('id, name, icon')
+          .order('name', { ascending: true }),
+        
+        supabase
+          .from('products')
+          .select('id, name, price, image_url, brand')
+          .eq('featured', true)
+          .order('created_at', { ascending: false })
+          .limit(6)
+      ])
+    } catch (queryError: any) {
+      console.error('❌ Query execution failed:', queryError)
+      // Return default empty results if queries fail
+      pagesResult = { data: [], error: null }
+      categoriesResult = { data: [], error: null }
+      featuredProductsResult = { data: [], error: null }
+    }
 
     console.log('📊 Results received')
 
-    // Check for errors
+    // Log any errors but don't fail completely - return empty arrays instead
     if (pagesResult.error) {
-      console.error('❌ Pages query error:', pagesResult.error)
-      throw pagesResult.error
+      console.warn('⚠️ Pages query error (returning empty array):', pagesResult.error)
     }
     if (categoriesResult.error) {
-      console.error('❌ Categories query error:', categoriesResult.error)
-      throw categoriesResult.error
+      console.warn('⚠️ Categories query error (returning empty array):', categoriesResult.error)
     }
     if (featuredProductsResult.error) {
-      console.error('❌ Featured products query error:', featuredProductsResult.error)
-      throw featuredProductsResult.error
+      console.warn('⚠️ Featured products query error (returning empty array):', featuredProductsResult.error)
+    }
+
+    // Ensure data arrays exist and sort pages by display_order if column exists
+    let pagesData = pagesResult.data || []
+    if (pagesData.length > 0 && 'display_order' in pagesData[0]) {
+      pagesData = pagesData.sort((a: any, b: any) => {
+        const orderA = a.display_order ?? 9999
+        const orderB = b.display_order ?? 9999
+        return orderA - orderB
+      })
     }
 
     const payload = {
-      pages: pagesResult.data || [],
+      pages: pagesData,
       categories: categoriesResult.data || [],
       featuredProducts: featuredProductsResult.data || []
     }
