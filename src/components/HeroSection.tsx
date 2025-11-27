@@ -7,7 +7,7 @@ import heroBulbs from "@/assets/hero-bulbs.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-subtle overflow-hidden pt-20">
+    <section className="relative min-h-screen flex items-center bg-gradient-subtle overflow-hidden">
       {/* Waves Background */}
       <div className="absolute inset-0 z-0">
         <Waves

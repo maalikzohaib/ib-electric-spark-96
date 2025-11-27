@@ -10,6 +10,7 @@ import { useProductStore } from "@/store/productStore";
 import { usePageStore } from "@/store/pageStore";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X, Plus, Camera } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const EditProduct = () => {
   const navigate = useNavigate();
@@ -17,9 +18,9 @@ const EditProduct = () => {
   const { getProductById, updateProduct, categories, fetchProducts, productsFetched } = useProductStore();
   const { pages, fetchPages } = usePageStore();
   const { toast } = useToast();
-  
+
   const product = id ? getProductById(id) : null;
-  
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -32,7 +33,7 @@ const EditProduct = () => {
     size: '',
     page_id: '' as string,
   });
-  
+
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -71,7 +72,7 @@ const EditProduct = () => {
       size: (product as any).size || '',
       page_id: product.page_id || '',
     });
-    
+
     // Initialize image URLs from product data
     if (product.images && Array.isArray(product.images) && product.images.length > 0) {
       setImageUrls(product.images);
@@ -98,7 +99,7 @@ const EditProduct = () => {
       ...prev,
       [name]: value
     }));
-    
+
     // If selecting a page, expand its parent in the UI
     if (name === 'page_id') {
       const selectedPage = pages.find(p => p.id === value);
@@ -112,12 +113,76 @@ const EditProduct = () => {
     }
   };
 
-  const handleImageUpload = async (_files: FileList | null) => {
-    toast({
-      title: "Uploads Disabled",
-      description: "Image uploads are disabled. Please use image URLs.",
-      variant: "destructive",
-    });
+  const handleImageUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const newUrls: string[] = [];
+    const errors: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // Create a unique file name
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        // Upload to Supabase Storage
+        const { data, error } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, file);
+
+        if (error) {
+          console.error('Error uploading file:', error);
+          errors.push(file.name);
+          continue;
+        }
+
+        if (data) {
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+          newUrls.push(publicUrl);
+        }
+      }
+
+      if (newUrls.length > 0) {
+        setImageUrls(prev => {
+          const updated = [...prev, ...newUrls];
+          // If this is the first image, set it as main
+          if (prev.length === 0 && imageFiles.length === 0) {
+            setMainImageIndex(0);
+          }
+          return updated;
+        });
+
+        toast({
+          title: "Upload Successful",
+          description: `Successfully uploaded ${newUrls.length} image(s).`,
+        });
+      }
+
+      if (errors.length > 0) {
+        toast({
+          title: "Upload Errors",
+          description: `Failed to upload: ${errors.join(', ')}`,
+          variant: "destructive",
+        });
+      }
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload Error",
+        description: "An unexpected error occurred during upload.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const removeImageFile = (index: number) => {
@@ -154,7 +219,7 @@ const EditProduct = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.price || !formData.category_id || !formData.brand) {
       toast({
         title: "Missing Information",
@@ -177,11 +242,11 @@ const EditProduct = () => {
       // Use the already uploaded image URLs - no need to re-upload files that were already processed
       // by the handleImageUpload function
       let allImages = [...imageUrls];
-      
+
       // Only upload files that haven't been processed yet
       // We don't need to upload files here as they should have already been uploaded
       // by the handleImageUpload function and their URLs added to imageUrls
-      
+
       // Determine main image URL
       let mainImageUrl = '';
       if (allImages.length > 0) {
@@ -204,7 +269,7 @@ const EditProduct = () => {
       };
 
       await updateProduct(id!, updatedProduct);
-      
+
       toast({
         title: "Product Updated",
         description: `${formData.name} has been updated successfully.`,
@@ -365,14 +430,14 @@ const EditProduct = () => {
                       .map((mainPage) => {
                         const subPages = pages.filter(p => p.parent_id === mainPage.id && p.name && p.name.trim() !== '');
                         const isExpanded = expandedMainPages[mainPage.id] || false;
-                        
+
                         return (
                           <div key={mainPage.id} className="space-y-2">
                             <div className="flex items-center">
                               <span className="flex-1 font-medium">{mainPage.name}</span>
-                              <Button 
-                                type="button" 
-                                variant="ghost" 
+                              <Button
+                                type="button"
+                                variant="ghost"
                                 size="sm"
                                 onClick={() => setExpandedMainPages(prev => ({
                                   ...prev,
@@ -382,7 +447,7 @@ const EditProduct = () => {
                                 <Plus className="h-4 w-4" />
                               </Button>
                             </div>
-                            
+
                             {isExpanded && (
                               <div className="pl-4 space-y-2 border-l-2 border-gray-200">
                                 {subPages.length > 0 ? (
@@ -411,7 +476,7 @@ const EditProduct = () => {
                         );
                       })}
                   </div>
-                  
+
                   {/* Preview of selected page */}
                   {formData.page_id && (
                     <div className="mt-4 p-2 bg-muted rounded-md">
@@ -419,11 +484,11 @@ const EditProduct = () => {
                       <p className="text-sm">
                         {(() => {
                           const selectedPage = pages.find(p => p.id === formData.page_id);
-                          const parentPage = selectedPage?.parent_id ? 
+                          const parentPage = selectedPage?.parent_id ?
                             pages.find(p => p.id === selectedPage.parent_id) : null;
-                          
-                          return parentPage ? 
-                            `${parentPage.name} → ${selectedPage?.name}` : 
+
+                          return parentPage ?
+                            `${parentPage.name} → ${selectedPage?.name}` :
                             selectedPage?.name;
                         })()}
                       </p>
@@ -457,40 +522,7 @@ const EditProduct = () => {
                 </div>
               </div>
 
-              {imageUrls.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Added URLs ({imageUrls.length})</Label>
-                    {(imageUrls.length > 0 || imageFiles.length > 0) && (
-                      <span className="text-xs text-muted-foreground">
-                        Select main image by clicking the radio button
-                      </span>
-                    )}
-                  </div>
-                  <div className="space-y-2 mt-2">
-                    {imageUrls.map((url, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded">
-                        <input
-                          type="radio"
-                          name="mainImage"
-                          checked={mainImageIndex === index}
-                          onChange={() => setMainImageIndex(index)}
-                          className="w-4 h-4 text-primary"
-                        />
-                        <span className="text-sm flex-1 truncate">{url}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeImageUrl(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+
 
               <div className="text-center text-muted-foreground">OR</div>
 
@@ -530,67 +562,58 @@ const EditProduct = () => {
                 </div>
               </div>
 
-              {imageFiles.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Label>Uploaded Images ({imageFiles.length})</Label>
-                    {imageUrls.length === 0 && (
-                      <span className="text-xs text-muted-foreground">
-                        Select main image by clicking the radio button
-                      </span>
-                    )}
+
+
+              {imageUrls.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Product Images ({imageUrls.length})</Label>
+                    <span className="text-xs text-muted-foreground">
+                      Set main image by clicking the button on the image
+                    </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {imageFiles.map((file, index) => (
-                      <div key={index} className="relative">
-                        <div className="absolute top-2 left-2 z-10">
-                          <input
-                            type="radio"
-                            name="mainImage"
-                            checked={mainImageIndex === imageUrls.length + index}
-                            onChange={() => setMainImageIndex(imageUrls.length + index)}
-                            className="w-4 h-4 text-primary bg-white rounded"
-                          />
-                        </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {imageUrls.map((url, index) => (
+                      <div key={index} className={`relative group aspect-square rounded-lg border-2 overflow-hidden ${mainImageIndex === index ? 'border-primary' : 'border-muted'}`}>
                         <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Upload ${index + 1}`}
-                          className="w-full h-24 object-cover rounded border"
+                          src={url}
+                          alt={`Product ${index + 1}`}
+                          className="w-full h-full object-cover"
                         />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          className="absolute top-1 right-1 h-6 w-6 p-0"
-                          onClick={() => removeImageFile(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                        {mainImageIndex === imageUrls.length + index && (
-                          <div className="absolute bottom-1 left-1 bg-primary text-primary-foreground text-xs px-2 py-1 rounded">
+
+                        {/* Overlay */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                          <Button
+                            type="button"
+                            variant={mainImageIndex === index ? "default" : "secondary"}
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => setMainImageIndex(index)}
+                          >
+                            {mainImageIndex === index ? 'Main Image' : 'Set as Main'}
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => removeImageUrl(index)}
+                          >
+                            <span className="flex items-center gap-1">
+                              <X className="h-3 w-3" /> Remove
+                            </span>
+                          </Button>
+                        </div>
+
+                        {/* Main Badge */}
+                        {mainImageIndex === index && (
+                          <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded shadow-sm z-10">
                             Main
                           </div>
                         )}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {imageUrls.length > 0 && (
-                <div>
-                  <Label>URL Previews</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {imageUrls.map((url, index) => (
-                      <img
-                        key={index}
-                        src={url}
-                        alt={`Preview ${index + 1}`}
-                        className="w-full h-24 object-cover rounded border"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
                     ))}
                   </div>
                 </div>
@@ -610,9 +633,9 @@ const EditProduct = () => {
 
         {/* Submit Buttons */}
         <div className="flex justify-end gap-4">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => navigate('/admin/products')}
           >
             Cancel

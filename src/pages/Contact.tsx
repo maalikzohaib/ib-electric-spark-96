@@ -315,9 +315,11 @@ ${formData.message}`;
                   />
                 </div>
 
-                <Button type="submit" variant="store" size="lg" className="w-full">
-                  Send Message
-                </Button>
+                <InteractiveHoverButton 
+                  type="submit" 
+                  text="Send Message" 
+                  className="w-full h-12 text-base"
+                />
               </form>
             </CardContent>
           </Card>

@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setQueryClient } from "@/lib/queryClient";
-import { createBrowserRouter, RouterProvider, useParams, Navigate, ScrollRestoration } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, useParams, Navigate, ScrollRestoration, useLocation } from "react-router-dom";
 import { useProductData } from "@/hooks/useProductData";
 import { Navbar1 } from "./components/ui/navbar-1";
 import Footer from "./components/layout/Footer";
@@ -32,15 +32,15 @@ import { usePageStore } from "./store/pageStore";
 const MainPageRedirect = () => {
   const { mainPageSlug } = useParams<{ mainPageSlug: string }>();
   const { getMainPagesWithChildren } = usePageStore();
-  
+
   const mainPagesWithChildren = getMainPagesWithChildren();
   const mainPage = mainPagesWithChildren.find(page => page.slug === mainPageSlug);
-  
+
   if (mainPage && mainPage.children && mainPage.children.length > 0) {
     // Redirect to the first subpage
     return <Navigate to={`/${mainPageSlug}/${mainPage.children[0].slug}`} replace />;
   }
-  
+
   // If no subpages found, redirect to shop
   return <Navigate to="/shop" replace />;
 };
@@ -48,20 +48,28 @@ const MainPageRedirect = () => {
 const queryClient = new QueryClient();
 
 // Make query client globally accessible for cache invalidation
+// Make query client globally accessible for cache invalidation
 setQueryClient(queryClient);
 
 // Layout component to wrap public routes
-const PublicLayout = ({ children }: { children: React.ReactNode }) => (
-  <>
-    <Navbar1 />
-    {children}
-    <Footer />
-  </>
-);
+const PublicLayout = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
+  return (
+    <>
+      <Navbar1 />
+      <main className={!isHome ? "pt-32" : ""}>
+        {children}
+      </main>
+      <Footer />
+    </>
+  );
+};
 
 function AppContent() {
   useProductData(); // Load product data on app start
-  
+
   // Define routes using createBrowserRouter
   const router = createBrowserRouter([
     {
@@ -100,7 +108,7 @@ function AppContent() {
       path: "/:mainPageSlug/:subPageSlug",
       element: <PublicLayout><PageProducts /></PublicLayout>,
     },
-    
+
     // Admin Routes
     {
       path: "/admin",
@@ -134,18 +142,14 @@ function AppContent() {
       path: "/admin/pages",
       element: <AdminLayout><AdminPages /></AdminLayout>,
     },
-    
+
     // Catch-all route
     {
       path: "*",
       element: <NotFound />,
     },
-  ], {
-    future: {
-      v7_startTransition: true
-    }
-  });
-  
+  ]);
+
   return (
     <Suspense fallback={null}>
       <RouterProvider router={router} />

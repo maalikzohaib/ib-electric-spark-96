@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Mail, MapPin } from "lucide-react";
+import { RetroGrid } from "@/components/ui/retro-grid";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-subtle border-t mt-20">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="relative bg-gradient-subtle border-t mt-20 overflow-hidden">
+      {/* RetroGrid Background */}
+      <RetroGrid className="opacity-40" angle={65} />
+      
+      <div className="container mx-auto px-4 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Tagline */}
           <div className="space-y-4">

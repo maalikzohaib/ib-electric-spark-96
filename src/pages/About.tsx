@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { Shield, Clock, Award, Users, Zap, Target, TrendingUp, Heart } from "lucide-react";
 import realCeilingFan from "@/assets/real-ceiling-fan.jpg";
 import realLedBulbs from "@/assets/real-led-bulbs.jpg";
@@ -255,19 +256,19 @@ const About = () => {
               href="https://wa.me/923014539090"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block"
             >
-              <button className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors">
-                Contact on WhatsApp
-              </button>
+              <InteractiveHoverButton 
+                text="WhatsApp" 
+                className="w-44 h-12 text-base bg-green-500 hover:bg-green-600 border-green-600"
+              />
             </a>
             <a
               href="mailto:info@ibelectricstore.com"
-              className="inline-block"
             >
-              <button className="bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors">
-                Send Email
-              </button>
+              <InteractiveHoverButton 
+                text="Send Email" 
+                className="w-44 h-12 text-base"
+              />
             </a>
           </div>
         </div>

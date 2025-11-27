@@ -3,6 +3,7 @@ import { useFavoriteStore } from '@/store/favoriteStore';
 import { useProductStore } from '@/store/productStore';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/enhanced-button';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -62,13 +63,11 @@ const Favorites = () => {
           </div>
           
           <div className="mt-12 text-center">
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg"
+            <InteractiveHoverButton
+              text="Add More"
+              className="w-44 h-12 text-base shadow-lg hover:shadow-xl transition-shadow duration-300"
               onClick={handleNavigateToShop}
-            >
-              Add More Favorites
-            </Button>
+            />
             <p className="text-sm text-gray-500 mt-2">
               Click to browse more products to add to your favorites
             </p>

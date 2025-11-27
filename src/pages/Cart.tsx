@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useCartStore } from '@/store/cartStore';
 import { useProductStore } from '@/store/productStore';
 import { Button } from '@/components/ui/enhanced-button';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -173,14 +174,11 @@ const Cart = () => {
           </div>
           
           <div className="mt-8 text-center">
-            <Button 
-              size="lg" 
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
+            <InteractiveHoverButton
+              text="WhatsApp"
+              className="w-52 h-14 text-base bg-green-600 hover:bg-green-700 border-green-700 shadow-lg hover:shadow-xl transition-shadow duration-300"
               onClick={handleWhatsAppCheckout}
-            >
-              <ShoppingBag className="mr-2 h-5 w-5" />
-              Continue with WhatsApp
-            </Button>
+            />
             <p className="text-sm text-gray-500 mt-2">
               Click to send your order via WhatsApp for checkout
             </p>
