@@ -25,7 +25,8 @@ const Navbar1 = () => {
   const shopButtonRef = useRef<HTMLDivElement>(null)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [isShopHovered, setIsShopHovered] = useState(false)
-  
+  const [expandedMobileItems, setExpandedMobileItems] = useState<string[]>([])
+
   const location = useLocation()
   const favoriteStore = useFavoriteStore()
   const cartStore = useCartStore()
@@ -65,7 +66,7 @@ const Navbar1 = () => {
     setShowSuggestions(hasQuery)
     if (!hasQuery) setHighlightedIndex(-1)
   }, [searchQuery])
-  
+
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen)
     if (!isSearchOpen) {
@@ -95,7 +96,7 @@ const Navbar1 = () => {
         setIsShopHovered(false)
       }
     }
-    
+
     document.addEventListener("mousedown", handleClickOutside)
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
@@ -119,6 +120,14 @@ const Navbar1 = () => {
     }, 250)
   }
 
+  const toggleMobileItem = (itemId: string) => {
+    setExpandedMobileItems(prev =>
+      prev.includes(itemId)
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    )
+  }
+
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Shop", path: "/shop", hasDropdown: true },
@@ -133,7 +142,7 @@ const Navbar1 = () => {
       {/* Search Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
-          <motion.div 
+          <motion.div
             className="fixed inset-0 bg-white/95 backdrop-blur-sm z-50 pt-32 px-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -147,7 +156,7 @@ const Navbar1 = () => {
               >
                 <X className="h-6 w-6 text-gray-900" />
               </motion.button>
-              
+
               <form onSubmit={handleSearch} className="w-full">
                 <div className="relative">
                   <Input
@@ -185,9 +194,9 @@ const Navbar1 = () => {
                       }
                     }}
                   />
-                  <Button 
-                    type="submit" 
-                    variant="default" 
+                  <Button
+                    type="submit"
+                    variant="default"
                     size="icon"
                     className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 bg-primary text-white rounded-xl hover:scale-105 transition-transform"
                   >
@@ -210,7 +219,7 @@ const Navbar1 = () => {
       </AnimatePresence>
 
       {/* Aave-style Navigation Bar */}
-      <motion.div 
+      <motion.div
         className="fixed top-0 left-0 right-0 z-50 flex justify-center w-full px-4 transition-all duration-300"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -220,154 +229,152 @@ const Navbar1 = () => {
           paddingBottom: scrolled ? '1rem' : '1.5rem',
         }}
       >
-        <motion.div 
-        className="bg-white rounded-full shadow-xl w-full max-w-6xl relative backdrop-blur-sm"
-        style={{
-          boxShadow: scrolled 
-            ? '0 4px 20px rgba(0, 0, 0, 0.1)' 
-            : '0 8px 30px rgba(0, 0, 0, 0.12)',
-        }}
-        animate={{
-          scale: scrolled ? 0.98 : 1,
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="flex items-center justify-between px-8 py-4">
-          {/* Logo */}
-          <motion.div
-            className="flex-shrink-0"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Link to="/" className="flex items-center">
-              <img 
-                src={logoImage} 
-                alt="IB Electric Store" 
-                className="h-10 w-auto transition-all duration-300"
-                style={{ height: scrolled ? '2.5rem' : '2.75rem' }}
-              />
-            </Link>
-          </motion.div>
-          
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
-          {navItems.map((item) => {
-            if (item.hasDropdown) {
-              return (
-                <div
-                  key={item.name}
-                  className="relative"
-                  ref={shopButtonRef}
-                  onMouseEnter={handleShopMouseEnter}
-                  onMouseLeave={handleShopMouseLeave}
-                >
-                  <motion.button
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${
-                      location.pathname.startsWith(item.path)
-                        ? "bg-primary/10 text-primary"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
+        <motion.div
+          className="bg-white rounded-full shadow-xl w-full max-w-6xl relative backdrop-blur-sm"
+          style={{
+            boxShadow: scrolled
+              ? '0 4px 20px rgba(0, 0, 0, 0.1)'
+              : '0 8px 30px rgba(0, 0, 0, 0.12)',
+          }}
+          animate={{
+            scale: scrolled ? 0.98 : 1,
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="flex items-center justify-between px-8 py-4">
+            {/* Logo */}
+            <motion.div
+              className="flex-shrink-0"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link to="/" className="flex items-center">
+                <img
+                  src={logoImage}
+                  alt="IB Electric Store"
+                  className="h-10 w-auto transition-all duration-300"
+                  style={{ height: scrolled ? '2.5rem' : '2.75rem' }}
+                />
+              </Link>
+            </motion.div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-1 flex-1 justify-center">
+              {navItems.map((item) => {
+                if (item.hasDropdown) {
+                  return (
+                    <div
+                      key={item.name}
+                      className="relative"
+                      ref={shopButtonRef}
+                      onMouseEnter={handleShopMouseEnter}
+                      onMouseLeave={handleShopMouseLeave}
+                    >
+                      <motion.button
+                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1 ${location.pathname.startsWith(item.path)
+                            ? "bg-primary/10 text-primary"
+                            : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {item.name}
+                        <ChevronDown className="h-4 w-4" />
+                      </motion.button>
+                    </div>
+                  )
+                }
+
+                return (
+                  <motion.div
+                    key={item.name}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {item.name}
-                    <ChevronDown className="h-4 w-4" />
-                  </motion.button>
-                </div>
-              )
-            }
-            
-            return (
-              <motion.div
-                key={item.name}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to={item.path}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all block ${
-                    location.pathname === item.path
-                      ? "bg-primary/10 text-primary"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              </motion.div>
-            )
-          })}
-        </nav>
+                    <Link
+                      to={item.path}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all block ${location.pathname === item.path
+                          ? "bg-primary/10 text-primary"
+                          : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                    >
+                      {item.name}
+                    </Link>
+                  </motion.div>
+                )
+              })}
+            </nav>
 
-        {/* Desktop Actions */}
-        <div className="hidden lg:flex items-center space-x-2">
-          {/* Search Button */}
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="relative rounded-full hover:bg-gray-100" 
-              onClick={toggleSearch}
-            >
-              <Search className="h-5 w-5 text-gray-700" />
-            </Button>
-          </motion.div>
-
-          {/* Favorites */}
-          {favoriteStore.getFavoritesCount() > 0 && (
-            <Link to="/favorites">
+            {/* Desktop Actions */}
+            <div className="hidden lg:flex items-center space-x-2">
+              {/* Search Button */}
               <motion.div
-                className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <Heart className="h-5 w-5 text-red-500 fill-red-500" />
-                <motion.span 
-                  className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative rounded-full hover:bg-gray-100"
+                  onClick={toggleSearch}
                 >
-                  {favoriteStore.getFavoritesCount()}
-                </motion.span>
+                  <Search className="h-5 w-5 text-gray-700" />
+                </Button>
               </motion.div>
-            </Link>
-          )}
-          
-          {/* Cart */}
-          <Link to="/cart">
-            <motion.div
-              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
-              whileHover={{ scale: 1.1 }}
+
+              {/* Favorites */}
+              {favoriteStore.getFavoritesCount() > 0 && (
+                <Link to="/favorites">
+                  <motion.div
+                    className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+                    <motion.span
+                      className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
+                      {favoriteStore.getFavoritesCount()}
+                    </motion.span>
+                  </motion.div>
+                </Link>
+              )}
+
+              {/* Cart */}
+              <Link to="/cart">
+                <motion.div
+                  className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <ShoppingCart className="h-5 w-5 text-gray-700" />
+                  {cartStore.getCartCount() > 0 && (
+                    <motion.span
+                      className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                    >
+                      {cartStore.getCartCount()}
+                    </motion.span>
+                  )}
+                </motion.div>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              className="lg:hidden flex items-center p-2 rounded-full hover:bg-gray-100 transition-colors"
+              onClick={toggleMenu}
               whileTap={{ scale: 0.9 }}
             >
-              <ShoppingCart className="h-5 w-5 text-gray-700" />
-              {cartStore.getCartCount() > 0 && (
-                <motion.span 
-                  className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 15 }}
-                >
-                  {cartStore.getCartCount()}
-                </motion.span>
-              )}
-            </motion.div>
-          </Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <motion.button 
-          className="lg:hidden flex items-center p-2 rounded-full hover:bg-gray-100 transition-colors" 
-          onClick={toggleMenu} 
-          whileTap={{ scale: 0.9 }}
-        >
-          <Menu className="h-6 w-6 text-gray-900" />
-        </motion.button>
-        </div>
-      </motion.div>
+              <Menu className="h-6 w-6 text-gray-900" />
+            </motion.button>
+          </div>
+        </motion.div>
       </motion.div>
 
       {/* Shop dropdown (desktop) - Aave style */}
@@ -387,8 +394,8 @@ const Navbar1 = () => {
             <div className="container mx-auto px-6 py-10">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
                 {mainPagesWithChildren.map((mainPage, index) => (
-                  <motion.div 
-                    key={mainPage.id} 
+                  <motion.div
+                    key={mainPage.id}
                     className="space-y-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -433,9 +440,9 @@ const Navbar1 = () => {
             <div className="p-6">
               <div className="flex items-center justify-between mb-8">
                 <Link to="/" onClick={toggleMenu}>
-                  <img 
-                    src={logoImage} 
-                    alt="IB Electric Store" 
+                  <img
+                    src={logoImage}
+                    alt="IB Electric Store"
                     className="h-12 w-auto"
                   />
                 </Link>
@@ -447,7 +454,7 @@ const Navbar1 = () => {
                   <X className="h-6 w-6 text-gray-900" />
                 </motion.button>
               </div>
-            
+
               <div className="flex flex-col space-y-2">
                 {navItems.map((item, i) => (
                   <motion.div
@@ -457,17 +464,87 @@ const Navbar1 = () => {
                     transition={{ delay: i * 0.1 + 0.1 }}
                     exit={{ opacity: 0, x: 20 }}
                   >
-                    <Link
-                      to={item.path}
-                      className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${
-                        location.pathname === item.path
-                          ? "bg-primary/10 text-primary"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                      onClick={toggleMenu}
-                    >
-                      {item.name}
-                    </Link>
+                    {item.hasDropdown ? (
+                      <div className="space-y-1">
+                        <div
+                          className={`flex items-center justify-between px-4 py-3 rounded-xl text-base font-medium transition-all cursor-pointer ${location.pathname.startsWith(item.path) || expandedMobileItems.includes(item.name)
+                              ? "bg-primary/10 text-primary"
+                              : "text-gray-700 hover:bg-gray-100"
+                            }`}
+                          onClick={() => toggleMobileItem(item.name)}
+                        >
+                          <span>{item.name}</span>
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform duration-200 ${expandedMobileItems.includes(item.name) ? "rotate-180" : ""
+                              }`}
+                          />
+                        </div>
+
+                        <AnimatePresence>
+                          {expandedMobileItems.includes(item.name) && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="pl-4 space-y-1 pb-2">
+                                {mainPagesWithChildren.map((mainPage) => (
+                                  <div key={mainPage.id} className="space-y-1">
+                                    <div
+                                      className="flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary cursor-pointer"
+                                      onClick={() => toggleMobileItem(mainPage.id)}
+                                    >
+                                      <span>{mainPage.name}</span>
+                                      {mainPage.children && mainPage.children.length > 0 && (
+                                        <ChevronDown
+                                          className={`h-3 w-3 transition-transform duration-200 ${expandedMobileItems.includes(mainPage.id) ? "rotate-180" : ""
+                                            }`}
+                                        />
+                                      )}
+                                    </div>
+
+                                    {mainPage.children && mainPage.children.length > 0 && expandedMobileItems.includes(mainPage.id) && (
+                                      <div className="pl-4 space-y-1 border-l-2 border-gray-100 ml-4">
+                                        {mainPage.children.map((subPage) => (
+                                          <Link
+                                            key={subPage.id}
+                                            to={`/${mainPage.slug}/${subPage.slug}`}
+                                            className="block px-4 py-2 text-sm text-gray-500 hover:text-primary transition-colors"
+                                            onClick={toggleMenu}
+                                          >
+                                            {subPage.name}
+                                          </Link>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {(!mainPage.children || mainPage.children.length === 0) && (
+                                      <Link // Handle cases where main page has no children if needed, though usually they do or are just links
+                                        to={`/${mainPage.slug}`}
+                                        className="hidden" // Hidden for now as logic implies main pages are categories
+                                      />
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        className={`block px-4 py-3 rounded-xl text-base font-medium transition-all ${location.pathname === item.path
+                            ? "bg-primary/10 text-primary"
+                            : "text-gray-700 hover:bg-gray-100"
+                          }`}
+                        onClick={toggleMenu}
+                      >
+                        {item.name}
+                      </Link>
+                    )}
                   </motion.div>
                 ))}
 
@@ -508,9 +585,9 @@ const Navbar1 = () => {
                           }
                         }}
                       />
-                      <Button 
-                        type="submit" 
-                        variant="default" 
+                      <Button
+                        type="submit"
+                        variant="default"
                         size="icon"
                         className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-primary text-white rounded-lg"
                       >
@@ -551,7 +628,7 @@ const Navbar1 = () => {
                       </span>
                     </Link>
                   )}
-                  
+
                   <Link
                     to="/cart"
                     className="flex items-center justify-between px-4 py-3 rounded-xl text-base text-gray-700 font-medium hover:bg-gray-100 transition-colors"
