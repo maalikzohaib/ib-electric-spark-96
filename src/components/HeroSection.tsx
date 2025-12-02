@@ -97,7 +97,7 @@ const HeroSection = () => {
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-primary rounded-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
                 <img
-                  fetchpriority="high"
+                  fetchPriority="high"
                   src={heroFan}
                   alt="Premium Ceiling Fan"
                   className="w-full h-64 object-cover rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-500 transform group-hover:scale-105"
@@ -114,7 +114,7 @@ const HeroSection = () => {
               <div className="relative group mt-8">
                 <div className="absolute inset-0 bg-gradient-accent rounded-2xl opacity-20 group-hover:opacity-30 transition-opacity duration-300"></div>
                 <img
-                  fetchpriority="high"
+                  fetchPriority="high"
                   src={heroBulbs}
                   alt="LED Bulbs Collection"
                   className="w-full h-64 object-cover rounded-2xl shadow-elegant hover:shadow-xl transition-all duration-500 transform group-hover:scale-105"

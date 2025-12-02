@@ -10,7 +10,8 @@ import {
   LogOut,
   FileText,
   Menu,
-  X
+  X,
+  Building2
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -80,6 +81,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       name: "Categories",
       path: "/admin/categories",
       icon: <Tag className="h-4 w-4" />
+    },
+    {
+      name: "Brands",
+      path: "/admin/brands",
+      icon: <Building2 className="h-4 w-4" />
     },
     {
       name: "Pages",

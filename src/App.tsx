@@ -22,6 +22,7 @@ const AddProduct = lazy(() => import('./pages/admin/AddProduct'));
 const EditProduct = lazy(() => import('./pages/admin/EditProduct'));
 const FeaturedProducts = lazy(() => import('./pages/admin/FeaturedProducts'));
 const Categories = lazy(() => import('./pages/admin/Categories'));
+const Brands = lazy(() => import('./pages/admin/Brands'));
 const AdminPages = lazy(() => import('./components/admin/AdminPages'));
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 import NotFound from "./pages/NotFound";
@@ -137,6 +138,10 @@ function AppContent() {
     {
       path: "/admin/categories",
       element: <AdminLayout><Categories /></AdminLayout>,
+    },
+    {
+      path: "/admin/brands",
+      element: <AdminLayout><Brands /></AdminLayout>,
     },
     {
       path: "/admin/pages",

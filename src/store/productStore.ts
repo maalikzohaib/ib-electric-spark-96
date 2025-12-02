@@ -46,9 +46,18 @@ export interface Category {
   created_at?: string;
 }
 
+export interface Brand {
+  id: string;
+  name: string;
+  description?: string;
+  logo_url?: string;
+  created_at?: string;
+}
+
 interface ProductStore {
   products: Product[];
   categories: Category[];
+  brands: Brand[];
   featuredProducts: Product[];
   loading: boolean;
   error: string | null;
@@ -67,6 +76,12 @@ interface ProductStore {
   updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
 
+  // Brand actions
+  fetchBrands: () => Promise<void>;
+  addBrand: (brand: Omit<Brand, 'id' | 'created_at'>) => Promise<void>;
+  updateBrand: (id: string, brand: Partial<Brand>) => Promise<void>;
+  deleteBrand: (id: string) => Promise<void>;
+
   // Featured products
   fetchFeaturedProducts: () => Promise<void>;
   setFeaturedProduct: (productId: string, featured: boolean) => Promise<void>;
@@ -74,12 +89,14 @@ interface ProductStore {
   // Boot setters (from /api/boot)
   setFeaturedProducts: (items: Product[]) => void;
   setCategories: (items: Category[]) => void;
+  setBrands: (items: Brand[]) => void;
   setProducts: (items: Product[]) => void;
 }
 
 export const useProductStore = create<ProductStore>((set, get) => ({
   products: [],
   categories: [],
+  brands: [],
   featuredProducts: [],
   loading: false,
   error: null,
@@ -187,10 +204,14 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       const resp = await fetch('/api/boot')
       if (!resp.ok) throw new Error('Failed to load categories')
       const data = await resp.json()
-      set({ categories: data?.categories || [], loading: false });
+      set({ 
+        categories: data?.categories || [], 
+        brands: data?.brands || [],
+        loading: false 
+      });
     } catch (error) {
       console.error('Error fetching categories:', error);
-      set({ error: (error as Error).message, loading: false, categories: [] });
+      set({ error: (error as Error).message, loading: false, categories: [], brands: [] });
     }
   },
 
@@ -257,6 +278,90 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     }
   },
 
+  // Brand actions
+  fetchBrands: async () => {
+    set({ loading: true, error: null });
+    try {
+      const resp = await fetch('/api/brands')
+      if (!resp.ok) throw new Error('Failed to load brands')
+      const data = await resp.json()
+      set({ brands: data?.brands || [], loading: false });
+    } catch (error) {
+      console.error('Error fetching brands:', error);
+      set({ error: (error as Error).message, loading: false, brands: [] });
+    }
+  },
+
+  addBrand: async (brand) => {
+    set({ loading: true, error: null });
+    try {
+      const resp = await fetch('/api/brands', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(brand),
+      })
+      if (!resp.ok) {
+        const errorData = await resp.json()
+        throw new Error(errorData.error || 'Failed to add brand')
+      }
+      const data = await resp.json()
+
+      set((state) => ({
+        brands: [...state.brands, data].sort((a, b) => a.name.localeCompare(b.name)),
+        loading: false
+      }));
+      return data;
+    } catch (error) {
+      console.error('Error adding brand:', error);
+      set({ error: (error as Error).message, loading: false });
+      throw error;
+    }
+  },
+
+  updateBrand: async (id, brandUpdate) => {
+    set({ loading: true, error: null });
+    try {
+      const resp = await fetch(`/api/brands?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(brandUpdate),
+      })
+      if (!resp.ok) {
+        const errorData = await resp.json()
+        throw new Error(errorData.error || 'Failed to update brand')
+      }
+      const data = await resp.json()
+
+      set((state) => ({
+        brands: state.brands.map((brand) =>
+          brand.id === id ? { ...brand, ...data } : brand
+        ).sort((a, b) => a.name.localeCompare(b.name)),
+        loading: false
+      }));
+    } catch (error) {
+      console.error('Error updating brand:', error);
+      set({ error: (error as Error).message, loading: false });
+      throw error;
+    }
+  },
+
+  deleteBrand: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      const resp = await fetch(`/api/brands?id=${id}`, { method: 'DELETE' })
+      if (!resp.ok) throw new Error('Failed to delete brand')
+
+      set((state) => ({
+        brands: state.brands.filter((brand) => brand.id !== id),
+        loading: false
+      }));
+    } catch (error) {
+      console.error('Error deleting brand:', error);
+      set({ error: (error as Error).message, loading: false });
+      throw error;
+    }
+  },
+
   fetchFeaturedProducts: async () => {
     set({ loading: true, error: null });
     try {
@@ -293,5 +398,6 @@ export const useProductStore = create<ProductStore>((set, get) => ({
 
   setFeaturedProducts: (items) => set({ featuredProducts: items || [] }),
   setCategories: (items) => set({ categories: items || [] }),
+  setBrands: (items) => set({ brands: items || [] }),
   setProducts: (items) => set({ products: items || [] }),
 }));

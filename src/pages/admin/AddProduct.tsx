@@ -15,7 +15,7 @@ import { supabase } from "@/lib/supabase";
 
 const AddProduct = () => {
   const navigate = useNavigate();
-  const { addProduct, categories, fetchCategories, products } = useProductStore();
+  const { addProduct, categories, brands, fetchCategories, products } = useProductStore();
   const { pages, fetchPages } = usePageStore();
   const { toast } = useToast();
 
@@ -49,18 +49,6 @@ const AddProduct = () => {
   const [mainImageIndex, setMainImageIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isProductListed, setIsProductListed] = useState(false);
-  const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
-  const [brandHighlightedIndex, setBrandHighlightedIndex] = useState(-1);
-
-  const uniqueBrands = Array.from(new Set(products.map(p => (p.brand || '').trim()).filter(Boolean)));
-  const brandQuery = formData.brand.trim().toLowerCase();
-  const brandSuggestions = brandQuery ? uniqueBrands.filter(b => b.toLowerCase().includes(brandQuery)).slice(0, 8) : [];
-
-  useEffect(() => {
-    const hasQuery = formData.brand.trim().length > 0;
-    setShowBrandSuggestions(hasQuery);
-    if (!hasQuery) setBrandHighlightedIndex(-1);
-  }, [formData.brand]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -407,45 +395,23 @@ const AddProduct = () => {
 
               <div>
                 <Label htmlFor="brand">Brand *</Label>
-                <div className="relative">
-                  <Input
-                    id="brand"
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleInputChange}
-                    placeholder="Enter brand name"
-                    required
-                    onFocus={() => setShowBrandSuggestions(formData.brand.trim().length > 0)}
-                    onBlur={() => setTimeout(() => setShowBrandSuggestions(false), 100)}
-                    onKeyDown={(e) => {
-                      if (brandSuggestions.length === 0) return;
-                      if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        setBrandHighlightedIndex(prev => Math.min(prev + 1, brandSuggestions.length - 1));
-                      } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        setBrandHighlightedIndex(prev => Math.max(prev - 1, 0));
-                      } else if (e.key === 'Enter' && brandHighlightedIndex >= 0) {
-                        e.preventDefault();
-                        const sel = brandSuggestions[brandHighlightedIndex];
-                        setFormData(prev => ({ ...prev, brand: sel }));
-                        setShowBrandSuggestions(false);
-                      } else if (e.key === 'Escape') {
-                        setShowBrandSuggestions(false);
-                      }
-                    }}
-                  />
-                  <SearchSuggestions
-                    items={brandSuggestions.map(b => ({ id: b, name: b }))}
-                    visible={showBrandSuggestions}
-                    highlightedIndex={brandHighlightedIndex}
-                    onHover={setBrandHighlightedIndex}
-                    onSelect={(item) => {
-                      setFormData(prev => ({ ...prev, brand: item.name }));
-                      setShowBrandSuggestions(false);
-                    }}
-                  />
-                </div>
+                <Select value={formData.brand} onValueChange={(value) => handleSelectChange('brand', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select brand" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.name}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {brands.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No brands available. <a href="/admin/brands" className="text-primary hover:underline">Add brands</a> first.
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">

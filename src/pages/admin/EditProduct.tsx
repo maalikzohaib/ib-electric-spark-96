@@ -15,7 +15,7 @@ import { supabase } from "@/lib/supabase";
 const EditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { getProductById, updateProduct, categories, fetchProducts, productsFetched } = useProductStore();
+  const { getProductById, updateProduct, categories, brands, fetchProducts, productsFetched } = useProductStore();
   const { pages, fetchPages } = usePageStore();
   const { toast } = useToast();
 
@@ -437,14 +437,23 @@ const EditProduct = () => {
 
               <div>
                 <Label htmlFor="brand">Brand *</Label>
-                <Input
-                  id="brand"
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  placeholder="Enter brand name"
-                  required
-                />
+                <Select value={formData.brand} onValueChange={(value) => handleSelectChange('brand', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select brand" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.name}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {brands.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No brands available. <a href="/admin/brands" className="text-primary hover:underline">Add brands</a> first.
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-4">
