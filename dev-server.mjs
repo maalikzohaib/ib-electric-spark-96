@@ -159,6 +159,17 @@ app.all('/api/categories/:id', async (req, res) => {
   }
 });
 
+// Brands endpoints  
+app.all('/api/brands', async (req, res) => {
+  try {
+    const handler = await loadHandler('./api/brands.ts');
+    await handler(req, res);
+  } catch (error) {
+    console.error('Error in /api/brands:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 const PORT = process.env.API_PORT || 3100;
 
 app.listen(PORT, () => {
