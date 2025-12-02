@@ -8,6 +8,7 @@ export interface Product {
   price_min?: number | null;
   price_max?: number | null;
   price_type?: 'single' | 'range';
+  sale_price?: number | null;
   category_id: string;
   brand: string;
   size?: string;
@@ -28,6 +29,19 @@ export const formatProductPrice = (product: Product): string => {
     return `PKR ${product.price_min.toLocaleString()} - ${product.price_max.toLocaleString()}`;
   }
   return `PKR ${product.price.toLocaleString()}`;
+};
+
+// Helper to check if product is on sale
+export const isProductOnSale = (product: Product): boolean => {
+  return product.price_type === 'single' && product.sale_price != null && product.sale_price > 0 && product.sale_price < product.price;
+};
+
+// Helper to format sale price display
+export const formatSalePrice = (product: Product): string => {
+  if (isProductOnSale(product)) {
+    return `PKR ${product.sale_price!.toLocaleString()}`;
+  }
+  return formatProductPrice(product);
 };
 
 // Helper to get price for cart/order (uses single price or min price for range)

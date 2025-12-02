@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/enhanced-button";
 import { Badge } from "@/components/ui/badge";
 import type { Product } from "@/store/productStore";
-import { formatProductPrice } from "@/store/productStore";
+import { formatProductPrice, isSaleActive } from "@/store/productStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { useCartStore } from "@/store/cartStore";
 import { Heart, ShoppingCart } from "lucide-react";
@@ -122,6 +122,14 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
         >
           {product.in_stock ? 'In Stock' : 'Out of Stock'}
         </Badge>
+        {isSaleActive(product) && (
+          <Badge
+            variant="default"
+            className="absolute top-12 right-3 z-20 bg-red-500 text-white hover:bg-red-600"
+          >
+            Sale
+          </Badge>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
@@ -140,9 +148,21 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-primary font-bold text-2xl">
-            {formatProductPrice(product)}
-          </span>
+          {(() => {
+            const priceInfo = formatProductPrice(product);
+            return (
+              <div className="flex items-center gap-2">
+                <span className="text-primary font-bold text-2xl">
+                  {priceInfo.display}
+                </span>
+                {priceInfo.isSale && priceInfo.original && (
+                  <span className="text-gray-400 line-through text-lg">
+                    {priceInfo.original}
+                  </span>
+                )}
+              </div>
+            );
+          })()}
           <Badge
             variant={product.in_stock ? 'default' : 'destructive'}
             className="text-xs px-3 py-1"

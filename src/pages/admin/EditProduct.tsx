@@ -28,6 +28,7 @@ const EditProduct = () => {
     price_type: 'single' as 'single' | 'range',
     price_min: '',
     price_max: '',
+    sale_price: '',
     category_id: '' as string,
     brand: '',
     in_stock: true,
@@ -70,6 +71,7 @@ const EditProduct = () => {
       price_type: product.price_type || 'single',
       price_min: product.price_min?.toString() || '',
       price_max: product.price_max?.toString() || '',
+      sale_price: product.sale_price?.toString() || '',
       category_id: product.category_id || '',
       brand: product.brand || '',
       in_stock: product.in_stock,
@@ -287,6 +289,9 @@ const EditProduct = () => {
         price_type: formData.price_type,
         price_min: formData.price_type === 'range' ? parseFloat(formData.price_min) : null,
         price_max: formData.price_type === 'range' ? parseFloat(formData.price_max) : null,
+        sale_price: formData.price_type === 'single' && formData.sale_price 
+          ? parseFloat(formData.sale_price) 
+          : null,
         category_id: formData.category_id,
         brand: formData.brand,
         in_stock: formData.in_stock,
@@ -377,18 +382,34 @@ const EditProduct = () => {
                 </div>
                 
                 {formData.price_type === 'single' ? (
-                  <div>
-                    <Label htmlFor="price">Price (Rs.) *</Label>
-                    <Input
-                      id="price"
-                      name="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      placeholder="0"
-                      required
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <Label htmlFor="price">Price (Rs.) *</Label>
+                      <Input
+                        id="price"
+                        name="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        placeholder="0"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="sale_price">Sale Price (Rs.) - Optional</Label>
+                      <Input
+                        id="sale_price"
+                        name="sale_price"
+                        type="number"
+                        value={formData.sale_price}
+                        onChange={handleInputChange}
+                        placeholder="Leave empty if no sale"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        If set, this will display as the sale price with a "Sale" badge
+                      </p>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div>

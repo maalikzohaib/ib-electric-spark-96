@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useProductStore, formatProductPrice } from '@/store/productStore';
+import { useProductStore, formatProductPrice, isSaleActive } from '@/store/productStore';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { Button } from '@/components/ui/enhanced-button';
@@ -41,7 +41,11 @@ const ProductDetail = () => {
   }
 
   const handleWhatsAppOrder = (product: any) => {
-    const priceText = formatProductPrice(product);
+    const priceInfo = formatProductPrice(product);
+    let priceText = priceInfo.display;
+    if (priceInfo.isSale && priceInfo.original) {
+      priceText = `${priceInfo.display} (was ${priceInfo.original})`;
+    }
     const message = `Hi! I'm interested in ordering this product:\n\n*${product.name}*\nPrice: ${priceText}\nBrand: ${product.brand}\n\nProduct Link: ${window.location.href}\n\nPlease let me know how to proceed with the order.`;
 
     const whatsappNumber = "923014539090"; // Replace with your actual WhatsApp number
@@ -169,12 +173,29 @@ const ProductDetail = () => {
             <div>
               <h1 className="text-4xl font-bold text-foreground mb-4">{product.name}</h1>
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold text-primary">
-                  {formatProductPrice(product)}
-                </span>
+                {(() => {
+                  const priceInfo = formatProductPrice(product);
+                  return (
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-bold text-primary">
+                        {priceInfo.display}
+                      </span>
+                      {priceInfo.isSale && priceInfo.original && (
+                        <span className="text-xl text-gray-400 line-through">
+                          {priceInfo.original}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
                 <Badge variant={product.in_stock ? 'default' : 'destructive'} className="text-sm">
                   {product.in_stock ? 'In Stock' : 'Out of Stock'}
                 </Badge>
+                {isSaleActive(product) && (
+                  <Badge variant="default" className="text-sm bg-red-500 hover:bg-red-600">
+                    Sale
+                  </Badge>
+                )}
               </div>
             </div>
 

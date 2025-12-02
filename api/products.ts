@@ -27,7 +27,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'GET' && !id) {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, description, price, price_type, price_min, price_max, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id')
+        .select('id, name, description, price, price_type, price_min, price_max, sale_price, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id')
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -51,6 +51,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           price_type: p.price_type || 'single',
           price_min: p.price_min || null,
           price_max: p.price_max || null,
+          sale_price: p.sale_price || null,
           category_id: p.category_id || null,
           brand: p.brand || null,
           size: p.size || null,
@@ -64,7 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
-        .select('id, name, description, price, price_type, price_min, price_max, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id')
+        .select('id, name, description, price, price_type, price_min, price_max, sale_price, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id')
         .single()
 
       if (error) {
@@ -97,7 +98,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // PATCH /api/products?id={id} (Update product)
     if (req.method === 'PATCH' && id) {
-      const { name, description, price, price_type, price_min, price_max, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id } = (req.body || {})
+      const { name, description, price, price_type, price_min, price_max, sale_price, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id } = (req.body || {})
 
       const updateData: any = {
         updated_at: new Date().toISOString()
@@ -109,6 +110,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (price_type !== undefined) updateData.price_type = price_type
       if (price_min !== undefined) updateData.price_min = price_min
       if (price_max !== undefined) updateData.price_max = price_max
+      if (sale_price !== undefined) updateData.sale_price = sale_price
       if (category_id !== undefined) updateData.category_id = category_id
       if (brand !== undefined) updateData.brand = brand
       if (size !== undefined) updateData.size = size
@@ -124,7 +126,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .from('products')
         .update(updateData)
         .eq('id', id)
-        .select('id, name, description, price, price_type, price_min, price_max, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id')
+        .select('id, name, description, price, price_type, price_min, price_max, sale_price, category_id, brand, size, color, variant, in_stock, image_url, images, featured, page_id')
         .single()
 
       if (error) {

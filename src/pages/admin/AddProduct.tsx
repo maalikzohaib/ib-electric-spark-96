@@ -26,6 +26,7 @@ const AddProduct = () => {
     price_type: 'single' as 'single' | 'range',
     price_min: '',
     price_max: '',
+    sale_price: '',
     category_id: '' as string,
     brand: '',
     color: '',
@@ -249,6 +250,7 @@ const AddProduct = () => {
         price_type: formData.price_type,
         price_min: formData.price_type === 'range' ? parseFloat(formData.price_min) : null,
         price_max: formData.price_type === 'range' ? parseFloat(formData.price_max) : null,
+        sale_price: formData.price_type === 'single' && formData.sale_price ? parseFloat(formData.sale_price) : null,
         image_url: mainImageUrl,
         images: allImages,
         featured: false,
@@ -335,18 +337,34 @@ const AddProduct = () => {
                 </div>
                 
                 {formData.price_type === 'single' ? (
-                  <div>
-                    <Label htmlFor="price">Price (Rs.) *</Label>
-                    <Input
-                      id="price"
-                      name="price"
-                      type="number"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      placeholder="0"
-                      required
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <Label htmlFor="price">Price (Rs.) *</Label>
+                      <Input
+                        id="price"
+                        name="price"
+                        type="number"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                        placeholder="0"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="sale_price">Sale Price (Rs.) <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                      <Input
+                        id="sale_price"
+                        name="sale_price"
+                        type="number"
+                        value={formData.sale_price}
+                        onChange={handleInputChange}
+                        placeholder="Leave empty if no sale"
+                      />
+                      {formData.sale_price && parseFloat(formData.sale_price) >= parseFloat(formData.price || '0') && (
+                        <p className="text-xs text-destructive mt-1">Sale price should be less than regular price</p>
+                      )}
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div>
