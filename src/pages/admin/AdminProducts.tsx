@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { useProductStore } from "@/store/productStore";
+import { useProductStore, formatProductPrice } from "@/store/productStore";
 import { Button } from "@/components/ui/enhanced-button";
 import { Input } from "@/components/ui/input";
 import SearchSuggestions from "@/components/ui/search-suggestions";
@@ -185,7 +185,7 @@ const AdminProducts = () => {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-primary text-sm">
-                    PKR {product.price.toLocaleString()}
+                    {formatProductPrice(product)}
                   </span>
                   <Badge variant="outline" className="text-xs">
                     {useProductStore.getState().categories.find(c => c.id === product.category_id)?.name || 'Unknown'}

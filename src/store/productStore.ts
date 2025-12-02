@@ -5,6 +5,9 @@ export interface Product {
   name: string;
   description: string;
   price: number;
+  price_min?: number | null;
+  price_max?: number | null;
+  price_type?: 'single' | 'range';
   category_id: string;
   brand: string;
   size?: string;
@@ -18,6 +21,22 @@ export interface Product {
   created_at?: string;
   updated_at?: string;
 }
+
+// Helper function to format price display
+export const formatProductPrice = (product: Product): string => {
+  if (product.price_type === 'range' && product.price_min != null && product.price_max != null) {
+    return `PKR ${product.price_min.toLocaleString()} - ${product.price_max.toLocaleString()}`;
+  }
+  return `PKR ${product.price.toLocaleString()}`;
+};
+
+// Helper to get price for cart/order (uses single price or min price for range)
+export const getProductPrice = (product: Product): number => {
+  if (product.price_type === 'range' && product.price_min != null) {
+    return product.price_min;
+  }
+  return product.price;
+};
 
 export interface Category {
   id: string;
@@ -34,20 +53,20 @@ interface ProductStore {
   loading: boolean;
   error: string | null;
   productsFetched: boolean;
-  
+
   // Product actions
   fetchProducts: () => Promise<void>;
   addProduct: (product: Omit<Product, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updateProduct: (id: string, product: Partial<Product>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   getProductById: (id: string) => Product | undefined;
-  
+
   // Category actions
   fetchCategories: () => Promise<void>;
   addCategory: (category: Omit<Category, 'id' | 'created_at'>) => Promise<void>;
   updateCategory: (id: string, category: Partial<Category>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
-  
+
   // Featured products
   fetchFeaturedProducts: () => Promise<void>;
   setFeaturedProduct: (productId: string, featured: boolean) => Promise<void>;
@@ -86,7 +105,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       if (!product.name || !product.price || !product.category_id) {
         throw new Error('Missing required product information');
       }
-      
+
       // Route to API (to be implemented server-side); provide optimistic local update as fallback
       const resp = await fetch('/api/products', {
         method: 'POST',
@@ -108,9 +127,9 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       throw new Error('Failed to add product. Please try again.')
     } catch (error) {
       console.error('Error adding product:', error);
-      set({ 
-        error: (error as Error).message || 'An unexpected error occurred while adding the product', 
-        loading: false 
+      set({
+        error: (error as Error).message || 'An unexpected error occurred while adding the product',
+        loading: false
       });
       throw error;
     }

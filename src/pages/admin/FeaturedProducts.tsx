@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useProductStore } from "@/store/productStore";
+import { useProductStore, formatProductPrice } from "@/store/productStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -92,7 +92,7 @@ const FeaturedProducts = () => {
                 <div className="flex-1">
                   <h3 className="font-medium text-foreground">{product.name}</h3>
                   <p className="text-sm text-muted-foreground">{product.brand} • {useProductStore.getState().categories.find(c => c.id === product.category_id)?.name || 'Unknown'}</p>
-                  <p className="text-sm font-medium text-primary">PKR {product.price.toLocaleString()}</p>
+                  <p className="text-sm font-medium text-primary">{formatProductPrice(product)}</p>
                 </div>
               </div>
             ))}

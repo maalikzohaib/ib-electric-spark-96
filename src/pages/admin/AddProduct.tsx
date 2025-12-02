@@ -23,6 +23,9 @@ const AddProduct = () => {
     name: '',
     description: '',
     price: '',
+    price_type: 'single' as 'single' | 'range',
+    price_min: '',
+    price_max: '',
     category_id: '' as string,
     brand: '',
     color: '',
@@ -195,13 +198,32 @@ const AddProduct = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.description || !formData.price || !formData.category_id || !formData.brand || !formData.page_id) {
+    // Validate required fields
+    const isPriceValid = formData.price_type === 'single' 
+      ? formData.price 
+      : (formData.price_min && formData.price_max);
+
+    if (!formData.name || !formData.description || !isPriceValid || !formData.category_id || !formData.brand || !formData.page_id) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields (name, description, price, category, brand, page).",
         variant: "destructive",
       });
       return;
+    }
+
+    // Validate price range
+    if (formData.price_type === 'range') {
+      const minPrice = parseFloat(formData.price_min);
+      const maxPrice = parseFloat(formData.price_max);
+      if (minPrice >= maxPrice) {
+        toast({
+          title: "Invalid Price Range",
+          description: "Minimum price must be less than maximum price.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (imageUrls.length === 0) {
@@ -233,7 +255,12 @@ const AddProduct = () => {
 
       const newProduct = {
         ...formData,
-        price: parseFloat(formData.price),
+        price: formData.price_type === 'single' 
+          ? parseFloat(formData.price) 
+          : parseFloat(formData.price_min), // Use min price as base price for range
+        price_type: formData.price_type,
+        price_min: formData.price_type === 'range' ? parseFloat(formData.price_min) : null,
+        price_max: formData.price_type === 'range' ? parseFloat(formData.price_max) : null,
         image_url: mainImageUrl,
         images: allImages,
         featured: false,
@@ -306,18 +333,61 @@ const AddProduct = () => {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div>
-                  <Label htmlFor="price">Price (Rs.) *</Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    placeholder="0"
-                    required
-                  />
+                <div className="sm:col-span-2">
+                  <Label>Price Type *</Label>
+                  <Select value={formData.price_type} onValueChange={(value) => handleSelectChange('price_type', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select price type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="single">Single Price (e.g., Rs. 800)</SelectItem>
+                      <SelectItem value="range">Price Range (e.g., Rs. 500-1000)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+                
+                {formData.price_type === 'single' ? (
+                  <div>
+                    <Label htmlFor="price">Price (Rs.) *</Label>
+                    <Input
+                      id="price"
+                      name="price"
+                      type="number"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      placeholder="0"
+                      required
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <Label htmlFor="price_min">Minimum Price (Rs.) *</Label>
+                      <Input
+                        id="price_min"
+                        name="price_min"
+                        type="number"
+                        value={formData.price_min}
+                        onChange={handleInputChange}
+                        placeholder="500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="price_max">Maximum Price (Rs.) *</Label>
+                      <Input
+                        id="price_max"
+                        name="price_max"
+                        type="number"
+                        value={formData.price_max}
+                        onChange={handleInputChange}
+                        placeholder="1000"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+                
                 <div>
                   <Label htmlFor="category_id">Category *</Label>
                   <Select value={formData.category_id} onValueChange={(value) => handleSelectChange('category_id', value)}>

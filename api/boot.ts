@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const [pagesResult, categoriesResult, featuredProductsResult] = await Promise.all([
       supabase.from('pages').select('*'),
       supabase.from('categories').select('id, name, icon').order('name', { ascending: true }),
-      supabase.from('products').select('id, name, price, image_url, images, brand, in_stock, size, color, variant').eq('featured', true).order('created_at', { ascending: false }).limit(6)
+      supabase.from('products').select('id, name, price, price_type, price_min, price_max, image_url, images, brand, in_stock, size, color, variant').eq('featured', true).order('created_at', { ascending: false }).limit(6)
     ])
 
     const payload = {

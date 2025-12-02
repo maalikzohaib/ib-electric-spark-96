@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/enhanced-button";
 import { Badge } from "@/components/ui/badge";
 import type { Product } from "@/store/productStore";
+import { formatProductPrice } from "@/store/productStore";
 import { useFavoriteStore } from "@/store/favoriteStore";
 import { useCartStore } from "@/store/cartStore";
 import { Heart, ShoppingCart } from "lucide-react";
@@ -18,20 +19,20 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavoriteStore();
   const { addToCart } = useCartStore();
   const { toast } = useToast();
-  
+
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState(false);
-  
+
   const isProductFavorite = isFavorite(product.id);
-  
+
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (isTogglingFavorite) return;
-    
+
     setIsTogglingFavorite(true);
-    
+
     try {
       if (isProductFavorite) {
         removeFromFavorites(product.id);
@@ -58,19 +59,19 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
       setIsTogglingFavorite(false);
     }
   };
-  
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (isAddingToCart) return;
-    
+
     setIsAddingToCart(true);
-    
+
     try {
       // Simulate a delay to show the loading state
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       addToCart(product);
       toast({
         title: "Added to cart",
@@ -87,14 +88,14 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
     }
   };
   return (
-    <div 
+    <div
       className={`group bg-card rounded-2xl shadow-lg border-0 overflow-hidden transition-all duration-500 hover:shadow-elegant hover:-translate-y-2 animate-scale-in ${className}`}
       role="article"
       aria-labelledby={`product-${product.id}-title`}
     >
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-primary opacity-0 group-hover:opacity-10 transition-opacity duration-300 z-10"></div>
-        
+
         {/* Favorite Button */}
         <Button
           variant="secondary"
@@ -115,18 +116,18 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
           alt={product.name}
           className="w-full h-56 object-contain p-2 transition-transform duration-500 group-hover:scale-105"
         />
-        <Badge 
-          variant={product.in_stock ? 'default' : 'destructive'} 
+        <Badge
+          variant={product.in_stock ? 'default' : 'destructive'}
           className="absolute top-3 right-3 z-20 bg-opacity-90 backdrop-blur-sm"
         >
           {product.in_stock ? 'In Stock' : 'Out of Stock'}
         </Badge>
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
-      
+
       <div className="p-4 space-y-3 sm:p-5">
         <div className="space-y-2">
-          <h3 
+          <h3
             id={`product-${product.id}-title`}
             className="font-bold text-foreground text-lg line-clamp-1 group-hover:text-primary transition-colors duration-300"
           >
@@ -137,22 +138,22 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
             {product.size && <span className="ml-2">• Size: {product.size}</span>}
           </p>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <span className="text-primary font-bold text-2xl">
-            PKR {product.price.toLocaleString()}
+            {formatProductPrice(product)}
           </span>
-          <Badge 
+          <Badge
             variant={product.in_stock ? 'default' : 'destructive'}
             className="text-xs px-3 py-1"
           >
             {product.in_stock ? 'In Stock' : 'Out of Stock'}
           </Badge>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-3 w-full mb-2 mt-4 sm:mt-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full sm:flex-1 group-hover:border-primary group-hover:text-primary transition-all duration-300 whitespace-nowrap py-2 px-3 h-auto"
             disabled={!product.in_stock || isAddingToCart}
             onClick={handleAddToCart}
@@ -170,14 +171,14 @@ const ProductCard = ({ product, className = "" }: ProductCardProps) => {
               </>
             )}
           </Button>
-          
-          <Link 
-            to={`/product/${product.id}`} 
+
+          <Link
+            to={`/product/${product.id}`}
             className="w-full sm:flex-1"
             aria-label={`View details for ${product.name}`}
           >
-            <Button 
-              variant="store" 
+            <Button
+              variant="store"
               className="w-full group-hover:bg-primary group-hover:scale-105 transition-all duration-300 whitespace-nowrap py-2 px-3 h-auto"
               disabled={!product.in_stock}
               tabIndex={0}

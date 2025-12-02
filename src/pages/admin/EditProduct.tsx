@@ -25,6 +25,9 @@ const EditProduct = () => {
     name: '',
     description: '',
     price: '',
+    price_type: 'single' as 'single' | 'range',
+    price_min: '',
+    price_max: '',
     category_id: '' as string,
     brand: '',
     in_stock: true,
@@ -64,6 +67,9 @@ const EditProduct = () => {
       name: product.name,
       description: product.description || '',
       price: product.price.toString(),
+      price_type: product.price_type || 'single',
+      price_min: product.price_min?.toString() || '',
+      price_max: product.price_max?.toString() || '',
       category_id: product.category_id || '',
       brand: product.brand || '',
       in_stock: product.in_stock,
@@ -220,13 +226,32 @@ const EditProduct = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.price || !formData.category_id || !formData.brand) {
+    // Validate required fields
+    const isPriceValid = formData.price_type === 'single' 
+      ? formData.price 
+      : (formData.price_min && formData.price_max);
+
+    if (!formData.name || !isPriceValid || !formData.category_id || !formData.brand) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
         variant: "destructive",
       });
       return;
+    }
+
+    // Validate price range
+    if (formData.price_type === 'range') {
+      const minPrice = parseFloat(formData.price_min);
+      const maxPrice = parseFloat(formData.price_max);
+      if (minPrice >= maxPrice) {
+        toast({
+          title: "Invalid Price Range",
+          description: "Minimum price must be less than maximum price.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (imageUrls.length === 0 && imageFiles.length === 0) {
@@ -256,7 +281,12 @@ const EditProduct = () => {
       const updatedProduct = {
         name: formData.name,
         description: formData.description,
-        price: parseFloat(formData.price),
+        price: formData.price_type === 'single' 
+          ? parseFloat(formData.price) 
+          : parseFloat(formData.price_min), // Use min price as base price for range
+        price_type: formData.price_type,
+        price_min: formData.price_type === 'range' ? parseFloat(formData.price_min) : null,
+        price_max: formData.price_type === 'range' ? parseFloat(formData.price_max) : null,
         category_id: formData.category_id,
         brand: formData.brand,
         in_stock: formData.in_stock,
@@ -332,19 +362,62 @@ const EditProduct = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="price">Price (Rs.) *</Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    placeholder="0"
-                    required
-                  />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <Label>Price Type *</Label>
+                  <Select value={formData.price_type} onValueChange={(value) => handleSelectChange('price_type', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select price type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="single">Single Price (e.g., Rs. 800)</SelectItem>
+                      <SelectItem value="range">Price Range (e.g., Rs. 500-1000)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+                
+                {formData.price_type === 'single' ? (
+                  <div>
+                    <Label htmlFor="price">Price (Rs.) *</Label>
+                    <Input
+                      id="price"
+                      name="price"
+                      type="number"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      placeholder="0"
+                      required
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <Label htmlFor="price_min">Minimum Price (Rs.) *</Label>
+                      <Input
+                        id="price_min"
+                        name="price_min"
+                        type="number"
+                        value={formData.price_min}
+                        onChange={handleInputChange}
+                        placeholder="500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="price_max">Maximum Price (Rs.) *</Label>
+                      <Input
+                        id="price_max"
+                        name="price_max"
+                        type="number"
+                        value={formData.price_max}
+                        onChange={handleInputChange}
+                        placeholder="1000"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+                
                 <div>
                   <Label htmlFor="category_id">Category *</Label>
                   <Select value={formData.category_id} onValueChange={(value) => handleSelectChange('category_id', value)}>
