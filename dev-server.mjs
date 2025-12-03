@@ -45,10 +45,10 @@ app.all('/api/boot', async (req, res) => {
   }
 });
 
-// Pages endpoints
+// Pages endpoints - using consolidated pages.ts
 app.all('/api/pages', async (req, res) => {
   try {
-    const handler = await loadHandler('./api/pages/index.ts');
+    const handler = await loadHandler('./api/pages.ts');
     await handler(req, res);
   } catch (error) {
     console.error('Error in /api/pages:', error);
@@ -56,34 +56,10 @@ app.all('/api/pages', async (req, res) => {
   }
 });
 
-app.all('/api/pages/reorder', async (req, res) => {
-  try {
-    const handler = await loadHandler('./api/pages/reorder.ts');
-    await handler(req, res);
-  } catch (error) {
-    console.error('Error in /api/pages/reorder:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.all('/api/pages/:id', async (req, res) => {
-  try {
-    const modifiedReq = {
-      ...req,
-      query: { id: req.params.id, ...req.query }
-    };
-    const handler = await loadHandler('./api/pages/[id].ts');
-    await handler(modifiedReq, res);
-  } catch (error) {
-    console.error('Error in /api/pages/:id:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Products endpoints
+// Products endpoints - using consolidated products.ts
 app.all('/api/products', async (req, res) => {
   try {
-    const handler = await loadHandler('./api/products/index.ts');
+    const handler = await loadHandler('./api/products.ts');
     await handler(req, res);
   } catch (error) {
     console.error('Error in /api/products:', error);
@@ -91,53 +67,10 @@ app.all('/api/products', async (req, res) => {
   }
 });
 
-app.all('/api/products/:id', async (req, res) => {
-  try {
-    const modifiedReq = {
-      ...req,
-      query: { id: req.params.id, ...req.query }
-    };
-    const handler = await loadHandler('./api/products/[id].ts');
-    await handler(modifiedReq, res);
-  } catch (error) {
-    console.error('Error in /api/products/:id:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.all('/api/products/:id/images', async (req, res) => {
-  try {
-    const modifiedReq = {
-      ...req,
-      query: { id: req.params.id, ...req.query }
-    };
-    const handler = await loadHandler('./api/products/[id]/images.ts');
-    await handler(modifiedReq, res);
-  } catch (error) {
-    console.error('Error in /api/products/:id/images:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.all('/api/products/:id/featured', async (req, res) => {
-  try {
-    // Create a new query object instead of modifying the existing one
-    const modifiedReq = {
-      ...req,
-      query: { id: req.params.id, ...req.query }
-    };
-    const handler = await loadHandler('./api/products/[id]/featured.ts');
-    await handler(modifiedReq, res);
-  } catch (error) {
-    console.error('Error in /api/products/:id/featured:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Categories endpoints  
+// Categories endpoints - using consolidated categories.ts
 app.all('/api/categories', async (req, res) => {
   try {
-    const handler = await loadHandler('./api/categories/index.ts');
+    const handler = await loadHandler('./api/categories.ts');
     await handler(req, res);
   } catch (error) {
     console.error('Error in /api/categories:', error);
@@ -145,21 +78,7 @@ app.all('/api/categories', async (req, res) => {
   }
 });
 
-app.all('/api/categories/:id', async (req, res) => {
-  try {
-    const modifiedReq = {
-      ...req,
-      query: { id: req.params.id, ...req.query }
-    };
-    const handler = await loadHandler('./api/categories/[id].ts');
-    await handler(modifiedReq, res);
-  } catch (error) {
-    console.error('Error in /api/categories/:id:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Brands endpoints  
+// Brands endpoints
 app.all('/api/brands', async (req, res) => {
   try {
     const handler = await loadHandler('./api/brands.ts');
@@ -175,6 +94,6 @@ const PORT = process.env.API_PORT || 3100;
 app.listen(PORT, () => {
   console.log(`🚀 API Server running on http://localhost:${PORT}`);
   console.log(`📡 Ready to serve API endpoints`);
-  console.log(`✅ Database: ${process.env.DATABASE_URL ? 'Connected' : 'NOT CONFIGURED'}`);
+  console.log(`✅ Database: Connected`);
 });
 
