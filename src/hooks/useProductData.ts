@@ -4,7 +4,7 @@ import { useProductStore } from '@/store/productStore';
 import { usePageStore } from '@/store/pageStore';
 
 export const useProductData = () => {
-  const { setFeaturedProducts, setCategories } = useProductStore();
+  const { setFeaturedProducts, setCategories, setBrands } = useProductStore();
   const { setPages } = usePageStore();
 
   const query = useQuery({
@@ -29,9 +29,10 @@ export const useProductData = () => {
     if (query.data) {
       setPages(query.data.pages || [])
       setCategories(query.data.categories || [])
+      setBrands(query.data.brands || [])
       setFeaturedProducts(query.data.featuredProducts || [])
     }
-  }, [query.data, setPages, setCategories, setFeaturedProducts])
+  }, [query.data, setPages, setCategories, setBrands, setFeaturedProducts])
 
   return { loading: query.isLoading, error: query.error as Error | null };
 };
