@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProductStore } from "@/store/productStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
@@ -15,12 +15,19 @@ import {
 } from "lucide-react";
 
 const Brands = () => {
-  const { brands, products, addBrand, updateBrand, deleteBrand } = useProductStore();
+  const { brands, products, productsFetched, fetchProducts, addBrand, updateBrand, deleteBrand } = useProductStore();
   const { toast } = useToast();
   
   const [newBrand, setNewBrand] = useState('');
   const [editingBrand, setEditingBrand] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+
+  // Fetch products if not already loaded (needed for product count)
+  useEffect(() => {
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [productsFetched, fetchProducts]);
 
   const handleAddBrand = async (e: React.FormEvent) => {
     e.preventDefault();

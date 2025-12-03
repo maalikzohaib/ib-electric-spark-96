@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProductStore } from "@/store/productStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
@@ -15,8 +15,19 @@ import {
 } from "lucide-react";
 
 const Categories = () => {
-  const { categories, products, addCategory, updateCategory, deleteCategory } = useProductStore();
+  const { categories, products, productsFetched, fetchProducts, addCategory, updateCategory, deleteCategory } = useProductStore();
   const { toast } = useToast();
+  
+  const [newCategory, setNewCategory] = useState('');
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  // Fetch products if not already loaded (needed for product count)
+  useEffect(() => {
+    if (!productsFetched) {
+      fetchProducts();
+    }
+  }, [productsFetched, fetchProducts]);
   
   const [newCategory, setNewCategory] = useState('');
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
