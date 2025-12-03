@@ -185,7 +185,7 @@ const AdminProducts = () => {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-primary text-sm">
-                    {formatProductPrice(product)}
+                    {formatProductPrice(product).display}
                   </span>
                   <Badge variant="outline" className="text-xs">
                     {useProductStore.getState().categories.find(c => c.id === product.category_id)?.name || 'Unknown'}

@@ -92,7 +92,7 @@ const FeaturedProducts = () => {
                 <div className="flex-1">
                   <h3 className="font-medium text-foreground">{product.name}</h3>
                   <p className="text-sm text-muted-foreground">{product.brand} • {useProductStore.getState().categories.find(c => c.id === product.category_id)?.name || 'Unknown'}</p>
-                  <p className="text-sm font-medium text-primary">{formatProductPrice(product)}</p>
+                  <p className="text-sm font-medium text-primary">{formatProductPrice(product).display}</p>
                 </div>
               </div>
             ))}

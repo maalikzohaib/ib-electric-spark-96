@@ -24,25 +24,44 @@ export interface Product {
 }
 
 // Helper function to format price display
-export const formatProductPrice = (product: Product): string => {
-  if (product.price_type === 'range' && product.price_min != null && product.price_max != null) {
-    return `PKR ${product.price_min.toLocaleString()} - ${product.price_max.toLocaleString()}`;
+export const formatProductPrice = (product: Product): { display: string; original?: string; isSale: boolean } => {
+  // Check if product is on sale (single price with valid sale_price)
+  const isOnSale = product.price_type === 'single' && 
+    product.sale_price != null && 
+    product.sale_price > 0 && 
+    product.sale_price < product.price;
+
+  if (isOnSale) {
+    return {
+      display: `PKR ${product.sale_price!.toLocaleString()}`,
+      original: `PKR ${product.price.toLocaleString()}`,
+      isSale: true
+    };
   }
-  return `PKR ${product.price.toLocaleString()}`;
+
+  if (product.price_type === 'range' && product.price_min != null && product.price_max != null) {
+    return {
+      display: `PKR ${product.price_min.toLocaleString()} - ${product.price_max.toLocaleString()}`,
+      isSale: false
+    };
+  }
+
+  return {
+    display: `PKR ${product.price.toLocaleString()}`,
+    isSale: false
+  };
 };
 
 // Helper to check if product is on sale
-export const isProductOnSale = (product: Product): boolean => {
-  return product.price_type === 'single' && product.sale_price != null && product.sale_price > 0 && product.sale_price < product.price;
+export const isSaleActive = (product: Product): boolean => {
+  return product.price_type === 'single' && 
+    product.sale_price != null && 
+    product.sale_price > 0 && 
+    product.sale_price < product.price;
 };
 
-// Helper to format sale price display
-export const formatSalePrice = (product: Product): string => {
-  if (isProductOnSale(product)) {
-    return `PKR ${product.sale_price!.toLocaleString()}`;
-  }
-  return formatProductPrice(product);
-};
+// Alias for backwards compatibility
+export const isProductOnSale = isSaleActive;
 
 // Helper to get price for cart/order (uses single price or min price for range)
 export const getProductPrice = (product: Product): number => {
