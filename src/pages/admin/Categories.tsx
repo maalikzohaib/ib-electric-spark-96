@@ -28,10 +28,6 @@ const Categories = () => {
       fetchProducts();
     }
   }, [productsFetched, fetchProducts]);
-  
-  const [newCategory, setNewCategory] = useState('');
-  const [editingCategory, setEditingCategory] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState('');
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
